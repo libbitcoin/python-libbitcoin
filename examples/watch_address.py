@@ -23,16 +23,17 @@ async def main():
     print("prefix=%s" % prefix)
 
     # Stop after 1 minute.
-    loop.call_later(10 * 60, subscription.stop)
+    loop.call_later(60, lambda: loop.create_task(subscription.stop()))
 
-    while subscription.is_running():
-        update = await subscription.updates()
-        print("Received update:")
-        if update.confirmed:
-            print("Block #%s %s" % (update.height,
-                                    hash_str(update.block_hash)))
-        tx_hash = libbitcoin.bitcoin_utils.bitcoin_hash(update.tx_data)
-        print("Transaction:", hash_str(tx_hash))
+    with subscription:
+        while subscription.is_running():
+            update = await subscription.updates()
+            print("Received update:")
+            if update.confirmed:
+                print("Block #%s %s" % (update.height,
+                                        hash_str(update.block_hash)))
+            tx_hash = libbitcoin.bitcoin_utils.bitcoin_hash(update.tx_data)
+            print("Transaction:", hash_str(tx_hash))
 
     context.stop_all()
 

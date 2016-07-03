@@ -41,13 +41,23 @@ class Subscription:
         scheduler.add(renew_time, self._renew)
 
     async def updates(self):
-        return await self._queue.get()
+        update = await self._queue.get()
+        if type(update) == StopIteration:
+            raise update
+        return update
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        return True
 
     def is_running(self):
         return not self._stopped
 
-    def stop(self):
+    async def stop(self):
         self._stopped = True
+        await self._queue.put(StopIteration())
 
     def _match(self, address_hash):
         matcher = libbitcoin.binary.Binary(self._prefix.size, address_hash)
