@@ -3,7 +3,7 @@ import struct
 import enum
 import asyncio
 import zmq
-import libbitcoin.error_code
+import libbitcoin
 import libbitcoin.serialize
 import libbitcoin.bitcoin_utils
 import libbitcoin.subscribe
@@ -15,7 +15,7 @@ def create_random_id():
 def make_error_code(ec):
     if not ec:
         return None
-    return libbitcoin.error_code(ec)
+    return libbitcoin.ErrorCode(ec)
 
 def pack_block_index(index):
     if type(index) == bytes:

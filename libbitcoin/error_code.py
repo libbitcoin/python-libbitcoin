@@ -1,12 +1,6 @@
 import enum
 
-def make(id):
-    for key, value in error_code.__dict__.iteritems():
-        if value == id:
-            return key
-    return None
-
-class error_code(enum.Enum):
+class ErrorCode(enum.Enum):
 
     nothing = 0
 
