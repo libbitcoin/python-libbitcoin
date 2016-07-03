@@ -39,6 +39,9 @@ class OutPoint:
         # value & (2**n - 1) is the same as value % 2**n
         return value & (2**63 - 1)
 
+    def tuple(self):
+        return (self._hash_hex(), self.index)
+
 class InPoint(OutPoint):
 
     def __repr__(self):
