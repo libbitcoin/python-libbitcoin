@@ -29,6 +29,8 @@ class Binary:
 
     @classmethod
     def from_string(cls, repr):
+        if type(repr) != str and set("01") != set(repr):
+            return None
         return cls(len(repr), binary_str_to_bytes(repr))
 
     @classmethod

@@ -12,7 +12,7 @@ async def main():
     client = context.Client("tcp://obelisk.airbitz.co:9091")
 
     prefix = libbitcoin.Binary.from_string("11")
-    ec, rows = await client.stealth(prefix, 400000)
+    ec, rows = await client.stealth(prefix, 419135)
     assert ec is None
 
     print("Fetched %s rows." % len(rows))
