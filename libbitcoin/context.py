@@ -58,6 +58,6 @@ class TornadoContext(Context):
 
     # Tornado prefers them uncalled.
     def start(self, loop):
-        loop.add_callback(self.poller.run)
-        loop.add_callback(self.scheduler.run)
+        loop.spawn_callback(self.poller.run)
+        loop.spawn_callback(self.scheduler.run)
 

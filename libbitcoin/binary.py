@@ -106,4 +106,5 @@ if __name__ == "__main__":
     c = Binary.from_string("0001110")
     b.resize(7)
     assert b == c
+    assert str(b) == "0001110"
 

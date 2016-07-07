@@ -15,8 +15,8 @@ async def main():
     client = context.Client("tcp://obelisk.airbitz.co:9091")
 
     address = "15s5nojkHKxJz3GvpKD1S6DR9nKUxSzNko"
-    prefix = libbitcoin.Binary.from_address(address)
-    #prefix = libbitcoin.Binary.from_string("11")
+    #prefix = libbitcoin.Binary.from_address(address)
+    prefix = libbitcoin.Binary.from_string("11")
     ec, subscription = await client.subscribe_address(prefix)
     assert ec is None
     print("Watching address: %s..." % address)
