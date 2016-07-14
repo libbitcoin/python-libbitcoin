@@ -2,6 +2,16 @@ import hashlib
 
 bitcoin_hash = lambda x: hashlib.sha256(hashlib.sha256(x).digest()).digest()
 
+def hash_160(public_key):
+    try:
+        md = hashlib.new('ripemd160')
+        md.update(hashlib.sha256(public_key).digest())
+        return md.digest()
+    except:
+        import ripemd
+        md = ripemd.new(hashlib.sha256(public_key).digest())
+        return md.digest()
+
 def bc_address_to_hash_160(addr):
     bytes = b58decode(addr, 25)
     return bytes[0], bytes[1:21]
