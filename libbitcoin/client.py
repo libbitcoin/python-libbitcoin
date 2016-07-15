@@ -72,28 +72,34 @@ class Client:
         ]
         await self._socket.send_multipart(request)
 
-    async def request(self, request_command, request_data, expiry_time=None):
+    async def request(self, request_command, request_data, expiry_time):
         future = self._context.Future()
         request_id = create_random_id()
         self._context.poller.add_future(request_id, future)
 
         await self._send_request(request_command, request_id, request_data)
 
-        reply = await future
+        try:
+            reply = await asyncio.wait_for(future, expiry_time)
+        except asyncio.TimeoutError:
+            return TimeoutError("Request timed out."), None
+
         reply_command, reply_id, ec, data = reply
         assert reply_command == request_command
         assert reply_id == request_id
         ec = make_error_code(ec)
         return ec, data
 
-    async def block_header(self, index):
+    async def block_header(self, index, expiry_time=None):
         """Fetches the block header by height or integer index."""
         command = b"blockchain.fetch_block_header"
         data = pack_block_index(index)
-        ec, data = await self.request(command, data)
+        ec, data = await self.request(command, data, expiry_time)
+        if ec:
+            return ec, None
         return ec, data
 
-    async def history(self, address, from_height=0):
+    async def history(self, address, from_height=0, expiry_time=None):
         """Fetches history for an address. cb is a callback which
         accepts an error code, and a list of rows consisting of:
 
@@ -117,7 +123,9 @@ class Client:
         data += address_hash                        # address
         data += struct.pack('<I', from_height)      # from_height
 
-        ec, data = await self.request(command, data)
+        ec, data = await self.request(command, data, expiry_time)
+        if ec:
+            return ec, None
 
         # parse results
         rows = unpack_table("<B32sIIQ", data)
@@ -134,63 +142,77 @@ class Client:
 
         return ec, history
 
-    async def last_height(self):
+    async def last_height(self, expiry_time=None):
         """Fetches the height of the last block in our blockchain."""
         command = b"blockchain.fetch_last_height"
-        ec, data = await self.request(command, b"")
+        ec, data = await self.request(command, b"", expiry_time)
+        if ec:
+            return ec, None
         # Deserialize data
         height = struct.unpack("<I", data)[0]
         return ec, height
 
-    async def transaction(self, tx_hash):
+    async def transaction(self, tx_hash, expiry_time=None):
         """Fetches a transaction by hash from the blockchain."""
         command = b"blockchain.fetch_transaction"
         data = libbitcoin.serialize.serialize_hash(tx_hash)
-        ec, data = await self.request(command, data)
+        ec, data = await self.request(command, data, expiry_time)
+        if ec:
+            return ec, None
         return ec, data
 
-    async def transaction_from_pool(self, tx_hash):
+    async def transaction_from_pool(self, tx_hash, expiry_time=None):
         """Fetches a transaction by hash from the transaction pool."""
         command = b"transaction_pool.fetch_transaction"
         data = libbitcoin.serialize.serialize_hash(tx_hash)
-        ec, data = await self.request(command, data)
+        ec, data = await self.request(command, data, expiry_time)
+        if ec:
+            return ec, None
         return ec, data
 
-    async def spend(self, outpoint):
+    async def spend(self, outpoint, expiry_time=None):
         """Fetches a corresponding spend of an output."""
         command = b"blockchain.fetch_spend"
         data = outpoint.serialize()
-        ec, data = await self.request(command, data)
+        ec, data = await self.request(command, data, expiry_time)
+        if ec:
+            return ec, None
         spend = libbitcoin.models.InPoint.deserialize(data)
         return ec, spend
 
-    async def transaction_index(self, tx_hash):
+    async def transaction_index(self, tx_hash, expiry_time=None):
         """Fetch the block height that contains a transaction and its index
         within a block."""
         command = b"blockchain.fetch_transaction_index"
         data = libbitcoin.serialize.serialize_hash(tx_hash)
-        ec, data = await self.request(command, data)
+        ec, data = await self.request(command, data, expiry_time)
+        if ec:
+            return ec, None
         height, index = struct.unpack("<II", data)
         return ec, height, index
 
-    async def block_transaction_hashes(self, block_hash):
+    async def block_transaction_hashes(self, block_hash, expiry_time=None):
         """Fetches list of transaction hashes in a block by block hash."""
         command = b"blockchain.fetch_block_transaction_hashes"
         data = libbitcoin.serialize.serialize_hash(block_hash)
-        ec, data = await self.request(command, data)
+        ec, data = await self.request(command, data, expiry_time)
+        if ec:
+            return ec, None
         rows = unpack_table("32s", data)
         hashes = [row[0][::-1] for row in rows]
         return ec, hashes
 
-    async def block_height(self, block_hash):
+    async def block_height(self, block_hash, expiry_time=None):
         """Fetches the height of a block given its hash."""
         command = b"blockchain.fetch_block_height"
         data = libbitcoin.serialize.serialize_hash(block_hash)
-        ec, data = await self.request(command, data)
+        ec, data = await self.request(command, data, expiry_time)
+        if ec:
+            return ec, None
         height = struct.unpack("<I", data)[0]
         return ec, height
 
-    async def stealth(self, prefix, from_height=0):
+    async def stealth(self, prefix, from_height=0, expiry_time=None):
         """Fetch possible stealth results. These results can then be iterated
         to discover new payments belonging to a particular stealth address.
         This is for recipient privacy.
@@ -207,7 +229,9 @@ class Client:
         data += prefix.blocks
         data += struct.pack('<I', from_height)
         # Make the request
-        ec, data = await self.request(command, data)
+        ec, data = await self.request(command, data, expiry_time)
+        if ec:
+            return ec, None
         # Deserialize data
         raw_rows = unpack_table("<32s20s32s", data)
         rows = []
@@ -218,23 +242,25 @@ class Client:
             rows.append((ephemkey, address, tx_hash))
         return ec, rows
 
-    async def total_connections(self):
+    async def total_connections(self, expiry_time=None):
         """Fetches the total number of connections."""
         command = b"protocol.total_connections"
-        ec, data = await self.request(command, b"")
+        ec, data = await self.request(command, b"", expiry_time)
+        if ec:
+            return ec, None
         # Deserialize data
         total = struct.unpack("<I", data)[0]
         return ec, total
 
-    async def broadcast(self, raw_tx):
+    async def broadcast(self, raw_tx, expiry_time=None):
         """Broadcasts a transaction to the network."""
         command = b"protocol.broadcast_transaction"
-        ec, _ = await self.request(command, raw_tx)
+        ec, _ = await self.request(command, raw_tx, expiry_time)
         return ec
 
     # Subscribe related stuff -----------------------------------
 
-    async def _base_subscribe_address(self, sub_type, prefix):
+    async def _base_subscribe_address(self, sub_type, prefix, expiry_time):
         command = b"address.subscribe"
 
         # prefix = obelisk.Binary.from_string("1011110101")
@@ -248,7 +274,7 @@ class Client:
         request_data += prefix.blocks
 
         # run command
-        ec, _ = await self.request(command, request_data)
+        ec, _ = await self.request(command, request_data, expiry_time)
         if ec:
             return ec, None
 
@@ -258,15 +284,15 @@ class Client:
 
         return ec, subscription
 
-    async def subscribe_address(self, prefix):
-        return await self._base_subscribe_address(0, prefix)
-    async def subscribe_stealth(self, prefix):
-        return await self._base_subscribe_address(1, prefix)
+    async def subscribe_address(self, prefix, expiry_time=None):
+        return await self._base_subscribe_address(0, prefix, expiry_time)
+    async def subscribe_stealth(self, prefix, expiry_time=None):
+        return await self._base_subscribe_address(1, prefix, expiry_time)
 
     async def _renew(self, data):
         command = b"address.renew"
         # Server should reply.
-        ec, _ = await self.request(command, data)
+        ec, _ = await self.request(command, data, None)
         return ec
 
     async def _on_update(self, frame):

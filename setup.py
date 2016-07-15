@@ -10,18 +10,18 @@ def read(fname):
 
 setup(
     name = "python-libbitcoin",
-    version = "0.1",
+    version = "1.2",
     author = "DarkWallet",
     author_email = "policeterror@dyne.org",
     description = ("Python client side library for libbitcoin-server."),
     license = "AGPL",
-    keywords = "bitcoin library",
+    keywords = "bitcoin libbitcoin blockchain library",
     url = "https://github.com/rojavacrypto/python-libbitcoin",
     packages=["libbitcoin"],
     install_requires=["pyzmq", "ecdsa"],
-    long_description=read('README.md'),
+    #long_description=read('README.md'),
     classifiers=[
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 4 - Beta",
         "Topic :: Software Development :: Libraries",
         "Topic :: Security :: Cryptography",
         "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",

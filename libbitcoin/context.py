@@ -3,8 +3,12 @@ import libbitcoin.client
 import libbitcoin.poller
 import libbitcoin.scheduler
 
-# TornadoContext
-import tornado.concurrent
+try:
+    # TornadoContext
+    import tornado.concurrent
+except:
+    pass
+
 import zmq.eventloop.future
 
 class Context:

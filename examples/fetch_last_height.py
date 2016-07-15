@@ -8,9 +8,9 @@ import libbitcoin
 context = libbitcoin.Context()
 
 async def main():
-    client = context.Client("tcp://gateway.unsystem.net:9091")
+    client = context.Client("tcp://fffgateway.unsystem.net:9091")
 
-    ec, height = await client.last_height()
+    ec, height = await client.last_height(expiry_time=0)
     assert ec is None
     print("Last height:", height)
 

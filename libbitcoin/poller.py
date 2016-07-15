@@ -1,3 +1,4 @@
+import asyncio
 import struct
 import sys
 import zmq
@@ -32,7 +33,11 @@ class Poller:
             future = self._futures[reply_id]
             del self._futures[reply_id]
             # Set the result for the future
-            future.set_result(reply)
+            try:
+                future.set_result(reply)
+            except asyncio.InvalidStateError:
+                # Future timed out.
+                pass
         elif command in self._handlers:
             handler = self._handlers[command]
             await handler(frame)
