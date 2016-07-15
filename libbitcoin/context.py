@@ -55,7 +55,8 @@ class TornadoContext(Context):
 
     def __init__(self):
         super().__init__(
-            make_future=tornado.concurrent.Future,
+            #make_future=tornado.concurrent.Future,
+            make_future=zmq.asyncio.Future,
             make_zmq_poller=zmq.eventloop.future.Poller,
             make_zmq_context=zmq.eventloop.future.Context
         )

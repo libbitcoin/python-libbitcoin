@@ -82,10 +82,9 @@ class Client:
 
         expiry_time = self.settings.query_expire_time
         try:
-            #reply = await asyncio.wait_for(future, expiry_time)
-            reply = await future
+            reply = await asyncio.wait_for(future, expiry_time)
         except asyncio.TimeoutError:
-            return TimeoutError("Request timed out."), None
+            return libbitcoin.ErrorCode.channel_timeout, None
 
         reply_command, reply_id, ec, data = reply
         assert reply_command == request_command
@@ -190,7 +189,7 @@ class Client:
         data = libbitcoin.serialize.serialize_hash(tx_hash)
         ec, data = await self.request(command, data)
         if ec:
-            return ec, None
+            return ec, None, None
         height, index = struct.unpack("<II", data)
         return ec, height, index
 
