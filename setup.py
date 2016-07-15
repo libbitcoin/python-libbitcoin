@@ -18,7 +18,7 @@ setup(
     keywords = "bitcoin library",
     url = "https://github.com/rojavacrypto/python-libbitcoin",
     packages=["libbitcoin"],
-    install_requires=["pyzmq"],
+    install_requires=["pyzmq", "ecdsa"],
     long_description=read('README.md'),
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",

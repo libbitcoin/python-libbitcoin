@@ -1,7 +1,7 @@
 import hashlib
 import os
-import libbitcoin.ecdsa
-from libbitcoin.ecdsa.util import string_to_number, number_to_string
+import ecdsa
+from ecdsa.util import string_to_number, number_to_string
 from libbitcoin.bitcoin_utils import hash_160_to_bc_address, hash_160
 
 # secp256k1, http://www.oid-info.com/get/1.3.132.0.10
@@ -11,11 +11,11 @@ _b = 0x0000000000000000000000000000000000000000000000000000000000000007
 _a = 0x0000000000000000000000000000000000000000000000000000000000000000
 _Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798
 _Gy = 0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8
-curve_secp256k1 = libbitcoin.ecdsa.ellipticcurve.CurveFp(_p, _a, _b)
-generator_secp256k1 = libbitcoin.ecdsa.ellipticcurve.Point(
+curve_secp256k1 = ecdsa.ellipticcurve.CurveFp(_p, _a, _b)
+generator_secp256k1 = ecdsa.ellipticcurve.Point(
     curve_secp256k1, _Gx, _Gy, _r)
 oid_secp256k1 = (1, 3, 132, 0, 10)
-SECP256k1 = libbitcoin.ecdsa.curves.Curve(
+SECP256k1 = ecdsa.curves.Curve(
     "SECP256k1",
     curve_secp256k1,
     generator_secp256k1,
@@ -42,15 +42,15 @@ def GetPubKey(pubkey, compressed=False):
 
 class EC_KEY(object):
     def __init__(self, secret):
-        self.pubkey = libbitcoin.ecdsa.ecdsa.Public_key(
+        self.pubkey = ecdsa.ecdsa.Public_key(
             generator_secp256k1,
             generator_secp256k1 * secret
         )
-        self.privkey = libbitcoin.ecdsa.ecdsa.Private_key(self.pubkey, secret)
+        self.privkey = ecdsa.ecdsa.Private_key(self.pubkey, secret)
         self.secret = secret
 
     def sign_message(self, message, compressed, address):
-        private_key = libbitcoin.ecdsa.SigningKey.from_secret_exponent(
+        private_key = ecdsa.SigningKey.from_secret_exponent(
             self.secret, curve=SECP256k1
         )
         public_key = private_key.get_verifying_key()
@@ -142,7 +142,7 @@ class EllipticCurveKey:
         #pkey = obelisk.regenerate_key(sec)
 
         secexp = pkey.secret
-        self._private_key = libbitcoin.ecdsa.SigningKey.from_secret_exponent(
+        self._private_key = ecdsa.SigningKey.from_secret_exponent(
             secexp, curve=SECP256k1)
         self._public_key = self._private_key.get_verifying_key()
 
@@ -151,13 +151,13 @@ class EllipticCurveKey:
             return None
         return self._private_key.sign_digest_deterministic(
             digest, hashfunc=hashlib.sha256,
-            sigencode=libbitcoin.ecdsa.util.sigencode_der)
+            sigencode=ecdsa.util.sigencode_der)
 
     def verify(self, digest, signature):
         if self._public_key is None:
             return None
         return self._public_key.verify_digest(
-            signature, digest, sigdecode=libbitcoin.ecdsa.util.sigdecode_der)
+            signature, digest, sigdecode=ecdsa.util.sigdecode_der)
 
     @property
     def secret(self):
