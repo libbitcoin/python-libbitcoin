@@ -82,7 +82,8 @@ class Client:
 
         expiry_time = self.settings.query_expire_time
         try:
-            reply = await asyncio.wait_for(future, expiry_time)
+            #reply = await asyncio.wait_for(future, expiry_time)
+            reply = await future
         except asyncio.TimeoutError:
             return TimeoutError("Request timed out."), None
 
