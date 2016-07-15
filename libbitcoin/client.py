@@ -226,6 +226,12 @@ class Client:
         total = struct.unpack("<I", data)[0]
         return ec, total
 
+    async def broadcast(self, raw_tx):
+        """Broadcasts a transaction to the network."""
+        command = b"protocol.broadcast_transaction"
+        ec, _ = await self.request(command, raw_tx)
+        return ec
+
     # Subscribe related stuff -----------------------------------
 
     async def _base_subscribe_address(self, sub_type, prefix):
