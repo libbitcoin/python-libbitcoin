@@ -27,8 +27,8 @@ class Context:
 
         self._scheduler = libbitcoin.scheduler.Scheduler()
 
-    def Client(self, address):
-        return libbitcoin.client.Client(address, self)
+    def Client(self, address, settings=libbitcoin.ClientSettings()):
+        return libbitcoin.client.Client(address, self, settings)
 
     def Future(self):
         return self._make_future()
