@@ -1,4 +1,4 @@
-# Python 3 library for libbitcoin-server (https://github.com/libbitcoin/libbitcoin-server)
+# Python 3 library for [libbitcoin-server](https://github.com/libbitcoin/libbitcoin-server)
 
 ## Installation
 
