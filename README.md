@@ -4,11 +4,17 @@
 
 ```sh
 $ pip3 install python-libbitcoin
-$ cd examples/
+```
+
+## Examples
+
+```sh
+$ git clone https://github.com/RojavaCrypto/python-libbitcoin.git
+$ cd python-libbitcoin/examples/
 $ python3 fetch_last_height.py
 ```
 
-Tornado integration also exists. See examples/web_app.py
+Tornado integration also exists. See ```examples/web_app.py```
 
 ## Basic Usage
 
@@ -65,8 +71,8 @@ if __name__ == '__main__':
 ## API Reference
 
 To keep the examples short, we're not handling ErrorCodes here.
-See help(libbitcoin.ErrorCode) for a full list of possible values.
-When a query times out, it will return ErrorCode.channel_timeout.
+See ```help(libbitcoin.ErrorCode)``` for a full list of possible values.
+When a query times out, it will return ```ErrorCode.channel_timeout```.
 
 ### Block header
 
