@@ -93,53 +93,51 @@ Header: b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x
 ### History for an address (outputs and spend inputs)
 
 Fetches history for an address. Returns an error code,
-and a list of rows consisting of:
+and a list of rows consisting of outputs and corresponding
+spend inputs.
+
+Outputs are a tuple of:
 
 ```
-id (obelisk.PointIdent.output or spend)
-point (hash and index)
+OutPoint(hash, index)
 block height
-value / checksum
+value
 ```
 
-If the row is for an output then the last item is the value.
-Otherwise it is a checksum of the previous output point, so
-spends can be matched to the rows they spend.
-Use ```outpoint.checksum()``` to compute output point checksums.
+Spends are either None (if unspent) or:
+
+```
+InPoint(hash, index)
+block height
+```
+
+These values form a tuple for each row in the history.
 
 ```py
 address = "13ejSKUxLT9yByyr1bsLNseLbx9H9tNj2d"
 ec, history = await client.history(address)
-for point, height, value in history:
-	if type(point) == libbitcoin.OutPoint:
-		print("OUTPT point=%s, height=%s, value=%s, checksum=%s" %
-			  (point, height, value, point.checksum()))
-	elif type(point) == libbitcoin.InPoint:
-		print("SPEND point=%s, height=%s outpoint_checksum=%s" %
-			  (point, height, value))
-	print()
-print("Use the checksums to match outpoints with the spend inpoints.")
+for output, spend in history:
+    print("OUTPUT point=%s, height=%s, value=%s" %
+          (output[0], output[1], output[2]))
+    if spend is not None:
+        print("-> SPEND point=%s, height=%s" %
+              (spend[0], spend[1]))
+    print()
 ```
 
 ```
 $ python3 fetch_history.py
-SPEND point=InPoint(hash=1431117a24f80fdc7771cef77722473f8fe528d12f8202659e1c0081adac0441, index=2), height=200009 outpoint_checksum=6271069198995161089
+OUTPUT point=OutPoint(hash=54dc90aa618ea1c300aac021399c66f5f5152848a57984a757075036e3046147, index=1), height=200000, value=127000000
+-> SPEND point=InPoint(hash=1431117a24f80fdc7771cef77722473f8fe528d12f8202659e1c0081adac0441, index=2), height=200009
 
-OUTPT point=OutPoint(hash=54dc90aa618ea1c300aac021399c66f5f5152848a57984a757075036e3046147, index=1), height=200000, value=127000000, checksum=6271069198995161089
+OUTPUT point=OutPoint(hash=2502852f77bd63d0ef71a5a854a91d35b7bec3450baeee268cca1511b51e3416, index=1), height=199919, value=69000000
+-> SPEND point=InPoint(hash=fd6ce207e5b540e8a74b2dd0571235cbc4a64e711aa8b1749f53190d24f3fa88, index=1), height=199928
 
-SPEND point=InPoint(hash=fd6ce207e5b540e8a74b2dd0571235cbc4a64e711aa8b1749f53190d24f3fa88, index=1), height=199928 outpoint_checksum=921572236509315073
+OUTPUT point=OutPoint(hash=34238a653e66651f5484edd06c8eef68b4245d98227c6b7eb00b0221225f9c1d, index=1), height=198327, value=411000000
+-> SPEND point=InPoint(hash=d96be857d22065994c2f5f1497405f3022044a98db5da5e30e80c56061765a52, index=5), height=198334
 
-OUTPT point=OutPoint(hash=2502852f77bd63d0ef71a5a854a91d35b7bec3450baeee268cca1511b51e3416, index=1), height=199919, value=69000000, checksum=921572236509315073
-
-SPEND point=InPoint(hash=d96be857d22065994c2f5f1497405f3022044a98db5da5e30e80c56061765a52, index=5), height=198334 outpoint_checksum=3461863079321534465
-
-OUTPT point=OutPoint(hash=34238a653e66651f5484edd06c8eef68b4245d98227c6b7eb00b0221225f9c1d, index=1), height=198327, value=411000000, checksum=3461863079321534465
-
-SPEND point=InPoint(hash=0d8e104d1a839025846105e7e22cf503c5c1e92648504411b766a0a466df65b5, index=5), height=184555 outpoint_checksum=3958274652068904960
-
-OUTPT point=OutPoint(hash=0d7efb76a574d71685b89d45d3badf99ad965668a1105b22b6ee9dd3c7473d2a, index=0), height=184531, value=500000, checksum=3958274652068904960
-
-Use the checksums to match outpoints with the spend inpoints.
+OUTPUT point=OutPoint(hash=0d7efb76a574d71685b89d45d3badf99ad965668a1105b22b6ee9dd3c7473d2a, index=0), height=184531, value=500000
+-> SPEND point=InPoint(hash=0d8e104d1a839025846105e7e22cf503c5c1e92648504411b766a0a466df65b5, index=5), height=184555
 ```
 
 ### Height of the last block

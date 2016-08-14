@@ -125,17 +125,21 @@ class Client:
 
     async def history(self, address, from_height=0):
         """Fetches history for an address. Returns an error code,
-        and a list of rows consisting of:
+        and a list of rows consisting of outputs and corresponding
+        spend inputs.
 
-            id (obelisk.PointIdent.output or spend)
-            point (hash and index)
+        Outputs are a tuple of:
+
+            OutPoint(hash, index)
             block height
-            value / checksum
+            value
 
-        If the row is for an output then the last item is the value.
-        Otherwise it is a checksum of the previous output point, so
-        spends can be matched to the rows they spend.
-        Use outpoint.checksum() to compute output point checksums."""
+        Spends are either None (if unspent) or:
+
+            InPoint(hash, index)
+            block height
+
+        These values form a tuple for each row in the history."""
 
         command = b"address.fetch_history2"
 
@@ -151,9 +155,10 @@ class Client:
         if ec:
             return ec, None
 
+        outputs = []
+        spends = {}
         # parse results
         rows = unpack_table("<B32sIIQ", data)
-        history = []
         for id, hash, index, height, value in rows:
             id = PointIdent(id)
             if id == PointIdent.output:
@@ -162,7 +167,20 @@ class Client:
                 point = libbitcoin.models.InPoint()
             point.hash = hash[::-1]
             point.index = index
-            history.append((point, height, value))
+            if id == PointIdent.output:
+                outputs.append((point, height, value))
+            elif id == PointIdent.spend:
+                spends[value] = (point, height)
+
+        history = []
+        for output in outputs:
+            output_point, *_ = output
+            checksum = output_point.checksum()
+            try:
+                row = (output, spends[checksum])
+            except KeyError:
+                row = (output, None)
+            history.append(row)
 
         return ec, history
 

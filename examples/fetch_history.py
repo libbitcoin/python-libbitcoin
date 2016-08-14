@@ -19,15 +19,13 @@ async def main():
         print("Couldn't fetch history:", ec, file=sys.stderr)
         context.stop_all()
         return
-    for point, height, value in history:
-        if type(point) == libbitcoin.OutPoint:
-            print("OUTPT point=%s, height=%s, value=%s, checksum=%s" %
-                  (point, height, value, point.checksum()))
-        elif type(point) == libbitcoin.InPoint:
-            print("SPEND point=%s, height=%s outpoint_checksum=%s" %
-                  (point, height, value))
+    for output, spend in history:
+        print("OUTPUT point=%s, height=%s, value=%s" %
+              (output[0], output[1], output[2]))
+        if spend is not None:
+            print("-> SPEND point=%s, height=%s" %
+                  (spend[0], spend[1]))
         print()
-    print("Use the checksums to match outpoints with the spend inpoints.")
 
     context.stop_all()
 
