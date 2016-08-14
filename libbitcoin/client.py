@@ -46,8 +46,28 @@ class PointIdent(enum.Enum):
 class ClientSettings:
 
     def __init__(self):
-        self.renew_time = 5 * 60
-        self.query_expire_time = None
+        self._renew_time = 5 * 60
+        self._query_expire_time = None
+
+    @property
+    def query_expire_time(self):
+        """The timeout for a query in seconds. If this time expires
+        then the blockchain method will return libbitcoin.ErrorCode
+        Set to None for no timeout."""
+        return self._query_expire_time
+    @query_expire_time.setter
+    def query_expire_time(self, query_expire_time):
+        self._query_expire_time = query_expire_time
+
+    @property
+    def renew_time(self):
+        """The renew time for address or stealth subscriptions.
+        This number should be lower than the setting for the blockchain
+        server. A good value is server_renew_time / 2"""
+        return self._renew_time
+    @renew_time.setter
+    def renew_time(self, renew_time):
+        self._renew_time = renew_time
 
 class Client:
 
