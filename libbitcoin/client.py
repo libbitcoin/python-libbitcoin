@@ -94,6 +94,8 @@ class Client:
         await self._socket.send_multipart(request)
 
     async def request(self, request_command, request_data):
+        """Make a generic request. Both options are byte objects specified like
+        b"blockchain.fetch_block_header" as an example."""
         future = self._context.Future()
         request_id = create_random_id()
         self._context.poller.add_future(request_id, future)
@@ -204,7 +206,7 @@ class Client:
 
     async def transaction_index(self, tx_hash):
         """Fetch the block height that contains a transaction and its index
-        within a block."""
+        within that block."""
         command = b"blockchain.fetch_transaction_index"
         data = libbitcoin.serialize.serialize_hash(tx_hash)
         ec, data = await self.request(command, data)
@@ -265,7 +267,7 @@ class Client:
         return ec, rows
 
     async def total_connections(self):
-        """Fetches the total number of connections."""
+        """Fetches the total number of server connections."""
         command = b"protocol.total_connections"
         ec, data = await self.request(command, b"")
         if ec:
