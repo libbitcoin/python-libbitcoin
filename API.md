@@ -2,7 +2,7 @@
 
 ## Basic Usage
 
-```py
+```sh
 $ python3
 >>> import libbitcoin
 >>> context = libbitcoin.Context()
@@ -58,13 +58,15 @@ To keep the examples short, we're not handling ErrorCodes here.
 See help(libbitcoin.ErrorCode) for a full list of possible values.
 When a query times out, it will return ErrorCode.channel_timeout.
 
-### block_header
+### Block header
+
+Fetches the block header by height or integer index.
 
 ```py
-    idx = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
-    idx = bytes.fromhex(idx)
-    ec, header = await client.block_header(idx)
-    print("Header:", header)
+idx = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
+idx = bytes.fromhex(idx)
+ec, header = await client.block_header(idx)
+print("Header:", header)
 ```
 
 ```
@@ -72,20 +74,35 @@ $ python3 fetch_block_header.py
 Header: b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00;\xa3\xed\xfdz{\x12\xb2z\xc7,>gv\x8fa\x7f\xc8\x1b\xc3\x88\x8aQ2:\x9f\xb8\xaaK\x1e^J)\xab_I\xff\xff\x00\x1d\x1d\xac+|'
 ```
 
-### history
+### History for an address (outputs and spend inputs)
+
+Fetches history for an address. cb is a callback which
+accepts an error code, and a list of rows consisting of:
+
+```
+id (obelisk.PointIdent.output or spend)
+point (hash and index)
+block height
+value / checksum
+```
+
+If the row is for an output then the last item is the value.
+Otherwise it is a checksum of the previous output point, so
+spends can be matched to the rows they spend.
+Use ```outpoint.spend_checksum()``` to compute output point checksums.
 
 ```py
-    address = "13ejSKUxLT9yByyr1bsLNseLbx9H9tNj2d"
-    ec, history = await client.history(address)
-    for point, height, value in history:
-        if type(point) == libbitcoin.OutPoint:
-            print("OUTPT point=%s, height=%s, value=%s, checksum=%s" %
-                  (point, height, value, point.checksum()))
-        elif type(point) == libbitcoin.InPoint:
-            print("SPEND point=%s, height=%s outpoint_checksum=%s" %
-                  (point, height, value))
-        print()
-    print("Use the checksums to match outpoints with the spend inpoints.")
+address = "13ejSKUxLT9yByyr1bsLNseLbx9H9tNj2d"
+ec, history = await client.history(address)
+for point, height, value in history:
+	if type(point) == libbitcoin.OutPoint:
+		print("OUTPT point=%s, height=%s, value=%s, checksum=%s" %
+			  (point, height, value, point.checksum()))
+	elif type(point) == libbitcoin.InPoint:
+		print("SPEND point=%s, height=%s outpoint_checksum=%s" %
+			  (point, height, value))
+	print()
+print("Use the checksums to match outpoints with the spend inpoints.")
 ```
 
 ```
@@ -109,11 +126,13 @@ OUTPT point=OutPoint(hash=0d7efb76a574d71685b89d45d3badf99ad965668a1105b22b6ee9d
 Use the checksums to match outpoints with the spend inpoints.
 ```
 
-### last_height
+### Height of the last block
+
+Fetches the height of the last block in our blockchain.
 
 ```py
-    ec, height = await client.last_height()
-    print("Last height:", height)
+ec, height = await client.last_height()
+print("Last height:", height)
 ```
 
 ```
@@ -123,12 +142,14 @@ Last height: 425156
 
 ### Transaction
 
+Fetches a transaction by hash from the blockchain.
+
 ```py
-    idx = "77cb1e9d44f1b8e8341e6e6848bf34ea6cb7a88bdaad0126ac1254093480f13f"
-    idx = bytes.fromhex(idx)
-    ec, tx_data = await client.transaction(idx)
-    # Should be 257 bytes.
-    print("tx size is %s bytes" % len(tx_data))
+idx = "77cb1e9d44f1b8e8341e6e6848bf34ea6cb7a88bdaad0126ac1254093480f13f"
+idx = bytes.fromhex(idx)
+ec, tx_data = await client.transaction(idx)
+# Should be 257 bytes.
+print("tx size is %s bytes" % len(tx_data))
 ```
 
 ```
@@ -141,11 +162,11 @@ tx size is 257 bytes
 Fetches a transaction the transaction pool (also known as the memory pool).
 
 ```py
-    idx = "77cb1e9d44f1b8e8341e6e6848bf34ea6cb7a88bdaad0126ac1254093480f13f"
-    idx = bytes.fromhex(idx)
-    ec, tx_data = await client.transaction_from_pool(idx)
-    # Should be 257 bytes.
-    print("tx size is %s bytes" % len(tx_data))
+idx = "77cb1e9d44f1b8e8341e6e6848bf34ea6cb7a88bdaad0126ac1254093480f13f"
+idx = bytes.fromhex(idx)
+ec, tx_data = await client.transaction_from_pool(idx)
+# Should be 257 bytes.
+print("tx size is %s bytes" % len(tx_data))
 ```
 
 ```
@@ -153,26 +174,28 @@ $ python3 fetch_transaction.py
 tx size is 257 bytes
 ```
 
-### Spend
+### Spend for an output point.
+
+Fetches a corresponding spend of an output.
 
 ```py
-    outpoint = libbitcoin.OutPoint()
-    outpoint.hash = bytes.fromhex(
-        "0530375a5bf4ea9a82494fcb5ef4a61076c2af807982076fa810851f4bc31c09")
-    outpoint.index = 0
+outpoint = libbitcoin.OutPoint()
+outpoint.hash = bytes.fromhex(
+	"0530375a5bf4ea9a82494fcb5ef4a61076c2af807982076fa810851f4bc31c09")
+outpoint.index = 0
 
-    ec, spend = await client.spend(outpoint)
+ec, spend = await client.spend(outpoint)
 
-    check_spend = libbitcoin.InPoint()
-    check_spend.hash = bytes.fromhex(
-        "e03a9a4b5c557f6ee3400a29ff1475d1df73e9cddb48c2391abdc391d8c1504a")
-    check_spend.index = 0
-    if spend != check_spend:
-        print("Incorrect spend value supplied by server.")
-        context.stop_all()
-        return
+check_spend = libbitcoin.InPoint()
+check_spend.hash = bytes.fromhex(
+	"e03a9a4b5c557f6ee3400a29ff1475d1df73e9cddb48c2391abdc391d8c1504a")
+check_spend.index = 0
+if spend != check_spend:
+	print("Incorrect spend value supplied by server.")
+	context.stop_all()
+	return
 
-    print(spend)
+print(spend)
 ```
 
 ```
@@ -180,14 +203,17 @@ $ python3 fetch_spend.py
 InPoint(hash=e03a9a4b5c557f6ee3400a29ff1475d1df73e9cddb48c2391abdc391d8c1504a, index=0)
 ```
 
-### Transaction index
+### Transaction index for a transaction hash
+
+Fetch the block height that contains a transaction and its index
+within that block.
 
 ```py
-    idx = "77cb1e9d44f1b8e8341e6e6848bf34ea6cb7a88bdaad0126ac1254093480f13f"
-    idx = bytes.fromhex(idx)
-    ec, height, index = await client.transaction_index(idx)
-    # 210000 4
-    print(height, index)
+idx = "77cb1e9d44f1b8e8341e6e6848bf34ea6cb7a88bdaad0126ac1254093480f13f"
+idx = bytes.fromhex(idx)
+ec, height, index = await client.transaction_index(idx)
+# 210000 4
+print(height, index)
 ```
 
 ```
@@ -197,13 +223,15 @@ $ python3 fetch_transaction.py
 
 ### Block transaction hashes
 
-```py
-    idx = "000000000000048b95347e83192f69cf0366076336c639f9b7228e9ba171342e"
-    idx = bytes.fromhex(idx)
+Fetches list of transaction hashes in a block by block hash.
 
-    ec, hashes = await client.block_transaction_hashes(idx)
-    for hash in hashes:
-        print(binascii.hexlify(hash))
+```py
+idx = "000000000000048b95347e83192f69cf0366076336c639f9b7228e9ba171342e"
+idx = bytes.fromhex(idx)
+
+ec, hashes = await client.block_transaction_hashes(idx)
+for hash in hashes:
+	print(binascii.hexlify(hash))
 ```
 
 ```
@@ -218,13 +246,15 @@ b'77cb1e9d44f1b8e8341e6e6848bf34ea6cb7a88bdaad0126ac1254093480f13f'
 
 ### Block height
 
-```py
-    idx = "000000000000048b95347e83192f69cf0366076336c639f9b7228e9ba171342e"
-    idx = bytes.fromhex(idx)
+Fetches the height of a block given its hash.
 
-    ec, height = await client.block_height(idx)
-    # Should be 210000
-    print("Block's height is", height)
+```py
+idx = "000000000000048b95347e83192f69cf0366076336c639f9b7228e9ba171342e"
+idx = bytes.fromhex(idx)
+
+ec, height = await client.block_height(idx)
+# Should be 210000
+print("Block's height is", height)
 ```
 
 ```
@@ -234,10 +264,22 @@ Block's height is 210000
 
 ### Stealth
 
+Fetch possible stealth results. These results can then be iterated
+to discover new payments belonging to a particular stealth address.
+This is for recipient privacy.
+
+The prefix is a special value that can be adjusted to provide
+greater precision at the expense of deniability.
+
+from_height is not guaranteed to only return results from that
+height, and may also include results from earlier blocks.
+It is provided as an optimisation. All results at and after
+from_height are guaranteed to be returned however.
+
 ```py
-    prefix = libbitcoin.Binary.from_string("")
-    ec, rows = await client.stealth(prefix, 419135)
-    print("Fetched %s rows." % len(rows))
+prefix = libbitcoin.Binary.from_string("")
+ec, rows = await client.stealth(prefix, 419135)
+print("Fetched %s rows." % len(rows))
 ```
 
 ```
@@ -247,9 +289,11 @@ Fetched 23036 rows.
 
 ### Total server connections
 
+Fetches the total number of server connections.
+
 ```py
-    ec, total_connections = await client.total_connections()
-    print("Total server connections:", total_connections)
+ec, total_connections = await client.total_connections()
+print("Total server connections:", total_connections)
 ```
 
 ```
@@ -257,33 +301,45 @@ $ python3 fetch_total_connections.py
 Total server connections: 11
 ```
 
-### Subscribe to an address
+### Broadcast transaction data
+
+Broadcasts a transaction to the network.
 
 ```py
-    # To subscribe to a specific address, then use:
-    #   address = "15s5nojkHKxJz3GvpKD1S6DR9nKUxSzNko"
-    #   prefix = libbitcoin.Binary.from_address(address)
-    prefix = libbitcoin.Binary.from_string("11")
-    ec, subscription = await client.subscribe_address(prefix)
-    if ec:
-        print("Couldn't subscribe:", ec, file=sys.stderr)
-        context.stop_all()
-        return
-	
-    #print("Watching address: %s..." % address)
-    print("prefix=%s" % prefix)
+raw_tx_data = b"..."
+ec = await client.broadcast(raw_tx_data)
+```
 
-    # Stop after 1 minute.
-    loop.call_later(60, lambda: loop.create_task(subscription.stop()))
+### Subscribe to an address
 
-    with subscription:
-        while subscription.is_running():
-            update = await subscription.updates()
-            print("Received update:")
-            if update.confirmed:
-                print("Block #%s %s" % (update.height,
-                                        hash_str(update.block_hash)))
-            tx_hash = libbitcoin.bitcoin_utils.bitcoin_hash(update.tx_data)
-            print("Transaction:", hash_str(tx_hash))
+Subscribe to address updates. Client is notified of all new transactions containing
+a specific address or address prefix.
+
+```py
+# To subscribe to a specific address, then use:
+#   address = "15s5nojkHKxJz3GvpKD1S6DR9nKUxSzNko"
+#   prefix = libbitcoin.Binary.from_address(address)
+prefix = libbitcoin.Binary.from_string("11")
+ec, subscription = await client.subscribe_address(prefix)
+if ec:
+	print("Couldn't subscribe:", ec, file=sys.stderr)
+	context.stop_all()
+	return
+
+#print("Watching address: %s..." % address)
+print("prefix=%s" % prefix)
+
+# Stop after 1 minute.
+loop.call_later(60, lambda: loop.create_task(subscription.stop()))
+
+with subscription:
+	while subscription.is_running():
+		update = await subscription.updates()
+		print("Received update:")
+		if update.confirmed:
+			print("Block #%s %s" % (update.height,
+									hash_str(update.block_hash)))
+		tx_hash = libbitcoin.bitcoin_utils.bitcoin_hash(update.tx_data)
+		print("Transaction:", hash_str(tx_hash))
 ```
 
