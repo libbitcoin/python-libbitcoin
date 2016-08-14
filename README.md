@@ -82,8 +82,8 @@ Fetches the block header by height or integer index.
 ```py
 import binascii
 # ...
-idx = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
-idx = bytes.fromhex(idx)
+idx = bytes.fromhex(
+    "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f")
 ec, header = await client.block_header(idx)
 print("Header:", binascii.hexlify(header))
 ```
