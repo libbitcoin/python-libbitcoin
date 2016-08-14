@@ -26,6 +26,9 @@ async def main():
             print("-> SPEND point=%s, height=%s" %
                   (spend[0], spend[1]))
         print()
+    # Calculate the balance of a Bitcoin address from its history.
+    balance = sum(output[2] for output, spend in history if spend is None)
+    print("Address balance:", balance)
 
     context.stop_all()
 

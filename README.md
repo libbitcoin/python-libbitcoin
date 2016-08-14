@@ -126,6 +126,9 @@ for output, spend in history:
         print("-> SPEND point=%s, height=%s" %
               (spend[0], spend[1]))
     print()
+# Calculate the balance of a Bitcoin address from its history.
+balance = sum(output[2] for output, spend in history if spend is None)
+print("Address balance:", balance)
 ```
 
 ```
@@ -141,7 +144,11 @@ OUTPUT point=OutPoint(hash=34238a653e66651f5484edd06c8eef68b4245d98227c6b7eb00b0
 
 OUTPUT point=OutPoint(hash=0d7efb76a574d71685b89d45d3badf99ad965668a1105b22b6ee9dd3c7473d2a, index=0), height=184531, value=500000
 -> SPEND point=InPoint(hash=0d8e104d1a839025846105e7e22cf503c5c1e92648504411b766a0a466df65b5, index=5), height=184555
+
+Address balance: 0
 ```
+
+If the spend is None, then the output is unspent.
 
 ### Height of the last block
 
