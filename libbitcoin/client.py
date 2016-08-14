@@ -135,7 +135,7 @@ class Client:
         If the row is for an output then the last item is the value.
         Otherwise it is a checksum of the previous output point, so
         spends can be matched to the rows they spend.
-        Use outpoint.spend_checksum() to compute output point checksums."""
+        Use outpoint.checksum() to compute output point checksums."""
 
         command = b"address.fetch_history2"
 
