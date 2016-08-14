@@ -2,11 +2,11 @@
 
 ## Installation
 
+```sh
 $ pip3 install python-libbitcoin
-
 $ cd examples/
-
 $ python3 fetch_last_height.py
+```
 
 Tornado integration also exists. See examples/web_app.py
 
