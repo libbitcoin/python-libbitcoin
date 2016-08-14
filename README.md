@@ -32,6 +32,7 @@ See the examples/ directory for more examples.
 Here's an example of querying the last blockheight.
 
 ```py
+import sys
 import zmq.asyncio
 import asyncio
 
@@ -79,15 +80,17 @@ When a query times out, it will return ```ErrorCode.channel_timeout```.
 Fetches the block header by height or integer index.
 
 ```py
+import binascii
+# ...
 idx = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
 idx = bytes.fromhex(idx)
 ec, header = await client.block_header(idx)
-print("Header:", header)
+print("Header:", binascii.hexlify(header))
 ```
 
 ```
 $ python3 fetch_block_header.py
-Header: b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00;\xa3\xed\xfdz{\x12\xb2z\xc7,>gv\x8fa\x7f\xc8\x1b\xc3\x88\x8aQ2:\x9f\xb8\xaaK\x1e^J)\xab_I\xff\xff\x00\x1d\x1d\xac+|'
+Header: b'0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a29ab5f49ffff001d1dac2b7c'
 ```
 
 ### History for an address (outputs and spend inputs)

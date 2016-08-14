@@ -1,4 +1,5 @@
 import sys
+import binascii
 import zmq.asyncio
 import asyncio
 
@@ -19,7 +20,7 @@ async def main():
         print("Couldn't fetch block_header:", ec, file=sys.stderr)
         context.stop_all()
         return
-    print("Header:", header)
+    print("Header:", binascii.hexlify(header))
 
     context.stop_all()
 

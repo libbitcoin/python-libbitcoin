@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name = "python-libbitcoin",
-    version = "1.2.02",
+    version = "1.2.04",
     author = "DarkWallet",
     author_email = "policeterror@dyne.org",
     description = ("Python client side library for libbitcoin-server."),
