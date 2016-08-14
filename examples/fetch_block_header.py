@@ -1,3 +1,4 @@
+import sys
 import zmq.asyncio
 import asyncio
 
@@ -10,15 +11,14 @@ context = libbitcoin.Context()
 async def main():
     client = context.Client("tcp://gateway.unsystem.net:9091")
 
-    ec, height = await client.last_height()
-    assert ec is None
-    print("Last height:", height)
-
     idx = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
     idx = bytes.fromhex(idx)
 
     ec, header = await client.block_header(idx)
-    assert ec is None
+    if ec:
+        print("Couldn't fetch block_header:", ec, file=sys.stderr)
+        context.stop_all()
+        return
     print("Header:", header)
 
     context.stop_all()

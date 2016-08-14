@@ -1,3 +1,4 @@
+import sys
 import zmq.asyncio
 import asyncio
 
@@ -15,11 +16,17 @@ async def main():
                             settings=client_settings)
 
     ec, height = await client.last_height()
-    assert ec is None
+    if ec:
+        print("Couldn't fetch last_height:", ec, file=sys.stderr)
+        context.stop_all()
+        return
     print("Last height:", height)
 
     ec, total_connections = await client.total_connections()
-    assert ec is None
+    if ec:
+        print("Couldn't fetch total_connections:", ec, file=sys.stderr)
+        context.stop_all()
+        return
     print("Total server connections:", total_connections)
 
     context.stop_all()

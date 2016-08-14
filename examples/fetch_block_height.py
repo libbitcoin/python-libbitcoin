@@ -1,3 +1,4 @@
+import sys
 import binascii
 import zmq.asyncio
 import asyncio
@@ -15,7 +16,11 @@ async def main():
     idx = bytes.fromhex(idx)
 
     ec, height = await client.block_height(idx)
-    assert ec is None
+    if ec:
+        print("Couldn't fetch block_height:", ec, file=sys.stderr)
+        context.stop_all()
+        return
+
     # Should be 210000
     print("Block's height is", height)
 

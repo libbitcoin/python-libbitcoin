@@ -1,3 +1,4 @@
+import sys
 import binascii
 import zmq.asyncio
 import asyncio
@@ -14,7 +15,10 @@ async def main():
     address = "13ejSKUxLT9yByyr1bsLNseLbx9H9tNj2d"
 
     ec, history = await client.history(address)
-    assert ec is None
+    if ec:
+        print("Couldn't fetch history:", ec, file=sys.stderr)
+        context.stop_all()
+        return
     for point, height, value in history:
         if type(point) == libbitcoin.OutPoint:
             print("OUTPT point=%s, height=%s, value=%s, checksum=%s" %

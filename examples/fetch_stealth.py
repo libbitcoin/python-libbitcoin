@@ -1,3 +1,4 @@
+import sys
 import zmq.asyncio
 import asyncio
 
@@ -13,7 +14,10 @@ async def main():
 
     prefix = libbitcoin.Binary.from_string("11")
     ec, rows = await client.stealth(prefix, 419135)
-    assert ec is None
+    if ec:
+        print("Couldn't fetch stealth:", ec, file=sys.stderr)
+        context.stop_all()
+        return
 
     print("Fetched %s rows." % len(rows))
 

@@ -1,3 +1,4 @@
+import sys
 import binascii
 import zmq.asyncio
 import asyncio
@@ -15,12 +16,18 @@ async def main():
     idx = bytes.fromhex(idx)
 
     ec, tx_data = await client.transaction(idx)
-    assert ec is None
+    if ec:
+        print("Couldn't fetch transaction:", ec, file=sys.stderr)
+        context.stop_all()
+        return
     # Should be 257 bytes.
     print("tx size is %s bytes" % len(tx_data))
 
     ec, height, index = await client.transaction_index(idx)
-    assert ec is None
+    if ec:
+        print("Couldn't fetch transaction_index:", ec, file=sys.stderr)
+        context.stop_all()
+        return
     # 210000 4
     print(height, index)
 

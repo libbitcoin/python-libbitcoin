@@ -1,3 +1,4 @@
+import sys
 import binascii
 import zmq.asyncio
 import asyncio
@@ -17,13 +18,19 @@ async def main():
     outpoint.index = 0
 
     ec, spend = await client.spend(outpoint)
-    assert ec is None
+    if ec:
+        print("Couldn't fetch spend:", ec, file=sys.stderr)
+        context.stop_all()
+        return
 
     check_spend = libbitcoin.InPoint()
     check_spend.hash = bytes.fromhex(
         "e03a9a4b5c557f6ee3400a29ff1475d1df73e9cddb48c2391abdc391d8c1504a")
     check_spend.index = 0
-    assert spend == check_spend
+    if spend != check_spend:
+        print("Incorrect spend value supplied by server.")
+        context.stop_all()
+        return
 
     print(spend)
 

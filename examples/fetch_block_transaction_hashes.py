@@ -1,3 +1,4 @@
+import sys
 import binascii
 import zmq.asyncio
 import asyncio
@@ -15,7 +16,10 @@ async def main():
     idx = bytes.fromhex(idx)
 
     ec, hashes = await client.block_transaction_hashes(idx)
-    assert ec is None
+    if ec:
+        print("Couldn't fetch block_transaction_hashes:", ec, file=sys.stderr)
+        context.stop_all()
+        return
     for hash in hashes:
         print(binascii.hexlify(hash))
 
