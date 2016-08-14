@@ -92,8 +92,8 @@ Header: b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x
 
 ### History for an address (outputs and spend inputs)
 
-Fetches history for an address. cb is a callback which
-accepts an error code, and a list of rows consisting of:
+Fetches history for an address. Returns an error code,
+and a list of rows consisting of:
 
 ```
 id (obelisk.PointIdent.output or spend)

@@ -124,8 +124,8 @@ class Client:
         return ec, data
 
     async def history(self, address, from_height=0):
-        """Fetches history for an address. cb is a callback which
-        accepts an error code, and a list of rows consisting of:
+        """Fetches history for an address. Returns an error code,
+        and a list of rows consisting of:
 
             id (obelisk.PointIdent.output or spend)
             point (hash and index)
