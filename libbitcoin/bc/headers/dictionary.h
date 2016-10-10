@@ -12,6 +12,8 @@ size_t bc_dictionary_size();
 typedef struct bc_dictionary_t bc_dictionary_t;
 void bc_destroy_dictionary(bc_dictionary_t* self);
 
+const char* bc_dictionary__const_at(const bc_dictionary_t* self, size_t pos);
+
 // Individual built-in languages:
 bc_dictionary_t* bc_dictionary_en();
 bc_dictionary_t* bc_dictionary_es();

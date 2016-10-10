@@ -65,9 +65,25 @@ class HashDigest(HashBase, metaclass=HashMeta):
     bc_name = "hash_digest"
     size = lib.bc_hash_size()
 
+class HalfHash(HashBase, metaclass=HashMeta):
+    bc_name = "half_hash"
+    size = lib.bc_half_hash_size()
+
+class QuarterHash(HashBase, metaclass=HashMeta):
+    bc_name = "quarter_hash"
+    size = lib.bc_quarter_hash_size()
+
+class LongHash(HashBase, metaclass=HashMeta):
+    bc_name = "long_hash"
+    size = lib.bc_long_hash_size()
+
 class ShortHash(HashBase, metaclass=HashMeta):
     bc_name = "short_hash"
     size = lib.bc_short_hash_size()
+
+class MiniHash(HashBase, metaclass=HashMeta):
+    bc_name = "mini_hash"
+    size = lib.bc_mini_hash_size()
 
 def bitcoin_hash(data):
     data = DataChunk(data)
