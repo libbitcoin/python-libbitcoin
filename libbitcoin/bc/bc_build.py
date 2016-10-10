@@ -20,6 +20,8 @@ cdef += bc_macros.byte_array("ec_compressed")
 cdef += bc_macros.byte_array("ec_uncompressed")
 cdef += bc_macros.byte_array("ec_signature")
 cdef += bc_macros.byte_array("payment")
+cdef += bc_macros.byte_array("wif_uncompressed")
+cdef += bc_macros.byte_array("wif_compressed")
 
 cdef += bc_macros.hash_type("hash_digest")
 cdef += bc_macros.hash_type("half_hash")

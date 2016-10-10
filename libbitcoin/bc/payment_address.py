@@ -1,4 +1,6 @@
 from libbitcoin.bc.config import ffi, lib
+from libbitcoin.bc.ec_private import EcPrivate
+from libbitcoin.bc.elliptic_curve import EcSecret
 from libbitcoin.bc.hash import ShortHash
 from libbitcoin.bc.string import String
 
@@ -29,6 +31,13 @@ class PaymentAddress:
                 hash_._obj, version)
         return cls(obj)
 
+    @classmethod
+    def from_secret(cls, secret):
+        if isinstance(secret, EcSecret):
+            secret = EcPrivate.from_secret(secret)
+        obj = lib.bc_create_payment_address_Secret(secret._obj)
+        return cls(obj)
+
     def __del__(self):
         lib.bc_destroy_payment_address(self._obj)
 
@@ -39,7 +48,7 @@ class PaymentAddress:
     def is_valid(self):
         return lib.bc_payment_address__is_valid(self._obj) == 1
 
-    def encode(self):
+    def encoded(self):
         obj = lib.bc_payment_address__encoded(self._obj)
         return str(String(obj))
 
@@ -54,6 +63,9 @@ class PaymentAddress:
 
     def __eq__(self, other):
         return lib.bc_payment_address__equals(self._obj, other._obj) == 1
+
+    def __str__(self):
+        return self.encoded()
 
     def __repr__(self):
         return "<bc_payment_address '%s'>" % self.encode()
