@@ -55,8 +55,11 @@ class HashBase:
     def __eq__(self, other):
         return self.bc_hash__equals(self._obj, other._obj) == 1
 
+    def __str__(self):
+        return self.data.hex()
+
     def __repr__(self):
-        return "<bc_%s '%s'>" % (self.bc_name, self.data.hex())
+        return "<bc_%s '%s'>" % (self.bc_name, str(self))
 
 class HashDigest(HashBase, metaclass=HashMeta):
     bc_name = "hash_digest"

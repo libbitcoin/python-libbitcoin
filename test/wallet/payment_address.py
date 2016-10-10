@@ -63,7 +63,164 @@ def payment_address__construct__secret__valid_expected():
     assert address.is_valid()
     assert str(address) == ADDRESS_COMPRESSED
 
+def payment_address__construct__secret_testnet__valid_expected():
+    secret = bc.EcSecret.from_string(SECRET)
+    private = bc.EcPrivate.from_secret(secret, 0x806f)
+    address = bc.PaymentAddress.from_secret(private)
+    assert address.is_valid()
+    assert str(address) == ADDRESS_COMPRESSED_TESTNET
+
+def payment_address__construct__secret_mainnet_uncompressed__valid_expected():
+    secret = bc.EcSecret.from_string(SECRET)
+    private = bc.EcPrivate.from_secret(secret, bc.PaymentAddress.mainnet_p2kh,
+                                       False)
+    address = bc.PaymentAddress.from_secret(private)
+    assert address.is_valid()
+    assert str(address) == ADDRESS_UNCOMPRESSED
+
+def payment_address__construct__secret_testnet_uncompressed__valid_expected():
+    secret = bc.EcSecret.from_string(SECRET)
+    private = bc.EcPrivate.from_secret(secret, 0x806f, False)
+    address = bc.PaymentAddress.from_secret(private)
+    assert address.is_valid()
+    assert str(address) == ADDRESS_UNCOMPRESSED_TESTNET
+
+# construct public:
+
+def payment_address__construct__public__valid_expected():
+    public = bc.EcPublic.from_string(COMPRESSED)
+    address = bc.PaymentAddress.from_point(public)
+    assert address.is_valid()
+    assert str(address) == ADDRESS_COMPRESSED
+
+def payment_address__construct__public_testnet__valid_expected():
+    public = bc.EcPublic.from_string(COMPRESSED)
+    address = bc.PaymentAddress.from_point(public, 0x6f)
+    assert address.is_valid()
+    assert str(address) == ADDRESS_COMPRESSED_TESTNET
+
+def payment_address__construct__public_uncompressed__valid_expected():
+    public = bc.EcPublic.from_string(UNCOMPRESSED)
+    address = bc.PaymentAddress.from_point(public)
+    assert address.is_valid()
+    assert str(address) == ADDRESS_UNCOMPRESSED
+
+def payment_address__construct__public_testnet_uncompressed__valid_expected():
+    public = bc.EcPublic.from_string(UNCOMPRESSED)
+    address = bc.PaymentAddress.from_point(public, 0x6f)
+    assert address.is_valid()
+    assert str(address) == ADDRESS_UNCOMPRESSED_TESTNET
+
+def payment_address__construct__public_compressed_from_uncompressed_testnet__valid_expected():
+    point = bc.EcUncompressed.from_string(UNCOMPRESSED)
+    public = bc.EcPublic.from_uncompressed(point, True)
+    address = bc.PaymentAddress.from_point(public, 0x6f)
+    assert address.is_valid()
+    assert str(address) == ADDRESS_COMPRESSED_TESTNET
+
+def payment_address__construct__public_uncompressed_from_compressed_testnet__valid_expected():
+    point = bc.EcCompressed.from_string(COMPRESSED)
+    public = bc.EcPublic.from_compressed(point, False)
+    address = bc.PaymentAddress.from_point(public, 0x6f)
+    assert address.is_valid()
+    assert str(address) == ADDRESS_UNCOMPRESSED_TESTNET
+
+# construct hash:
+
+def payment_address__construct__hash__valid_expected():
+    hash_ = bc.ShortHash.from_string(COMPRESSED_HASH)
+    address = bc.PaymentAddress.from_hash(hash_)
+    assert address.is_valid()
+    assert str(address) == ADDRESS_COMPRESSED
+
+def payment_address__construct__uncompressed_hash_testnet__valid_expected():
+    hash_ = bc.ShortHash.from_string(UNCOMPRESSED_HASH)
+    address = bc.PaymentAddress.from_hash(hash_, 0x6f)
+    assert address.is_valid()
+    assert str(address) == ADDRESS_UNCOMPRESSED_TESTNET
+
+# construct script:
+
+def payment_address__construct__script__valid_expected():
+    ops = bc.Script()
+    ops.from_string(SCRIPT)
+    address = bc.PaymentAddress.from_script(ops)
+    assert address.is_valid()
+    assert str(address) == ADDRESS_SCRIPT
+
+def payment_address__construct__script_testnet__valid_expected():
+    ops = bc.Script()
+    ops.from_string(SCRIPT)
+    address = bc.PaymentAddress.from_script(ops, 0xc4)
+    assert address.is_valid()
+    assert str(address) == ADDRESS_SCRIPT_TESTNET
+
+# construct payment:
+
+def payment_address__construct__payment__valid_expected():
+    # TODO
+    pass
+
+def payment_address__construct__payment_testnet__valid_expected():
+    # TODO
+    pass
+
+# construct copy:
+
+def payment_address__construct__copy__valid_expected():
+    # TODO
+    pass
+
+# version property:
+
+def payment_address__version__default__mainnet():
+    public = bc.EcPublic.from_string(COMPRESSED)
+    address = bc.PaymentAddress.from_point(public)
+    assert address.version == bc.PaymentAddress.mainnet_p2kh
+
+def payment_address__version__testnet__testnet():
+    testnet = 0x6f
+    public = bc.EcPublic.from_string(COMPRESSED)
+    address = bc.PaymentAddress.from_point(public, testnet)
+    assert address.is_valid()
+    assert address.version == testnet
+
+def payment_address__version__script__valid_mainnet_p2sh():
+    ops = bc.Script()
+    assert ops.from_string(SCRIPT)
+    address = bc.PaymentAddress.from_script(ops)
+    assert address.is_valid()
+    assert address.version == bc.PaymentAddress.mainnet_p2sh
+
+# hash property:
+
+def payment_address__hash__compressed_point__expected():
+    public = bc.EcPublic.from_string(COMPRESSED)
+    address = bc.PaymentAddress.from_point(public)
+    assert address.is_valid()
+    assert str(address.hash) == COMPRESSED_HASH
+
 payment_address__construct__default__invalid()
 payment_address__construct__string_invalid__invalid()
 payment_address__construct__secret__valid_expected()
+payment_address__construct__secret_testnet__valid_expected()
+payment_address__construct__secret_mainnet_uncompressed__valid_expected()
+payment_address__construct__secret_testnet_uncompressed__valid_expected()
+payment_address__construct__public__valid_expected()
+payment_address__construct__public_testnet__valid_expected()
+payment_address__construct__public_uncompressed__valid_expected()
+payment_address__construct__public_testnet_uncompressed__valid_expected()
+payment_address__construct__public_compressed_from_uncompressed_testnet__valid_expected()
+payment_address__construct__public_uncompressed_from_compressed_testnet__valid_expected()
+payment_address__construct__hash__valid_expected()
+payment_address__construct__uncompressed_hash_testnet__valid_expected()
+payment_address__construct__script__valid_expected()
+payment_address__construct__script_testnet__valid_expected()
+payment_address__construct__payment__valid_expected()
+payment_address__construct__payment_testnet__valid_expected()
+payment_address__construct__copy__valid_expected()
+payment_address__version__default__mainnet()
+payment_address__version__testnet__testnet()
+payment_address__version__script__valid_mainnet_p2sh()
+payment_address__hash__compressed_point__expected()
 

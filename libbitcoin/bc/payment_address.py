@@ -6,6 +6,9 @@ from libbitcoin.bc.string import String
 
 class PaymentAddress:
 
+    mainnet_p2kh = lib.bc_payment_address__mainnet_p2kh()
+    mainnet_p2sh = lib.bc_payment_address__mainnet_p2sh()
+
     def __init__(self, obj=None):
         if isinstance(obj, str):
             obj = PaymentAddress._string_init_obj(obj)
@@ -36,6 +39,24 @@ class PaymentAddress:
         if isinstance(secret, EcSecret):
             secret = EcPrivate.from_secret(secret)
         obj = lib.bc_create_payment_address_Secret(secret._obj)
+        return cls(obj)
+
+    @classmethod
+    def from_point(cls, point, version=None):
+        if version is None:
+            obj = lib.bc_create_payment_address_Point(point._obj)
+        else:
+            obj = lib.bc_create_payment_address_Point_Version(
+                point._obj, version)
+        return cls(obj)
+
+    @classmethod
+    def from_script(cls, script, version=None):
+        if version is None:
+            obj = lib.bc_create_payment_address_Script(script._obj)
+        else:
+            obj = lib.bc_create_payment_address_Script_Version(
+                script._obj, version)
         return cls(obj)
 
     def __del__(self):
