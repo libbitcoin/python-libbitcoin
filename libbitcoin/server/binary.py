@@ -1,4 +1,4 @@
-import libbitcoin.bitcoin_utils
+import libbitcoin.server.bitcoin_utils
 
 def binary_str_to_bytes(str):
     split = lambda str: [str[x:x + 8] for x in range(0, len(str), 8)]

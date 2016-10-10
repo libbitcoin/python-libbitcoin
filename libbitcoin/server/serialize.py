@@ -1,7 +1,7 @@
 import struct
 import io
 
-import libbitcoin.models
+import libbitcoin.server.models
 
 def serialize_hash(hashval):
     return hashval[::-1]

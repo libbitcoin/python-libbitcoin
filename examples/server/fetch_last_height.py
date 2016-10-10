@@ -5,11 +5,11 @@ import asyncio
 loop = zmq.asyncio.ZMQEventLoop()
 asyncio.set_event_loop(loop)
 
-import libbitcoin
-context = libbitcoin.Context()
+import libbitcoin.server
+context = libbitcoin.server.Context()
 
 async def main():
-    client_settings = libbitcoin.ClientSettings()
+    client_settings = libbitcoin.server.ClientSettings()
     client_settings.query_expire_time = None
 
     client = context.Client("tcp://gateway.unsystem.net:9091",

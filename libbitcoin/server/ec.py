@@ -2,7 +2,7 @@ import hashlib
 import os
 import ecdsa
 from ecdsa.util import string_to_number, number_to_string
-from libbitcoin.bitcoin_utils import hash_160_to_bc_address, hash_160
+from libbitcoin.server.bitcoin_utils import hash_160_to_bc_address, hash_160
 
 # secp256k1, http://www.oid-info.com/get/1.3.132.0.10
 _p = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F

@@ -3,7 +3,7 @@ import tornado.ioloop
 import tornado.web
 from zmq.eventloop.ioloop import IOLoop
 
-import libbitcoin
+import libbitcoin.server
 
 # Debug stuff
 import logging
@@ -30,7 +30,7 @@ def make_app(context):
     ])
 
 if __name__ == "__main__":
-    context = libbitcoin.TornadoContext()
+    context = libbitcoin.server.TornadoContext()
     app = make_app(context)
     app.listen(8888)
     loop = IOLoop.current()

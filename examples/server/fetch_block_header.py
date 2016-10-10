@@ -6,23 +6,21 @@ import asyncio
 loop = zmq.asyncio.ZMQEventLoop()
 asyncio.set_event_loop(loop)
 
-import libbitcoin
-context = libbitcoin.Context()
+import libbitcoin.server
+context = libbitcoin.server.Context()
 
 async def main():
     client = context.Client("tcp://gateway.unsystem.net:9091")
 
-    idx = "000000000000048b95347e83192f69cf0366076336c639f9b7228e9ba171342e"
-    idx = bytes.fromhex(idx)
+    idx = bytes.fromhex(
+    	"000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f")
 
-    ec, height = await client.block_height(idx)
+    ec, header = await client.block_header(idx)
     if ec:
-        print("Couldn't fetch block_height:", ec, file=sys.stderr)
+        print("Couldn't fetch block_header:", ec, file=sys.stderr)
         context.stop_all()
         return
-
-    # Should be 210000
-    print("Block's height is", height)
+    print("Header:", binascii.hexlify(header))
 
     context.stop_all()
 

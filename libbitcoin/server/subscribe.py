@@ -1,12 +1,12 @@
 import asyncio
-import libbitcoin.binary
-import libbitcoin.bitcoin_utils
+import libbitcoin.server.binary
+import libbitcoin.server.bitcoin_utils
 
 class SubscribeResult:
 
     def __init__(self, address_version, address_hash,
                  height, block_hash, tx_data):
-        self.address = libbitcoin.bitcoin_utils.hash_160_to_bc_address(\
+        self.address = libbitcoin.server.bitcoin_utils.hash_160_to_bc_address(\
             address_version, address_hash)
         self.confirmed = height > 0
         self.height = height
@@ -60,7 +60,7 @@ class Subscription:
         await self._queue.put(StopIteration())
 
     def _match(self, address_hash):
-        matcher = libbitcoin.binary.Binary(self._prefix.size, address_hash)
+        matcher = libbitcoin.server.binary.Binary(self._prefix.size, address_hash)
         return matcher == self._prefix
 
     async def handle_update(self, result):

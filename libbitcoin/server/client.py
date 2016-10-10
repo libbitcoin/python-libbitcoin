@@ -3,10 +3,10 @@ import struct
 import enum
 import asyncio
 import zmq
-import libbitcoin
-import libbitcoin.serialize
-import libbitcoin.bitcoin_utils
-import libbitcoin.subscribe
+import libbitcoin.server
+import libbitcoin.server.serialize
+import libbitcoin.server.bitcoin_utils
+import libbitcoin.server.subscribe
 
 def create_random_id():
     MAX_UINT32 = 4294967295
@@ -15,12 +15,12 @@ def create_random_id():
 def make_error_code(ec):
     if not ec:
         return None
-    return libbitcoin.ErrorCode(ec)
+    return libbitcoin.server.ErrorCode(ec)
 
 def pack_block_index(index):
     if type(index) == bytes:
         assert len(index) == 32
-        return libbitcoin.serialize.serialize_hash(index)
+        return libbitcoin.server.serialize.serialize_hash(index)
     elif type(index) == int:
         return struct.pack('<I', index)
     else:
@@ -52,7 +52,7 @@ class ClientSettings:
     @property
     def query_expire_time(self):
         """The timeout for a query in seconds. If this time expires
-        then the blockchain method will return libbitcoin.ErrorCode
+        then the blockchain method will return libbitcoin.server.ErrorCode
         Set to None for no timeout."""
         return self._query_expire_time
     @query_expire_time.setter
@@ -77,7 +77,7 @@ class Client:
         self.settings = settings
         self._setup_socket()
 
-        self._subscribe_manager = libbitcoin.subscribe.SubscribeManager()
+        self._subscribe_manager = libbitcoin.server.subscribe.SubscribeManager()
 
     def _setup_socket(self):
         self._socket = self._context.zmq_context.socket(zmq.DEALER)
@@ -106,7 +106,7 @@ class Client:
         try:
             reply = await asyncio.wait_for(future, expiry_time)
         except asyncio.TimeoutError:
-            return libbitcoin.ErrorCode.channel_timeout, None
+            return libbitcoin.server.ErrorCode.channel_timeout, None
 
         reply_command, reply_id, ec, data = reply
         assert reply_command == request_command
@@ -144,7 +144,7 @@ class Client:
         command = b"address.fetch_history2"
 
         address_version, address_hash = \
-            libbitcoin.bitcoin_utils.bc_address_to_hash_160(address)
+            libbitcoin.server.bitcoin_utils.bc_address_to_hash_160(address)
 
         # prepare parameters
         data = struct.pack('B', address_version)    # address version
@@ -162,9 +162,9 @@ class Client:
         for id, hash, index, height, value in rows:
             id = PointIdent(id)
             if id == PointIdent.output:
-                point = libbitcoin.models.OutPoint()
+                point = libbitcoin.server.models.OutPoint()
             elif id == PointIdent.spend:
-                point = libbitcoin.models.InPoint()
+                point = libbitcoin.server.models.InPoint()
             point.hash = hash[::-1]
             point.index = index
             if id == PointIdent.output:
@@ -197,7 +197,7 @@ class Client:
     async def transaction(self, tx_hash):
         """Fetches a transaction by hash from the blockchain."""
         command = b"blockchain.fetch_transaction"
-        data = libbitcoin.serialize.serialize_hash(tx_hash)
+        data = libbitcoin.server.serialize.serialize_hash(tx_hash)
         ec, data = await self.request(command, data)
         if ec:
             return ec, None
@@ -206,7 +206,7 @@ class Client:
     async def transaction_from_pool(self, tx_hash):
         """Fetches a transaction by hash from the transaction pool."""
         command = b"transaction_pool.fetch_transaction"
-        data = libbitcoin.serialize.serialize_hash(tx_hash)
+        data = libbitcoin.server.serialize.serialize_hash(tx_hash)
         ec, data = await self.request(command, data)
         if ec:
             return ec, None
@@ -219,14 +219,14 @@ class Client:
         ec, data = await self.request(command, data)
         if ec:
             return ec, None
-        spend = libbitcoin.models.InPoint.deserialize(data)
+        spend = libbitcoin.server.models.InPoint.deserialize(data)
         return ec, spend
 
     async def transaction_index(self, tx_hash):
         """Fetch the block height that contains a transaction and its index
         within that block."""
         command = b"blockchain.fetch_transaction_index"
-        data = libbitcoin.serialize.serialize_hash(tx_hash)
+        data = libbitcoin.server.serialize.serialize_hash(tx_hash)
         ec, data = await self.request(command, data)
         if ec:
             return ec, None, None
@@ -236,7 +236,7 @@ class Client:
     async def block_transaction_hashes(self, block_hash):
         """Fetches list of transaction hashes in a block by block hash."""
         command = b"blockchain.fetch_block_transaction_hashes"
-        data = libbitcoin.serialize.serialize_hash(block_hash)
+        data = libbitcoin.server.serialize.serialize_hash(block_hash)
         ec, data = await self.request(command, data)
         if ec:
             return ec, None
@@ -247,7 +247,7 @@ class Client:
     async def block_height(self, block_hash):
         """Fetches the height of a block given its hash."""
         command = b"blockchain.fetch_block_height"
-        data = libbitcoin.serialize.serialize_hash(block_hash)
+        data = libbitcoin.server.serialize.serialize_hash(block_hash)
         ec, data = await self.request(command, data)
         if ec:
             return ec, None
@@ -320,7 +320,7 @@ class Client:
         if ec:
             return ec, None
 
-        subscription = libbitcoin.subscribe.Subscription(
+        subscription = libbitcoin.server.subscribe.Subscription(
             prefix, request_data, self)
         self._subscribe_manager.add(subscription)
 
@@ -353,7 +353,7 @@ class Client:
         address_version, address_hash, height, block_hash = \
             struct.unpack(fmt, other_data)
         # Now push the result to subscribers.
-        result = libbitcoin.subscribe.SubscribeResult(
+        result = libbitcoin.server.subscribe.SubscribeResult(
             address_version, address_hash, height, block_hash, tx_data)
         await self._subscribe_manager.update(result)
 

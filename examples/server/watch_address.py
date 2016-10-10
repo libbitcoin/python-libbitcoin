@@ -5,8 +5,8 @@ import asyncio
 loop = zmq.asyncio.ZMQEventLoop()
 asyncio.set_event_loop(loop)
 
-import libbitcoin
-context = libbitcoin.Context()
+import libbitcoin.server
+context = libbitcoin.server.Context()
 
 def hash_str(hash):
     return str(binascii.hexlify(hash), "ascii")
@@ -15,8 +15,8 @@ async def main():
     client = context.Client("tcp://obelisk.airbitz.co:9091")
 
     address = "15s5nojkHKxJz3GvpKD1S6DR9nKUxSzNko"
-    #prefix = libbitcoin.Binary.from_address(address)
-    prefix = libbitcoin.Binary.from_string("11")
+    #prefix = libbitcoin.server.Binary.from_address(address)
+    prefix = libbitcoin.server.Binary.from_string("11")
     ec, subscription = await client.subscribe_address(prefix)
     assert ec is None
     print("Watching address: %s..." % address)
@@ -32,7 +32,7 @@ async def main():
             if update.confirmed:
                 print("Block #%s %s" % (update.height,
                                         hash_str(update.block_hash)))
-            tx_hash = libbitcoin.bitcoin_utils.bitcoin_hash(update.tx_data)
+            tx_hash = libbitcoin.server.bitcoin_utils.bitcoin_hash(update.tx_data)
             print("Transaction:", hash_str(tx_hash))
 
     context.stop_all()

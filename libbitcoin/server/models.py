@@ -1,6 +1,6 @@
 import binascii
 import struct
-import libbitcoin.serialize
+import libbitcoin.server.serialize
 
 class OutPoint:
 
@@ -18,12 +18,12 @@ class OutPoint:
         return "OutPoint(hash=%s, index=%i)" % (self._hash_hex(), self.index)
 
     def serialize(self):
-        return libbitcoin.serialize.serialize_point(self)
+        return libbitcoin.server.serialize.serialize_point(self)
 
     @staticmethod
     def deserialize(bytes):
         point = OutPoint()
-        libbitcoin.serialize.deserialize_output_point(bytes, point)
+        libbitcoin.server.serialize.deserialize_output_point(bytes, point)
         return point
 
     def __eq__(self, other):
@@ -50,6 +50,6 @@ class InPoint(OutPoint):
     @staticmethod
     def deserialize(bytes):
         point = InPoint()
-        libbitcoin.serialize.deserialize_point(bytes, point)
+        libbitcoin.server.serialize.deserialize_point(bytes, point)
         return point
 

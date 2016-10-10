@@ -1,7 +1,8 @@
 import zmq.asyncio
-import libbitcoin.client
-import libbitcoin.poller
-import libbitcoin.scheduler
+import libbitcoin.server.client
+import libbitcoin.server.poller
+import libbitcoin.server.scheduler
+from libbitcoin.server import ClientSettings
 
 try:
     # TornadoContext
@@ -21,14 +22,14 @@ class Context:
         #self._make_zmq_context = make_context
 
         zmq_poller = make_zmq_poller()
-        self._poller = libbitcoin.poller.Poller(zmq_poller)
+        self._poller = libbitcoin.server.poller.Poller(zmq_poller)
 
         self.zmq_context = make_zmq_context()
 
-        self._scheduler = libbitcoin.scheduler.Scheduler()
+        self._scheduler = libbitcoin.server.scheduler.Scheduler()
 
-    def Client(self, address, settings=libbitcoin.ClientSettings()):
-        return libbitcoin.client.Client(address, self, settings)
+    def Client(self, address, settings=ClientSettings()):
+        return libbitcoin.server.client.Client(address, self, settings)
 
     def Future(self):
         return self._make_future()
