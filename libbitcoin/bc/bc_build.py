@@ -2,11 +2,18 @@ from cffi import FFI
 import os
 import bc_macros
 
+def read_dir_files(path):
+    cdef = ""
+    for filename in os.listdir(path):
+        if filename.endswith(".h"):
+            filename = os.path.join(path, filename)
+            cdef += open(filename).read()
+    return cdef
+
 cdef = ""
-for filename in os.listdir("headers"):
-    if filename.endswith(".h"):
-        filename = os.path.join("headers", filename)
-        cdef += open(filename).read()
+
+cdef += read_dir_files("enums")
+cdef += read_dir_files("headers")
 
 cdef += bc_macros.byte_array("ec_secret")
 cdef += bc_macros.byte_array("ec_compressed")
