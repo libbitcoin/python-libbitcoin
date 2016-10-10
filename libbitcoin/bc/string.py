@@ -1,4 +1,5 @@
 from libbitcoin.bc.config import ffi, lib
+from libbitcoin.bc.vector import VectorMeta, VectorBase
 
 class String:
 
@@ -43,64 +44,7 @@ class String:
     def __len__(self):
         return lib.bc_string__length(self._obj)
 
-class StringListIterator:
-
-    def __init__(self, parent):
-        self._parent = parent
-        self._index = 0
-
-    def __next__(self):
-        if self._index >= len(self._parent):
-            raise StopIteration
-        result = self._parent[self._index]
-        self._index += 1
-        return result
-
-class StringList:
-
-    def __init__(self, obj=None):
-        if obj is None:
-            obj = lib.bc_create_string_list()
-        self._obj = obj
-
-    def __del__(self):
-        lib.bc_destroy_string_list(self._obj)
-
-    def __getitem__(self, pos):
-        obj = lib.bc_string_list__at(self._obj, pos)
-        result = String(obj)
-        result._destroy_object = lambda: None
-        return result
-
-    def __len__(self):
-        return lib.bc_string_list__size(self._obj)
-
-    def empty(self):
-        return lib.bc_string_list__empty(self._obj)
-
-    def clear(self):
-        return lib.bc_string_list__clear(self._obj)
-
-    def __delitem__(self, pos):
-        lib.bc_string_list__erase(self._obj, pos)
-
-    def append(self, item):
-        # We need to invalidate item's delete function
-        item._destroy_object = lambda: None
-        lib.bc_string_list__push_back_noconsume(self._obj, item._obj)
-
-    def resize(self, count):
-        lib.bc_string_list__resize(self._obj, count)
-
-    def insert(self, pos, item):
-        # We need to invalidate item's delete function
-        item._destroy_object = lambda: None
-        lib.bc_string_list__insert_noconsume(self._obj, pos, item._obj)
-
-    def __iter__(self):
-        return StringListIterator(self)
-
-    def __repr__(self):
-        return "<bc_string_list [%s]>" % (
-            ", ".join([repr(obj) for obj in self]))
+class StringList(VectorBase, metaclass=VectorMeta):
+    bc_name = "string_list"
+    item_type = String
 

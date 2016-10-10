@@ -6,16 +6,14 @@ class ByteArrayMeta(type):
 
     def __new__(cls, clsname, bases, attrs):
         bc_name = attrs["bc_name"]
-        def method(method_name, bc_name):
+        def method(method_name):
             return getattr(lib, method_name % bc_name)
-        attrs["bc_create_object"] = method("bc_create_%s", bc_name)
-        attrs["bc_create_object_Data"] = method("bc_create_%s_Data", bc_name)
-        attrs["bc_create_object_Base16"] = method(
-            "bc_create_%s_Base16", bc_name)
-        attrs["bc_destroy_object"] = method("bc_destroy_%s", bc_name)
-        attrs["bc_object__data"] = method("bc_%s__data", bc_name)
-        attrs["bc_object__encode_base16"] = method(
-            "bc_%s__encode_base16", bc_name)
+        attrs["bc_create_object"] = method("bc_create_%s")
+        attrs["bc_create_object_Data"] = method("bc_create_%s_Data")
+        attrs["bc_create_object_Base16"] = method("bc_create_%s_Base16")
+        attrs["bc_destroy_object"] = method("bc_destroy_%s")
+        attrs["bc_object__data"] = method("bc_%s__data")
+        attrs["bc_object__encode_base16"] = method("bc_%s__encode_base16")
         def bc_object_size():
             return getattr(lib, "bc_%s_size" % bc_name)()
         attrs["size"] = bc_object_size()
