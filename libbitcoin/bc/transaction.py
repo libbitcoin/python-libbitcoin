@@ -29,6 +29,19 @@ class Transaction:
     def __str__(self):
         return self.to_string(0)
 
+    def is_valid(self):
+        return lib.bc_transaction__is_valid(self._obj) == 1
+
+    def is_coinbase(self):
+        return lib.bc_transaction__is_coinbase(self._obj) == 1
+
+    def is_final(self, block_height, block_time):
+        return lib.bc_transaction__is_final(self._obj, block_height,
+                                            block_time) == 1
+
+    def is_locktime_conflict(self):
+        return lib.bc_transaction__is_locktime_conflict(self._obj) == 1
+
     @property
     def locktime(self):
         return lib.bc_transaction__locktime(self._obj)

@@ -1,6 +1,7 @@
 from libbitcoin.bc._bc import ffi
 from libbitcoin.bc.base_10 import btc_decimal_places, mbtc_decimal_places, \
     ubtc_decimal_places, decode_base10, encode_base10
+from libbitcoin.bc.constants import max_input_sequence, locktime_threshold
 from libbitcoin.bc.crypto import AesSecret, AesBlock, aes256_key_size, \
     aes256_block_size, aes256_encrypt, aes256_decrypt
 from libbitcoin.bc.data import DataChunk
@@ -11,7 +12,7 @@ from libbitcoin.bc.elliptic_curve import Endorsement, EcSecret, EcCompressed, \
 from libbitcoin.bc.error import ConsoleResult, Error
 from libbitcoin.bc.dictionary import Dictionary
 from libbitcoin.bc.hash import HashDigest, HalfHash, QuarterHash, LongHash, \
-    ShortHash, MiniHash, bitcoin_hash
+    ShortHash, MiniHash, null_hash, bitcoin_hash
 from libbitcoin.bc.hd_public import hd_first_hardened_key, HdPublic
 from libbitcoin.bc.hd_private import HdPrivate
 from libbitcoin.bc.input import Input, InputList

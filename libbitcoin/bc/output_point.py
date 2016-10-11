@@ -10,7 +10,7 @@ class OutputPoint:
 
     @classmethod
     def from_tuple(cls, hash_, index):
-        obj = lib.bc_create_output_point_Tuple(hash_.obj, index)
+        obj = lib.bc_create_output_point_Tuple(hash_._obj, index)
         return cls(obj)
 
     def __del__(self):

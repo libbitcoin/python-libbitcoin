@@ -85,6 +85,10 @@ class MiniHash(HashBase, metaclass=HashMeta):
     bc_name = "mini_hash"
     size = lib.bc_mini_hash_size()
 
+_null_hash_obj = lib.bc_null_hash()
+
+null_hash = HashDigest(_null_hash_obj)
+
 def bitcoin_hash(data):
     data = DataChunk(data)
     obj = lib.bc_bitcoin_hash(data._obj)
