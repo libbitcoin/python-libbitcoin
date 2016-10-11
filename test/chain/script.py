@@ -1,7 +1,8 @@
 from libbitcoin import bc
+import chain.script_data
 
 def is_number(token):
-    if token.is_digit():
+    if token.isdigit():
         return True
     # Now check for negative numbers
     if token[0] != "-":
@@ -10,7 +11,7 @@ def is_number(token):
     return numeric_part.isdigit()
 
 def is_hex_data(token):
-    if token.startswith("0x"):
+    if not token.startswith("0x"):
         return False
     hex_part = token[2:]
     try:
@@ -29,19 +30,18 @@ def token_to_opcode(token):
     return bc.string_to_opcode(lower_token)
 
 def is_opcode(token):
-    return token_to_opcode(token) != bc.bc_opcode__bad_operation
+    return token_to_opcode(token) != bc.Opcode.bad_operation
 
 def is_opx(value):
     return value == -1 or (1 <= value and value <= 16)
 
-def push_literal(raw_script, value):
+def push_literal(value):
+    assert is_opx(value)
     if value == -1:
-        raw_script += bytes(chr(bc.Opcode.negative_1), "ascii")
-        return
-    raw_script += bytes(chr(bc.Opcode.op_1 + value - 1))
-    return raw_script
+        return bytes(chr(bc.Opcode.negative_1.value), "ascii")
+    return bytes(chr(bc.Opcode.op_1.value + value - 1), "ascii")
 
-def push_data(raw_script, data):
+def push_data(data):
     if not data:
         code = bc.Opcode.zero
     elif len(data) < 76:
@@ -59,8 +59,7 @@ def push_data(raw_script, data):
     ops.append(bc.Operation(code, data))
     tmp_script.set_operations(ops)
     raw_tmp_script = tmp_script.to_data(False)
-    raw_script += raw_tmp_script
-    return raw_script
+    return raw_tmp_script
 
 sentinel = "__ENDING__"
 
@@ -81,10 +80,10 @@ def parse_token(raw_script, raw_hex, token):
         value = int(token)
 
         if is_opx(value):
-            raw_script[0] += push_literal(raw_script, value)
+            raw_script[0] += push_literal(value)
         else:
             bignum = bc.ScriptNumber(value)
-            raw_script += push_data(raw_script, bignum.data)
+            raw_script[0] += push_data(bignum.data)
     elif is_hex_data(token):
         hex_part = token[2:]
         try:
@@ -93,11 +92,11 @@ def parse_token(raw_script, raw_hex, token):
             return False
         raw_hex[0] += raw_data
     elif is_quoted_string(token):
-        inner_value = token[1:-1]
-        raw_script += push_data(raw_script, inner_value)
+        inner_value = bytes(token[1:-1], "ascii")
+        raw_script[0] += push_data(inner_value)
     elif is_opcode(token):
         tokenized_opcode = token_to_opcode(token)
-        raw_script += bytes([tokenized_opcode.value])
+        raw_script[0] += bytes([tokenized_opcode.value])
     else:
         print("Token parsing failed with:", token)
         return False
@@ -118,7 +117,7 @@ def parse(result_script, format):
     parse_token(raw_script, raw_hex, sentinel)
 
     if not result_script.from_data(raw_script[0], False,
-                                   bc_script_parse_mode__strict):
+                                   bc.ScriptParseMode.strict):
         return False
 
     ops = result_script.copy_operations()
@@ -131,11 +130,256 @@ def new_tx(test):
     input_script = bc.Script()
     output_script = bc.Script()
 
+    tx = bc.Transaction()
     if not parse(input_script, test[0]):
-        return None
+        return tx
 
     if not parse(output_script, test[1]):
-        return None
+        return tx
 
-    # TODO: set tx
+    input = bc.Input()
+    input.set_script(input_script)
+
+    cache = bc.Output()
+    cache.set_script(output_script)
+    prevout = bc.OutputPoint()
+    prevout.set_cache(cache)
+    input.set_previous_output(prevout)
+
+    inputs = bc.InputList()
+    inputs.append(input)
+
+    tx.set_inputs(inputs)
+    return tx
+
+def script__from_data__testnet_119058_non_parseable__fallback():
+    raw_script = bytes.fromhex("0130323066643366303435313438356531306633383837363437356630643265396130393739343332353534313766653139316438623963623230653430643863333030326431373463336539306366323433393231383761313037623634373337633937333135633932393264653431373731636565613062323563633534353732653302ae")
+
+    parsed = bc.Script()
+    assert parsed.from_data(raw_script, True, bc.ScriptParseMode.raw_data_fallback)
+
+def script__from_data__parse__fails():
+    raw_script = bytes.fromhex("3045022100ff1fc58dbd608e5e05846a8e6b45a46ad49878aef6879ad1a7cf4c5a7f853683022074a6a10f6053ab3cddc5620d169c7374cd42c1416c51b9744db2c8d9febfb84d01")
+
+    parsed = bc.Script()
+    assert not parsed.from_data(raw_script, True, bc.ScriptParseMode.strict)
+
+def script__from_data__to_data__roundtrips():
+    normal_output_script = bytes.fromhex("76a91406ccef231c2db72526df9338894ccf9355e8f12188ac")
+
+    out_script = bc.Script()
+    assert out_script.from_data(normal_output_script, False, bc.ScriptParseMode.raw_data_fallback)
+
+    roundtrip = out_script.to_data(False)
+    assert roundtrip == normal_output_script
+
+def script__from_data__to_data_weird__roundtrips():
+    weird_raw_script = bytes.fromhex(
+        "0c49206c69656b20636174732e483045022100c7387f64e1f4"
+        "cf654cae3b28a15f7572106d6c1319ddcdc878e636ccb83845"
+        "e30220050ebf440160a4c0db5623e0cb1562f46401a7ff5b87"
+        "7aa03415ae134e8c71c901534d4f0176519c6375522103b124"
+        "c48bbff7ebe16e7bd2b2f2b561aa53791da678a73d2777cc1c"
+        "a4619ab6f72103ad6bb76e00d124f07a22680e39debd4dc4bd"
+        "b1aa4b893720dd05af3c50560fdd52af67529c63552103b124"
+        "c48bbff7ebe16e7bd2b2f2b561aa53791da678a73d2777cc1c"
+        "a4619ab6f721025098a1d5a338592bf1e015468ec5a8fafc1f"
+        "c9217feb5cb33597f3613a2165e9210360cfabc01d52eaaeb3"
+        "976a5de05ff0cfa76d0af42d3d7e1b4c233ee8a00655ed2103"
+        "f571540c81fd9dbf9622ca00cfe95762143f2eab6b65150365"
+        "bb34ac533160432102bc2b4be1bca32b9d97e2d6fb255504f4"
+        "bc96e01aaca6e29bfa3f8bea65d8865855af672103ad6bb76e"
+        "00d124f07a22680e39debd4dc4bdb1aa4b893720dd05af3c50"
+        "560fddada820a4d933888318a23c28fb5fc67aca8530524e20"
+        "74b1d185dbf5b4db4ddb0642848868685174519c6351670068")
+
+    weird = bc.Script()
+    assert weird.from_data(weird_raw_script, False, bc.ScriptParseMode.raw_data_fallback)
+
+    roundtrip_result = weird.to_data(False)
+    assert roundtrip_result == weird_raw_script
+
+def script__is_raw_data_operations_size_not_equal_one_returns_false():
+    instance = bc.Script()
+    assert not instance.is_raw_data()
+
+def script__is_raw_data_code_not_equal_raw_data_returns_false():
+    instance = bc.Script()
+    ops = bc.OperationStack()
+    ops.append(bc.Operation(bc.Opcode.vernotif))
+    instance.set_operations(ops)
+    assert not instance.is_raw_data()
+
+def script__is_raw_data_returns_true():
+    instance = bc.Script()
+    ops = bc.OperationStack()
+    ops.append(bc.Operation(bc.Opcode.raw_data))
+    instance.set_operations(ops)
+    assert instance.is_raw_data()
+
+def script__factory_from_data_chunk_test():
+    raw = bytes.fromhex("76a914fc7b44566256621affb1541cc9d59f08336d276b88ac")
+    instance = bc.Script()
+    instance.from_data(raw, False, bc.ScriptParseMode.strict)
+    assert instance.is_valid()
+
+# Valid pay-to-script-hash scripts are valid regardless of context,
+# however after bip16 activation the scripts have additional constraints.
+def script__bip16__valid():
+    for test in chain.script_data.valid_bip16_scripts:
+        tx = new_tx(test)
+        assert not tx.copy_inputs().empty(), test[2]
+
+        # These are valid prior to and after BIP16 activation.
+        assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.bip16_rule) == \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.all_rules) == \
+            bc.Error.success, test[2]
+
+def script__bip16__invalidated():
+    for test in chain.script_data.invalidated_bip16_scripts:
+        tx = new_tx(test)
+        assert not tx.copy_inputs().empty(), test[2]
+
+        # These are valid prior to BIP16 activation and invalid after.
+        assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.bip16_rule) != \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.all_rules) != \
+            bc.Error.success, test[2]
+
+# Prior to bip65 activation op_nop2 always returns true, but after it becomes a locktime comparer.
+def script__bip65__valid():
+    for test in chain.script_data.valid_bip65_scripts:
+        tx = new_tx(test)
+        assert not tx.copy_inputs().empty(), test[2]
+
+        tx.locktime = 500000042;
+
+        inputs = tx.copy_inputs()
+        inputs[0].sequence = 42
+        tx.set_inputs(inputs)
+
+        # These are valid prior to and after BIP65 activation.
+        assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.bip65_rule) == \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.all_rules) == \
+            bc.Error.success, test[2]
+
+def script__bip65__invalid():
+    for test in chain.script_data.invalid_bip65_scripts:
+        tx = new_tx(test)
+        assert not tx.copy_inputs().empty(), test[2]
+
+        tx.locktime = 99;
+
+        inputs = tx.copy_inputs()
+        inputs[0].sequence = 42
+        tx.set_inputs(inputs)
+
+        # These are valid prior to and after BIP65 activation.
+        assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) != \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.bip65_rule) != \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.all_rules) != \
+            bc.Error.success, test[2]
+
+def script__bip65__invalidated():
+    for test in chain.script_data.invalidated_bip65_scripts:
+        tx = new_tx(test)
+        assert not tx.copy_inputs().empty(), test[2]
+
+        tx.locktime = 99;
+
+        inputs = tx.copy_inputs()
+        inputs[0].sequence = 42
+        tx.set_inputs(inputs)
+
+        # These are valid prior to and after BIP65 activation.
+        assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.bip65_rule) != \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.all_rules) != \
+            bc.Error.success, test[2]
+
+# These are scripts potentially affected by bip66 (but should not be).
+def script__multisig__valid():
+    for test in chain.script_data.valid_multisig_scripts:
+        tx = new_tx(test)
+        assert not tx.copy_inputs().empty(), test[2]
+
+        # These are always valid.
+        assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.bip66_rule) == \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.all_rules) == \
+            bc.Error.success, test[2]
+
+# These are scripts potentially affected by bip66 (but should not be).
+def script__multisig__invalid():
+    for test in chain.script_data.invalid_multisig_scripts:
+        tx = new_tx(test)
+        assert not tx.copy_inputs().empty(), test[2]
+
+        # These are always invalid.
+        assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) != \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.bip66_rule) != \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.all_rules) != \
+            bc.Error.success, test[2]
+
+def script__context_free__valid():
+    for test in chain.script_data.valid_context_free_scripts:
+        tx = new_tx(test)
+        assert not tx.copy_inputs().empty(), test[2]
+
+        # These are always valid.
+        assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.all_rules) == \
+            bc.Error.success, test[2]
+
+def script__context_free__invalid():
+    for test in chain.script_data.invalid_context_free_scripts:
+        tx = new_tx(test)
+        assert not tx.copy_inputs().empty(), test[2]
+
+        # These are always valid.
+        assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) != \
+            bc.Error.success, test[2]
+        assert bc.Script.verify(tx, 0, bc.RuleFork.all_rules) != \
+            bc.Error.success, test[2]
+
+def script__invalid_parse__empty_inputs():
+    for test in chain.script_data.invalid_parse_scripts:
+        tx = new_tx(test)
+        assert tx.copy_inputs().empty(), test[2]
+
+script__from_data__testnet_119058_non_parseable__fallback()
+script__from_data__parse__fails()
+script__from_data__to_data__roundtrips()
+script__from_data__to_data_weird__roundtrips()
+script__is_raw_data_operations_size_not_equal_one_returns_false()
+script__is_raw_data_code_not_equal_raw_data_returns_false()
+script__is_raw_data_returns_true()
+script__factory_from_data_chunk_test()
+script__bip16__valid()
+script__bip16__invalidated()
+script__bip65__valid()
+script__bip65__invalid()
+script__bip65__invalidated()
+script__multisig__valid()
+script__multisig__invalid()
+script__context_free__valid()
+script__context_free__invalid()
+script__invalid_parse__empty_inputs()
 

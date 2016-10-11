@@ -122,6 +122,15 @@ class Opcode(Enum):
     bad_operation = 186
     raw_data = 187
 
+class RuleFork(Enum):
+    no_rules = lib.bc_rule_fork__no_rules
+    bip16_rule = lib.bc_rule_fork__bip16_rule
+    bip30_rule = lib.bc_rule_fork__bip30_rule
+    bip34_rule = lib.bc_rule_fork__bip34_rule
+    bip66_rule = lib.bc_rule_fork__bip66_rule
+    bip65_rule = lib.bc_rule_fork__bip65_rule
+    all_rules = lib.bc_rule_fork__all_rules
+
 def within_op_n(code):
     """Determine if code is in the op_n range."""
     return lib.bc_within_op_n(code.value) == 1
