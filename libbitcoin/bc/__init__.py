@@ -16,8 +16,12 @@ from libbitcoin.bc.hd_private import HdPrivate
 from libbitcoin.bc.mnemonic import mnemonic_word_multiple, \
     mnemonic_seed_multiple, create_mnemonic, validate_mnemonic, \
     decode_mnemonic
+from libbitcoin.bc.opcode import Opcode, within_op_n, decode_op_n, \
+    data_to_opcode, string_to_opcode, opcode_to_string
+from libbitcoin.bc.operation import Operation, OperationStack
 from libbitcoin.bc.payment_address import PaymentAddress
 from libbitcoin.bc.script import Script
+from libbitcoin.bc.script_number import ScriptNumber
 from libbitcoin.bc.string import String, StringList
 from libbitcoin.bc.version import libbitcoin_version, \
     libbitcoin_major_version, libbitcoin_minor_version, \

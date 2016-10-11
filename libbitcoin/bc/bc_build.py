@@ -33,6 +33,7 @@ cdef += bc_macros.hash_type("short_hash")
 cdef += bc_macros.hash_type("mini_hash")
 
 cdef += bc_macros.vector("string_list", "bc_string_t")
+cdef += bc_macros.vector("operation_stack", "bc_operation_t")
 
 ffibuilder = FFI()
 ffibuilder.set_source("_bc", None)

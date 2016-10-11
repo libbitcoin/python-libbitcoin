@@ -14,10 +14,13 @@ class String:
             self._obj = s
 
     def __del__(self):
-        self._destroy_object()
+        self._delete_object()
 
-    def _destroy_object(self):
+    def _delete_object(self):
         lib.bc_destroy_string(self._obj)
+
+    def disable_object_deleter(self):
+        self._delete_object = lambda: None
 
     @property
     def data(self):

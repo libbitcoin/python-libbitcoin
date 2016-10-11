@@ -1,5 +1,6 @@
 from libbitcoin.bc.config import ffi, lib
 from libbitcoin.bc.data import DataChunk
+from libbitcoin.bc.operation import OperationStack
 from libbitcoin.bc.string import String
 
 class Script:
@@ -38,4 +39,10 @@ class Script:
 
     def __repr__(self):
         return "<bc_script '%s'>" % str(self)
+
+    def copy_operations(self):
+        obj = lib.bc_script__operations(self._obj)
+        return OperationStack(obj)
+    def set_operations(self, ops):
+        lib.bc_script__set_operations(self._obj, ops._obj)
 

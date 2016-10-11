@@ -46,7 +46,7 @@ class VectorBase:
     def __getitem__(self, pos):
         obj = self.bc_vector__at(self._obj, pos)
         result = self.item_type(obj)
-        result._destroy_object = lambda: None
+        result.disable_object_deleter()
         return result
 
     def __len__(self):
@@ -63,7 +63,7 @@ class VectorBase:
 
     def append(self, item):
         # We need to invalidate item's delete function
-        item._destroy_object = lambda: None
+        item.disable_object_deleter()
         self.bc_vector__push_back_noconsume(self._obj, item._obj)
 
     def resize(self, count):
@@ -71,7 +71,7 @@ class VectorBase:
 
     def insert(self, pos, item):
         # We need to invalidate item's delete function
-        item._destroy_object = lambda: None
+        item.disable_object_deleter()
         self.bc_vector__insert_noconsume(self._obj, pos, item._obj)
 
     def __iter__(self):
