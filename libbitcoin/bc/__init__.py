@@ -1,6 +1,8 @@
 from libbitcoin.bc._bc import ffi
 from libbitcoin.bc.base_10 import btc_decimal_places, mbtc_decimal_places, \
     ubtc_decimal_places, decode_base10, encode_base10
+from libbitcoin.bc.crypto import AesSecret, AesBlock, aes256_key_size, \
+    aes256_block_size, aes256_encrypt, aes256_decrypt
 from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.ec_private import EcPrivate
 from libbitcoin.bc.ec_public import EcPublic
