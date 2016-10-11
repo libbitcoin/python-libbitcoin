@@ -17,4 +17,7 @@ from libbitcoin.bc.mnemonic import mnemonic_word_multiple, \
 from libbitcoin.bc.payment_address import PaymentAddress
 from libbitcoin.bc.script import Script
 from libbitcoin.bc.string import String, StringList
+from libbitcoin.bc.version import libbitcoin_version, \
+    libbitcoin_major_version, libbitcoin_minor_version, \
+    libbitcoin_patch_version
 
