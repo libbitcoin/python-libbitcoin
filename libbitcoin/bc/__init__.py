@@ -6,7 +6,7 @@ from libbitcoin.bc.crypto import AesSecret, AesBlock, aes256_key_size, \
 from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.ec_private import EcPrivate
 from libbitcoin.bc.ec_public import EcPublic
-from libbitcoin.bc.elliptic_curve import EcSecret, EcCompressed, \
+from libbitcoin.bc.elliptic_curve import Endorsement, EcSecret, EcCompressed, \
     EcUncompressed, EcSignature
 from libbitcoin.bc.error import ConsoleResult, Error
 from libbitcoin.bc.dictionary import Dictionary
@@ -24,7 +24,8 @@ from libbitcoin.bc.operation import Operation, OperationStack
 from libbitcoin.bc.output import Output
 from libbitcoin.bc.output_point import OutputPoint
 from libbitcoin.bc.payment_address import PaymentAddress
-from libbitcoin.bc.script import ScriptParseMode, Script
+from libbitcoin.bc.script import SignatureHashAlgorithm, ScriptParseMode, \
+    Script
 from libbitcoin.bc.script_number import ScriptNumber
 from libbitcoin.bc.string import String, StringList
 from libbitcoin.bc.transaction import Transaction

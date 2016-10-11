@@ -2,8 +2,19 @@ from enum import Enum
 from libbitcoin.bc.config import ffi, lib
 from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.error import ErrorCode
+from libbitcoin.bc.hash import HashDigest
 from libbitcoin.bc.operation import OperationStack
 from libbitcoin.bc.string import String
+
+class SignatureHashAlgorithm(Enum):
+    all = lib.bc_signature_hash_algorithm__all
+    none = lib.bc_signature_hash_algorithm__none
+    single = lib.bc_signature_hash_algorithm__single
+    anyone_can_pay = lib.bc_signature_hash_algorithm__anyone_can_pay
+    all_anyone_can_pay = lib.bc_signature_hash_algorithm__all_anyone_can_pay
+    none_anyone_can_pay = lib.bc_signature_hash_algorithm__none_anyone_can_pay
+    single_anyone_can_pay = lib.bc_signature_hash_algorithm__single_anyone_can_pay
+    mask = lib.bc_signature_hash_algorithm__mask
 
 class ScriptParseMode(Enum):
     strict = lib.bc_script_parse_mode__strict
@@ -12,6 +23,28 @@ class ScriptParseMode(Enum):
 
 class Script:
 
+    @staticmethod
+    def generate_signature_hash(parent_tx, input_index,
+                                script_code, sighash_type):
+        obj = lib.bc_script__generate_signature_hash(
+            parent_tx._obj, input_index, script_code._obj, sighash_type.value)
+        return HashDigest(obj)
+
+    @staticmethod
+    def create_endorsement(out, secret, prevout_script, new_tx,
+                           input_index, sighash_type):
+        return lib.bc_script__create_endorsement(
+            out._obj, secret._obj, prevout_script._obj, new_tx._obj,
+            input_index, sighash_type.value) == 1
+
+    @staticmethod
+    def check_signature(signature, sighash_type, public_key,
+                        script_code, parent_tx, input_index):
+        public_key = DataChunk(public_key)
+        return lib.bc_script__check_signature(
+            signature._obj, sighash_type.value, public_key._obj,
+            script_code._obj, parent_tx._obj, input_index) == 1
+    
     @staticmethod
     def verify(tx, input_index, flags):
         obj = lib.bc_script__verify(tx._obj, input_index, flags.value)

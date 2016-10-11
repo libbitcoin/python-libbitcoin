@@ -364,6 +364,102 @@ def script__invalid_parse__empty_inputs():
         tx = new_tx(test)
         assert tx.copy_inputs().empty(), test[2]
 
+# These are special tests for checksig.
+def script__checksig__uses_one_hash():
+    # input 315ac7d4c26d69668129cc352851d9389b4a6868f1509c6c8b66bead11e2619f:1
+    tx_data = bytes.fromhex("0100000002dc38e9359bd7da3b58386204e186d9408685f427f5e513666db735aa8a6b2169000000006a47304402205d8feeb312478e468d0b514e63e113958d7214fa572acd87079a7f0cc026fc5c02200fa76ea05bf243af6d0f9177f241caf606d01fcfd5e62d6befbca24e569e5c27032102100a1a9ca2c18932d6577c58f225580184d0e08226d41959874ac963e3c1b2feffffffffdc38e9359bd7da3b58386204e186d9408685f427f5e513666db735aa8a6b2169010000006b4830450220087ede38729e6d35e4f515505018e659222031273b7366920f393ee3ab17bc1e022100ca43164b757d1a6d1235f13200d4b5f76dd8fda4ec9fc28546b2df5b1211e8df03210275983913e60093b767e85597ca9397fb2f418e57f998d6afbbc536116085b1cbffffffff0140899500000000001976a914fcc9b36d38cf55d7d5b4ee4dddb6b2c17612f48c88ac00000000")
+    parent_tx = bc.Transaction.from_data(tx_data)
+
+    distinguished = bytes.fromhex("30450220087ede38729e6d35e4f515505018e659222031273b7366920f393ee3ab17bc1e022100ca43164b757d1a6d1235f13200d4b5f76dd8fda4ec9fc28546b2df5b1211e8df")
+
+    pubkey = bytes.fromhex("0275983913e60093b767e85597ca9397fb2f418e57f998d6afbbc536116085b1cb")
+
+    script_data = bytes.fromhex("76a91433cef61749d11ba2adf091a5e045678177fe3a6d88ac")
+
+    script_code = bc.Script()
+    prefix = False
+    assert script_code.from_data(script_data, prefix, bc.ScriptParseMode.strict)
+
+    strict = True
+    input_index = 1
+    signature = bc.EcSignature.from_der(distinguished, strict)
+    assert signature is not None
+    assert bc.Script.check_signature(
+        signature, bc.SignatureHashAlgorithm.single, pubkey,
+        script_code, parent_tx, input_index)
+
+def script__checksig__normal():
+    # input 315ac7d4c26d69668129cc352851d9389b4a6868f1509c6c8b66bead11e2619f:0
+    tx_data = bytes.fromhex("0100000002dc38e9359bd7da3b58386204e186d9408685f427f5e513666db735aa8a6b2169000000006a47304402205d8feeb312478e468d0b514e63e113958d7214fa572acd87079a7f0cc026fc5c02200fa76ea05bf243af6d0f9177f241caf606d01fcfd5e62d6befbca24e569e5c27032102100a1a9ca2c18932d6577c58f225580184d0e08226d41959874ac963e3c1b2feffffffffdc38e9359bd7da3b58386204e186d9408685f427f5e513666db735aa8a6b2169010000006b4830450220087ede38729e6d35e4f515505018e659222031273b7366920f393ee3ab17bc1e022100ca43164b757d1a6d1235f13200d4b5f76dd8fda4ec9fc28546b2df5b1211e8df03210275983913e60093b767e85597ca9397fb2f418e57f998d6afbbc536116085b1cbffffffff0140899500000000001976a914fcc9b36d38cf55d7d5b4ee4dddb6b2c17612f48c88ac00000000")
+    parent_tx = bc.Transaction.from_data(tx_data)
+
+    distinguished = bytes.fromhex("304402205d8feeb312478e468d0b514e63e113958d7214fa572acd87079a7f0cc026fc5c02200fa76ea05bf243af6d0f9177f241caf606d01fcfd5e62d6befbca24e569e5c27")
+
+    pubkey = bytes.fromhex("02100a1a9ca2c18932d6577c58f225580184d0e08226d41959874ac963e3c1b2fe")
+
+    script_data = bytes.fromhex("76a914fcc9b36d38cf55d7d5b4ee4dddb6b2c17612f48c88ac")
+
+    script_code = bc.Script()
+    prefix = False
+    assert script_code.from_data(script_data, prefix,
+                                 bc.ScriptParseMode.strict)
+
+    strict = True
+    input_index = 0
+    signature = bc.EcSignature.from_der(distinguished, strict)
+    assert signature is not None
+    assert bc.Script.check_signature(
+        signature, bc.SignatureHashAlgorithm.single, pubkey,
+        script_code, parent_tx, input_index)
+
+def script__create_endorsement__single_input_single_output__expected():
+    tx_data = bytes.fromhex("0100000001b3807042c92f449bbf79b33ca59d7dfec7f4cc71096704a9c526dddf496ee0970100000000ffffffff01905f0100000000001976a91418c0bd8d1818f1bf99cb1df2269c645318ef7b7388ac00000000")
+    new_tx = bc.Transaction.from_data(tx_data)
+
+    prevout_script = bc.Script()
+    assert prevout_script.from_string("dup hash160 [ 88350574280395ad2c3e2ee20e322073d94e5e40 ] equalverify checksig")
+
+    secret = bc.EcSecret.from_string("ce8f4b713ffdd2658900845251890f30371856be201cd1f5b3d970f793634333", True)
+
+    out = bc.Endorsement()
+    input_index = 0
+    sighash_type = bc.SignatureHashAlgorithm.all
+    assert bc.Script.create_endorsement(out, secret, prevout_script, new_tx,
+                                        input_index, sighash_type)
+
+    assert str(out) == "3045022100e428d3cc67a724cb6cfe8634aa299e58f189d9c46c02641e936c40cc16c7e8ed0220083949910fe999c21734a1f33e42fca15fb463ea2e08f0a1bccd952aacaadbb801"
+
+def script__create_endorsement__single_input_no_output__expected():
+    tx_data = bytes.fromhex("0100000001b3807042c92f449bbf79b33ca59d7dfec7f4cc71096704a9c526dddf496ee0970000000000ffffffff0000000000")
+    new_tx = bc.Transaction.from_data(tx_data)
+
+    prevout_script = bc.Script()
+    assert prevout_script.from_string("dup hash160 [ 88350574280395ad2c3e2ee20e322073d94e5e40 ] equalverify checksig")
+
+    secret = bc.EcSecret.from_string("ce8f4b713ffdd2658900845251890f30371856be201cd1f5b3d970f793634333", True)
+
+    out = bc.Endorsement()
+    input_index = 0
+    sighash_type = bc.SignatureHashAlgorithm.all
+    assert bc.Script.create_endorsement(out, secret, prevout_script, new_tx,
+                                        input_index, sighash_type)
+
+    assert str(out) == "3045022100ba57820be5f0b93a0d5b880fbf2a86f819d959ecc24dc31b6b2d4f6ed286f253022071ccd021d540868ee10ca7634f4d270dfac7aea0d5912cf2b104111ac9bc756b01"
+
+def script__generate_signature_hash__all__expected():
+    tx_data = bytes.fromhex("0100000001b3807042c92f449bbf79b33ca59d7dfec7f4cc71096704a9c526dddf496ee0970000000000ffffffff0000000000")
+    new_tx = bc.Transaction.from_data(tx_data)
+
+    prevout_script = bc.Script()
+    assert prevout_script.from_string("dup hash160 [ 88350574280395ad2c3e2ee20e322073d94e5e40 ] equalverify checksig")
+
+    out = bc.Endorsement()
+    input_index = 0
+    sighash_type = bc.SignatureHashAlgorithm.all
+    sighash = bc.Script.generate_signature_hash(new_tx, input_index,
+                                                prevout_script, sighash_type)
+    assert sighash.encode_base16() == "f89572635651b2e4f89778350616989183c98d1a721c911324bf9f17a0cf5bf0"
+
 script__from_data__testnet_119058_non_parseable__fallback()
 script__from_data__parse__fails()
 script__from_data__to_data__roundtrips()
@@ -382,4 +478,9 @@ script__multisig__invalid()
 script__context_free__valid()
 script__context_free__invalid()
 script__invalid_parse__empty_inputs()
+script__checksig__uses_one_hash()
+script__checksig__normal()
+script__create_endorsement__single_input_single_output__expected()
+script__create_endorsement__single_input_no_output__expected()
+script__generate_signature_hash__all__expected()
 

@@ -1,4 +1,5 @@
 from libbitcoin.bc.config import lib
+from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.input import InputList
 from libbitcoin.bc.string import String
 
@@ -8,6 +9,15 @@ class Transaction:
         if obj is None:
             obj = lib.bc_create_transaction()
         self._obj = obj
+
+    @classmethod
+    def from_data(cls, data, satoshi=True):
+        data = DataChunk(data)
+        if satoshi:
+            obj = lib.bc_transaction__factory_from_data(data._obj)
+        else:
+            obj = lib.bc_transaction__factory_from_data_nosatoshi(data._obj)
+        return cls(obj)
 
     def __del__(self):
         lib.bc_destroy_transaction(self._obj)

@@ -2,6 +2,12 @@ from libbitcoin.bc.config import ffi, lib
 from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.byte_array import ByteArrayBase, ByteArrayMeta
 
+class Endorsement(DataChunk):
+
+    @staticmethod
+    def max_size():
+        return lib.bc_max_endorsement_size()
+
 class EcSecret(ByteArrayBase, metaclass=ByteArrayMeta):
 
     bc_name = "ec_secret"

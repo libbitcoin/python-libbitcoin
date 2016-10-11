@@ -29,7 +29,11 @@ void bc_destroy_transaction(bc_transaction_t* self);
 // Member functions
 bool bc_transaction__from_data(bc_transaction_t* self,
     const bc_data_chunk_t* data);
+bool bc_transaction__from_data_nosatoshi(bc_transaction_t* self,
+    const bc_data_chunk_t* data);
 bc_data_chunk_t* bc_transaction__to_data(const bc_transaction_t* self);
+bc_data_chunk_t* bc_transaction__to_data_nosatoshi(
+    const bc_transaction_t* self);
 bc_string_t* bc_transaction__to_string(const bc_transaction_t* self,
     uint32_t flags);
 

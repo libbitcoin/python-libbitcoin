@@ -41,6 +41,9 @@ class DataChunk:
             other = DataChunk(other)
         return lib.bc_data_chunk__equals(self._obj, other._obj) == 1
 
+    def __str__(self):
+        return self.data.hex()
+
     def __repr__(self):
         return "<bc_data_chunk '%s'>" % self.data.hex()
 
