@@ -42,14 +42,14 @@ def vector(typename, itemtype):
     void bc_TYPENAME__clear(bc_TYPENAME_t* self);
     void bc_TYPENAME__erase(bc_TYPENAME_t* self, size_t pos);
     void bc_TYPENAME__insert(bc_TYPENAME_t* self,
-        size_t pos, ITEMTYPE** obj);
-    void bc_TYPENAME__push_back(bc_TYPENAME_t* self, ITEMTYPE** obj);
+        size_t pos, ITEMTYPE* obj);
+    void bc_TYPENAME__push_back(bc_TYPENAME_t* self, ITEMTYPE* obj);
     /* Methods that don't try to consume the passed pointer, but
        the semantics remain the same as the normal push_back() */
-    void bc_TYPENAME__insert_noconsume(bc_TYPENAME_t* self,
-        size_t pos, ITEMTYPE* obj);
-    void bc_TYPENAME__push_back_noconsume(bc_TYPENAME_t* self,
-        ITEMTYPE* obj);
+    void bc_TYPENAME__insert_consume(bc_TYPENAME_t* self,
+        size_t pos, ITEMTYPE** obj);
+    void bc_TYPENAME__push_back_consume(bc_TYPENAME_t* self,
+        ITEMTYPE** obj);
     void bc_TYPENAME__resize(bc_TYPENAME_t* self, size_t count);
     """.replace("TYPENAME", typename).replace("ITEMTYPE", itemtype)
 

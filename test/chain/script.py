@@ -57,7 +57,7 @@ def push_data(data):
     tmp_script = bc.Script()
     ops = bc.OperationStack()
     ops.append(bc.Operation(code, data))
-    tmp_script.set_operations(ops)
+    tmp_script.operations = ops
     raw_tmp_script = tmp_script.to_data(False)
     return raw_tmp_script
 
@@ -120,7 +120,7 @@ def parse(result_script, format):
                                    bc.ScriptParseMode.strict):
         return False
 
-    ops = result_script.copy_operations()
+    ops = result_script.operations
     if ops.empty():
         return False
 
@@ -141,10 +141,7 @@ def new_tx(test):
     input.script = input_script
     input.previous_output.cache.script = output_script
 
-    inputs = bc.InputList()
-    inputs.append(input)
-
-    tx.set_inputs(inputs)
+    tx.inputs.append(input)
     return tx
 
 def script__from_data__testnet_119058_non_parseable__fallback():
@@ -202,14 +199,14 @@ def script__is_raw_data_code_not_equal_raw_data_returns_false():
     instance = bc.Script()
     ops = bc.OperationStack()
     ops.append(bc.Operation(bc.Opcode.vernotif))
-    instance.set_operations(ops)
+    instance.operations = ops
     assert not instance.is_raw_data()
 
 def script__is_raw_data_returns_true():
     instance = bc.Script()
     ops = bc.OperationStack()
     ops.append(bc.Operation(bc.Opcode.raw_data))
-    instance.set_operations(ops)
+    instance.operations = ops
     assert instance.is_raw_data()
 
 def script__factory_from_data_chunk_test():
@@ -223,7 +220,7 @@ def script__factory_from_data_chunk_test():
 def script__bip16__valid():
     for test in chain.script_data.valid_bip16_scripts:
         tx = new_tx(test)
-        assert not tx.copy_inputs().empty(), test[2]
+        assert not tx.inputs.empty(), test[2]
 
         # These are valid prior to and after BIP16 activation.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
@@ -236,7 +233,7 @@ def script__bip16__valid():
 def script__bip16__invalidated():
     for test in chain.script_data.invalidated_bip16_scripts:
         tx = new_tx(test)
-        assert not tx.copy_inputs().empty(), test[2]
+        assert not tx.inputs.empty(), test[2]
 
         # These are valid prior to BIP16 activation and invalid after.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
@@ -250,13 +247,11 @@ def script__bip16__invalidated():
 def script__bip65__valid():
     for test in chain.script_data.valid_bip65_scripts:
         tx = new_tx(test)
-        assert not tx.copy_inputs().empty(), test[2]
+        assert not tx.inputs.empty(), test[2]
 
         tx.locktime = 500000042;
 
-        inputs = tx.copy_inputs()
-        inputs[0].sequence = 42
-        tx.set_inputs(inputs)
+        tx.inputs[0].sequence = 42
 
         # These are valid prior to and after BIP65 activation.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
@@ -269,13 +264,11 @@ def script__bip65__valid():
 def script__bip65__invalid():
     for test in chain.script_data.invalid_bip65_scripts:
         tx = new_tx(test)
-        assert not tx.copy_inputs().empty(), test[2]
+        assert not tx.inputs.empty(), test[2]
 
         tx.locktime = 99;
 
-        inputs = tx.copy_inputs()
-        inputs[0].sequence = 42
-        tx.set_inputs(inputs)
+        tx.inputs[0].sequence = 42
 
         # These are valid prior to and after BIP65 activation.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) != \
@@ -288,13 +281,11 @@ def script__bip65__invalid():
 def script__bip65__invalidated():
     for test in chain.script_data.invalidated_bip65_scripts:
         tx = new_tx(test)
-        assert not tx.copy_inputs().empty(), test[2]
+        assert not tx.inputs.empty(), test[2]
 
         tx.locktime = 99;
 
-        inputs = tx.copy_inputs()
-        inputs[0].sequence = 42
-        tx.set_inputs(inputs)
+        tx.inputs[0].sequence = 42
 
         # These are valid prior to and after BIP65 activation.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
@@ -308,7 +299,7 @@ def script__bip65__invalidated():
 def script__multisig__valid():
     for test in chain.script_data.valid_multisig_scripts:
         tx = new_tx(test)
-        assert not tx.copy_inputs().empty(), test[2]
+        assert not tx.inputs.empty(), test[2]
 
         # These are always valid.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
@@ -322,7 +313,7 @@ def script__multisig__valid():
 def script__multisig__invalid():
     for test in chain.script_data.invalid_multisig_scripts:
         tx = new_tx(test)
-        assert not tx.copy_inputs().empty(), test[2]
+        assert not tx.inputs.empty(), test[2]
 
         # These are always invalid.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) != \
@@ -335,7 +326,7 @@ def script__multisig__invalid():
 def script__context_free__valid():
     for test in chain.script_data.valid_context_free_scripts:
         tx = new_tx(test)
-        assert not tx.copy_inputs().empty(), test[2]
+        assert not tx.inputs.empty(), test[2]
 
         # These are always valid.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
@@ -346,7 +337,7 @@ def script__context_free__valid():
 def script__context_free__invalid():
     for test in chain.script_data.invalid_context_free_scripts:
         tx = new_tx(test)
-        assert not tx.copy_inputs().empty(), test[2]
+        assert not tx.inputs.empty(), test[2]
 
         # These are always valid.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) != \
@@ -357,7 +348,7 @@ def script__context_free__invalid():
 def script__invalid_parse__empty_inputs():
     for test in chain.script_data.invalid_parse_scripts:
         tx = new_tx(test)
-        assert tx.copy_inputs().empty(), test[2]
+        assert tx.inputs.empty(), test[2]
 
 # These are special tests for checksig.
 def script__checksig__uses_one_hash():

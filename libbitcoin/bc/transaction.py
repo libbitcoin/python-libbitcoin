@@ -79,16 +79,20 @@ class Transaction:
     def locktime(self, locktime):
         lib.bc_transaction__set_locktime(self._obj, locktime)
 
-    def copy_inputs(self):
+    @property
+    def inputs(self):
         obj = lib.bc_transaction__inputs(self._obj)
         return InputList(obj)
-    def set_inputs(self, inputs):
+    @inputs.setter
+    def inputs(self, inputs):
         lib.bc_transaction__set_inputs(self._obj, inputs._obj)
 
-    def copy_outputs(self):
+    @property
+    def outputs(self):
         obj = lib.bc_transaction__outputs(self._obj)
         return OutputList(obj)
-    def set_outputs(self, outputs):
+    @outputs.setter
+    def outputs(self, outputs):
         lib.bc_transaction__set_outputs(self._obj, outputs._obj)
 
 class TransactionList(VectorBase, metaclass=VectorMeta):

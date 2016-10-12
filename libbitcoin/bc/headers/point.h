@@ -1,3 +1,5 @@
+typedef struct bc_point_iterator_t bc_point_iterator_t;
+
 // Immutable vector of uint32_t
 typedef struct bc_point_indexes_t bc_point_indexes_t;
 // Constructor

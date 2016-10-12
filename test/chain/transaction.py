@@ -6,12 +6,10 @@ def is_coinbase_returns_false():
 
 def is_coinbase_returns_true():
     instance = bc.Transaction()
-    inputs = instance.copy_inputs()
     input = bc.Input()
     input.previous_output = bc.OutputPoint.from_tuple(bc.null_hash,
                                                       bc.max_input_sequence)
-    inputs.append(input)
-    instance.set_inputs(inputs)
+    instance.inputs.append(input)
     assert instance.is_coinbase()
 
 def is_final_locktime_zero_returns_true():
@@ -40,11 +38,9 @@ def is_final_locktime_input_not_final_returns_false():
     time = 100
     instance = bc.Transaction()
     instance.locktime = 101
-    inputs = instance.copy_inputs()
     input = bc.Input()
     input.sequence = 1
-    inputs.append(input)
-    instance.set_inputs(inputs)
+    instance.inputs.append(input)
     assert not instance.is_final(height, time)
 
 def is_final_locktime_inputs_final_returns_true():
@@ -52,11 +48,9 @@ def is_final_locktime_inputs_final_returns_true():
     time = 100
     instance = bc.Transaction()
     instance.locktime = 101
-    inputs = instance.copy_inputs()
     input = bc.Input()
     input.sequence = bc.max_input_sequence
-    inputs.append(input)
-    instance.set_inputs(inputs)
+    instance.inputs.append(input)
     assert instance.is_final(height, time)
 
 def is_locktime_conflict_locktime_zero_returns_false():
@@ -67,11 +61,9 @@ def is_locktime_conflict_locktime_zero_returns_false():
 def is_locktime_conflict_input_sequence_not_maximum_returns_false():
     instance = bc.Transaction()
     instance.locktime = 2143
-    inputs = instance.copy_inputs()
     input = bc.Input()
     input.sequence = 1
-    inputs.append(input)
-    instance.set_inputs(inputs)
+    instance.inputs.append(input)
     assert not instance.is_locktime_conflict()
 
 def is_locktime_conflict_no_inputs_returns_true():
@@ -82,11 +74,9 @@ def is_locktime_conflict_no_inputs_returns_true():
 def is_locktime_conflict_input_max_sequence_returns_true():
     instance = bc.Transaction()
     instance.locktime = 2143
-    inputs = instance.copy_inputs()
     input = bc.Input()
     input.sequence = bc.max_input_sequence
-    inputs.append(input)
-    instance.set_inputs(inputs)
+    instance.inputs.append(input)
     assert instance.is_locktime_conflict()
 
 def total_output_value_returns_zero():
@@ -96,14 +86,12 @@ def total_output_value_returns_zero():
 def total_output_value_returns_positive():
     expected = 1234
     instance = bc.Transaction()
-    outputs = instance.copy_outputs()
     output = bc.Output()
     output.value = 1200
-    outputs.append(output)
+    instance.outputs.append(output)
     output = bc.Output()
     output.value = 34
-    outputs.append(output)
-    instance.set_outputs(outputs)
+    instance.outputs.append(output)
     assert instance.total_output_value() == expected
 
 def from_data_fails():

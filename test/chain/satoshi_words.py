@@ -5,15 +5,14 @@ def satoshi_words_mainnet():
     block = bc.Block.genesis_mainnet()
 
     # Genesis block contains a single coinbase transaction.
-    assert len(block.copy_transactions()) == 1
+    assert len(block.transactions) == 1
 
     # Get first transaction in block (coinbase).
-    txs = block.copy_transactions()
-    coinbase_tx = txs[0]
+    coinbase_tx = block.transactions[0]
 
     # Coinbase tx has a single input.
-    assert len(coinbase_tx.copy_inputs()) == 1
-    coinbase_input = coinbase_tx.copy_inputs()[0]
+    assert len(coinbase_tx.inputs) == 1
+    coinbase_input = coinbase_tx.inputs[0]
 
     # Convert the input script to its raw format.
     raw_message = coinbase_input.script.to_data(False)

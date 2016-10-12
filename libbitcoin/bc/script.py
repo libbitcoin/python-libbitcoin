@@ -88,9 +88,11 @@ class Script:
     def __repr__(self):
         return "<bc_script '%s'>" % str(self)
 
-    def copy_operations(self):
+    @property
+    def operations(self):
         obj = lib.bc_script__operations(self._obj)
         return OperationStack(obj)
-    def set_operations(self, ops):
+    @operations.setter
+    def operations(self, ops):
         lib.bc_script__set_operations(self._obj, ops._obj)
 

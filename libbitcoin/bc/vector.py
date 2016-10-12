@@ -13,11 +13,9 @@ class VectorMeta(type):
         attrs["bc_vector__empty"] = method("bc_%s__empty")
         attrs["bc_vector__clear"] = method("bc_%s__clear")
         attrs["bc_vector__erase"] = method("bc_%s__erase")
-        attrs["bc_vector__push_back_noconsume"] = \
-            method("bc_%s__push_back_noconsume")
+        attrs["bc_vector__push_back"] = method("bc_%s__push_back")
         attrs["bc_vector__resize"] = method("bc_%s__resize")
-        attrs["bc_vector__insert_noconsume"] = \
-            method("bc_%s__insert_noconsume")
+        attrs["bc_vector__insert"] = method("bc_%s__insert")
         return super().__new__(cls, clsname, bases, attrs)
 
 class VectorIterator:
@@ -65,7 +63,7 @@ class VectorBase:
     def append(self, item):
         # We need to invalidate item's delete function
         item.disable_object_deleter()
-        self.bc_vector__push_back_noconsume(self._obj, item._obj)
+        self.bc_vector__push_back(self._obj, item._obj)
 
     def resize(self, count):
         self.bc_vector__resize(self._obj, count)
@@ -73,7 +71,7 @@ class VectorBase:
     def insert(self, pos, item):
         # We need to invalidate item's delete function
         item.disable_object_deleter()
-        self.bc_vector__insert_noconsume(self._obj, pos, item._obj)
+        self.bc_vector__insert(self._obj, pos, item._obj)
 
     def __iter__(self):
         return VectorIterator(self)
