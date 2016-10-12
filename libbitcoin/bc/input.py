@@ -1,9 +1,17 @@
 from libbitcoin.bc.config import lib
+from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.output_point import OutputPoint
 from libbitcoin.bc.script import Script
+from libbitcoin.bc.string import String
 from libbitcoin.bc.vector import VectorMeta, VectorBase
 
 class Input:
+
+    @classmethod
+    def from_data(cls, data):
+        data = DataChunk(data)
+        obj = lib.bc_input__factory_from_data(data._obj)
+        return cls(obj)
 
     def __init__(self, obj=None):
         if obj is None:
@@ -18,6 +26,20 @@ class Input:
 
     def disable_object_deleter(self):
         self._delete_object = lambda: None
+
+    def to_data(self):
+        obj = lib.bc_input__to_data(self._obj)
+        return DataChunk(obj)
+
+    def to_string(self, flags):
+        obj = lib.bc_input__to_string(self._obj, flags)
+        return str(String(obj))
+
+    def is_valid(self):
+        return lib.bc_input__is_valid(self._obj) == 1
+
+    def serialized_size(self):
+        return lib.bc_input__serialized_size(self._obj)
 
     def copy_previous_output(self):
         obj = lib.bc_input__previous_output(self._obj)
@@ -37,6 +59,9 @@ class Input:
     @sequence.setter
     def sequence(self, sequence):
         lib.bc_input__set_sequence(self._obj, sequence)
+
+    def __repr__(self):
+        return "<bc_input>"
 
 class InputList(VectorBase, metaclass=VectorMeta):
     bc_name = "input_list"
