@@ -12,13 +12,11 @@ def satoshi_words_mainnet():
     coinbase_tx = txs[0]
 
     # Coinbase tx has a single input.
-    inputs = coinbase_tx.copy_inputs()
-    assert len(inputs) == 1
-    coinbase_input = inputs[0]
+    assert len(coinbase_tx.copy_inputs()) == 1
+    coinbase_input = coinbase_tx.copy_inputs()[0]
 
     # Convert the input script to its raw format.
-    coinbase_script = coinbase_input.copy_script()
-    raw_message = coinbase_script.to_data(False)
+    raw_message = coinbase_input.copy_script().to_data(False)
 
     # Convert to a string after removing the 8 byte checksum.
     assert len(raw_message) >= 8

@@ -47,6 +47,7 @@ class VectorBase:
         obj = self.bc_vector__at(self._obj, pos)
         result = self.item_type(obj)
         result.disable_object_deleter()
+        result._keep_alive_parent = self
         return result
 
     def __len__(self):
