@@ -8,16 +8,16 @@ class Output:
 
     not_found = lib.bc_output__not_found()
 
-    def __init__(self, obj=None):
-        if obj is None:
-            obj = lib.bc_create_output()
-        self._obj = obj
-
     @classmethod
     def from_data(cls, data):
         data = DataChunk(data)
         obj = lib.bc_output__factory_from_data(data._obj)
         return cls(obj)
+
+    def __init__(self, obj=None):
+        if obj is None:
+            obj = lib.bc_create_output()
+        self._obj = obj
 
     def __del__(self):
         self._delete_object()
