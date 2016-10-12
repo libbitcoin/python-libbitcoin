@@ -1,3 +1,4 @@
+import chain.header
 import chain.script
 import chain.transaction
 import math_.elliptic_curve

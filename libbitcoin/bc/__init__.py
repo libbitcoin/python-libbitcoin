@@ -11,6 +11,7 @@ from libbitcoin.bc.elliptic_curve import Endorsement, EcSecret, EcCompressed, \
     EcUncompressed, EcSignature
 from libbitcoin.bc.error import ConsoleResult, Error
 from libbitcoin.bc.dictionary import Dictionary
+from libbitcoin.bc.header import Header, HeaderList
 from libbitcoin.bc.hash import HashDigest, HalfHash, QuarterHash, LongHash, \
     ShortHash, MiniHash, null_hash, bitcoin_hash
 from libbitcoin.bc.hd_public import hd_first_hardened_key, HdPublic
