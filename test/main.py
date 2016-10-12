@@ -1,4 +1,5 @@
 import chain.header
+import chain.satoshi_words
 import chain.script
 import chain.transaction
 import math_.elliptic_curve

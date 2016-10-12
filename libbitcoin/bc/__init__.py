@@ -1,6 +1,7 @@
 from libbitcoin.bc._bc import ffi
 from libbitcoin.bc.base_10 import btc_decimal_places, mbtc_decimal_places, \
     ubtc_decimal_places, decode_base10, encode_base10
+from libbitcoin.bc.block import Block
 from libbitcoin.bc.constants import max_input_sequence, locktime_threshold
 from libbitcoin.bc.crypto import AesSecret, AesBlock, aes256_key_size, \
     aes256_block_size, aes256_encrypt, aes256_decrypt
@@ -30,7 +31,7 @@ from libbitcoin.bc.script import SignatureHashAlgorithm, ScriptParseMode, \
     Script
 from libbitcoin.bc.script_number import ScriptNumber
 from libbitcoin.bc.string import String, StringList
-from libbitcoin.bc.transaction import Transaction
+from libbitcoin.bc.transaction import Transaction, TransactionList
 from libbitcoin.bc.version import libbitcoin_version, \
     libbitcoin_major_version, libbitcoin_minor_version, \
     libbitcoin_patch_version

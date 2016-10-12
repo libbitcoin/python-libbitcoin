@@ -4,6 +4,7 @@ from libbitcoin.bc.hash import HashDigest
 from libbitcoin.bc.input import InputList
 from libbitcoin.bc.output import OutputList
 from libbitcoin.bc.string import String
+from libbitcoin.bc.vector import VectorMeta, VectorBase
 
 class Transaction:
 
@@ -22,7 +23,13 @@ class Transaction:
         return cls(obj)
 
     def __del__(self):
+        self._delete_object()
+
+    def _delete_object(self):
         lib.bc_destroy_transaction(self._obj)
+
+    def disable_object_deleter(self):
+        self._delete_object = lambda: None
 
     def to_data(self, satoshi=True):
         if satoshi:
@@ -83,4 +90,8 @@ class Transaction:
         return OutputList(obj)
     def set_outputs(self, outputs):
         lib.bc_transaction__set_outputs(self._obj, outputs._obj)
+
+class TransactionList(VectorBase, metaclass=VectorMeta):
+    bc_name = "transaction_list"
+    item_type = Transaction
 

@@ -1,4 +1,4 @@
-from libbitcoin.bc.config import ffi, lib
+from libbitcoin.bc.config import lib
 from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.byte_array import ByteArrayBase, ByteArrayMeta
 
