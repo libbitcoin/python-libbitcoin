@@ -1,6 +1,8 @@
 from libbitcoin.bc.config import lib
 from libbitcoin.bc.data import DataChunk
+from libbitcoin.bc.hash import HashDigest
 from libbitcoin.bc.input import InputList
+from libbitcoin.bc.output import OutputList
 from libbitcoin.bc.string import String
 
 class Transaction:
@@ -22,6 +24,13 @@ class Transaction:
     def __del__(self):
         lib.bc_destroy_transaction(self._obj)
 
+    def to_data(self, satoshi=True):
+        if satoshi:
+            obj = lib.bc_transaction__to_data(self._obj)
+        else:
+            obj = lib.bc_transaction__to_data_nosatoshi(self._obj)
+        return DataChunk(obj).data
+
     def to_string(self, flags):
         obj = lib.bc_transaction__to_string(self._obj, flags)
         return str(String(obj))
@@ -42,6 +51,20 @@ class Transaction:
     def is_locktime_conflict(self):
         return lib.bc_transaction__is_locktime_conflict(self._obj) == 1
 
+    def serialized_size(self):
+        return lib.bc_transaction__serialized_size(self._obj)
+
+    def total_output_value(self):
+        return lib.bc_transaction__total_output_value(self._obj)
+
+    def hash(self, sighash_type=None):
+        if sighash_type is None:
+            obj = lib.bc_transaction__hash(self._obj)
+        else:
+            obj = lib.bc_transaction__hash_Sighash(self._obj,
+                                                   sighash_type.value)
+        return HashDigest(obj)
+
     @property
     def locktime(self):
         return lib.bc_transaction__locktime(self._obj)
@@ -54,4 +77,10 @@ class Transaction:
         return InputList(obj)
     def set_inputs(self, inputs):
         lib.bc_transaction__set_inputs(self._obj, inputs._obj)
+
+    def copy_outputs(self):
+        obj = lib.bc_transaction__outputs(self._obj)
+        return OutputList(obj)
+    def set_outputs(self, outputs):
+        lib.bc_transaction__set_outputs(self._obj, outputs._obj)
 
