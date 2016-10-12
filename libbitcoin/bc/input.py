@@ -47,10 +47,12 @@ class Input:
     def set_previous_output(self, previous_output):
         lib.bc_input__set_previous_output(self._obj, previous_output._obj)
 
-    def copy_script(self):
+    @property
+    def script(self):
         obj = lib.bc_input__script(self._obj)
         return Script(obj)
-    def set_script(self, script):
+    @script.setter
+    def script(self, script):
         lib.bc_input__set_script(self._obj, script._obj)
 
     @property

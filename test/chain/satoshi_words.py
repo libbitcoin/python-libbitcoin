@@ -16,7 +16,7 @@ def satoshi_words_mainnet():
     coinbase_input = coinbase_tx.copy_inputs()[0]
 
     # Convert the input script to its raw format.
-    raw_message = coinbase_input.copy_script().to_data(False)
+    raw_message = coinbase_input.script.to_data(False)
 
     # Convert to a string after removing the 8 byte checksum.
     assert len(raw_message) >= 8

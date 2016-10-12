@@ -138,10 +138,10 @@ def new_tx(test):
         return tx
 
     input = bc.Input()
-    input.set_script(input_script)
+    input.script = input_script
 
     cache = bc.Output()
-    cache.set_script(output_script)
+    cache.script = output_script
     prevout = bc.OutputPoint()
     prevout.set_cache(cache)
     input.set_previous_output(prevout)
