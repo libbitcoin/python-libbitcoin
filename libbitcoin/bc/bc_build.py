@@ -39,6 +39,7 @@ cdef += bc_macros.vector("output_list", "bc_output_t")
 cdef += bc_macros.vector("input_list", "bc_input_t")
 cdef += bc_macros.vector("transaction_list", "bc_transaction_t")
 cdef += bc_macros.vector("header_list", "bc_header_t")
+cdef += bc_macros.vector("chain_point_list", "bc_point_t")
 
 ffibuilder = FFI()
 ffibuilder.set_source("_bc", None)
