@@ -41,10 +41,12 @@ class Input:
     def serialized_size(self):
         return lib.bc_input__serialized_size(self._obj)
 
-    def copy_previous_output(self):
+    @property
+    def previous_output(self):
         obj = lib.bc_input__previous_output(self._obj)
         return OutputPoint(obj)
-    def set_previous_output(self, previous_output):
+    @previous_output.setter
+    def previous_output(self, previous_output):
         lib.bc_input__set_previous_output(self._obj, previous_output._obj)
 
     @property

@@ -139,12 +139,7 @@ def new_tx(test):
 
     input = bc.Input()
     input.script = input_script
-
-    cache = bc.Output()
-    cache.script = output_script
-    prevout = bc.OutputPoint()
-    prevout.set_cache(cache)
-    input.set_previous_output(prevout)
+    input.previous_output.cache.script = output_script
 
     inputs = bc.InputList()
     inputs.append(input)

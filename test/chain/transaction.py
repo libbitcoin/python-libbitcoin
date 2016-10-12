@@ -8,8 +8,8 @@ def is_coinbase_returns_true():
     instance = bc.Transaction()
     inputs = instance.copy_inputs()
     input = bc.Input()
-    prevout = bc.OutputPoint.from_tuple(bc.null_hash, bc.max_input_sequence)
-    input.set_previous_output(prevout)
+    input.previous_output = bc.OutputPoint.from_tuple(bc.null_hash,
+                                                      bc.max_input_sequence)
     inputs.append(input)
     instance.set_inputs(inputs)
     assert instance.is_coinbase()
