@@ -42,6 +42,8 @@ class VectorBase:
         self.bc_destroy_vector(self._obj)
 
     def __getitem__(self, pos):
+        if pos >= len(self):
+            raise IndexError("vector index out of range")
         obj = self.bc_vector__at(self._obj, pos)
         result = self.item_type(obj)
         result.disable_object_deleter()
