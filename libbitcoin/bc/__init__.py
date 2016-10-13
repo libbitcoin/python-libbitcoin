@@ -25,11 +25,12 @@ from libbitcoin.bc.opcode import Opcode, RuleFork, within_op_n, decode_op_n, \
     data_to_opcode, string_to_opcode, opcode_to_string
 from libbitcoin.bc.operation import Operation, OperationStack
 from libbitcoin.bc.output import Output
-from libbitcoin.bc.output_point import OutputPoint
+from libbitcoin.bc.output_point import OutputPoint, OutputInfo, OutputInfoList
 from libbitcoin.bc.payment_address import PaymentAddress
 from libbitcoin.bc.script import SignatureHashAlgorithm, ScriptParseMode, \
     Script
 from libbitcoin.bc.script_number import ScriptNumber
+from libbitcoin.bc.select_outputs import select_outputs
 from libbitcoin.bc.string import String, StringList
 from libbitcoin.bc.transaction import Transaction, TransactionList
 from libbitcoin.bc.version import libbitcoin_version, \
