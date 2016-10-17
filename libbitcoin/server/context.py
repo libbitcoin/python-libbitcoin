@@ -66,8 +66,8 @@ class TornadoContext(Context):
             make_zmq_context=zmq.asyncio.Context
         )
 
-    def spawn(self, callback):
-        return IOLoop.current().spawn_callback(callback)
+    def spawn(self, callback, *args, **kwargs):
+        return IOLoop.current().spawn_callback(callback, *args, **kwargs)
 
     # Tornado prefers them uncalled.
     def start(self):
