@@ -8,12 +8,20 @@ asyncio.set_event_loop(loop)
 import libbitcoin.server
 context = libbitcoin.server.Context()
 
+tor_enabled = False
+
 async def main():
+    if tor_enabled:
+        url = "fimtbqblemvbavxf.onion:30000"
+    else:
+        url = "tcp://gateway.unsystem.net:9091"
+
     client_settings = libbitcoin.server.ClientSettings()
     client_settings.query_expire_time = None
+    if tor_enabled:
+        client_settings.socks5 = "127.0.0.1:9050"
 
-    client = context.Client("tcp://gateway.unsystem.net:9091",
-                            settings=client_settings)
+    client = context.Client(url, settings=client_settings)
 
     ec, height = await client.last_height()
     if ec:

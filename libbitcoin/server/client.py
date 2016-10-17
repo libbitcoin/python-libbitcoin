@@ -48,6 +48,17 @@ class ClientSettings:
     def __init__(self):
         self._renew_time = 5 * 60
         self._query_expire_time = None
+        self._socks5 = None
+
+    @property
+    def renew_time(self):
+        """The renew time for address or stealth subscriptions.
+        This number should be lower than the setting for the blockchain
+        server. A good value is server_renew_time / 2"""
+        return self._renew_time
+    @renew_time.setter
+    def renew_time(self, renew_time):
+        self._renew_time = renew_time
 
     @property
     def query_expire_time(self):
@@ -60,14 +71,12 @@ class ClientSettings:
         self._query_expire_time = query_expire_time
 
     @property
-    def renew_time(self):
-        """The renew time for address or stealth subscriptions.
-        This number should be lower than the setting for the blockchain
-        server. A good value is server_renew_time / 2"""
-        return self._renew_time
-    @renew_time.setter
-    def renew_time(self, renew_time):
-        self._renew_time = renew_time
+    def socks5(self):
+        """Enable SOCKS5."""
+        return self._socks5
+    @socks5.setter
+    def socks5(self, socks5):
+        self._socks5 = socks5
 
 class Client:
 
@@ -81,6 +90,9 @@ class Client:
 
     def _setup_socket(self):
         self._socket = self._context.zmq_context.socket(zmq.DEALER)
+        if self.settings.socks5:
+            socks5 = bytes(self.settings.socks5, "ascii")
+            self._socket.setsockopt(zmq.SOCKS_PROXY, socks5)
         self._socket.connect(self._address)
         self._context.poller.register(self._socket)
         self._context.poller.add_handler(b"address.update", self._on_update)
