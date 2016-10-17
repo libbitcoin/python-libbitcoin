@@ -1,8 +1,5 @@
 #!/usr/bin/python3
-import tornado.ioloop
 import tornado.web
-from zmq.eventloop.ioloop import IOLoop
-
 import libbitcoin.server
 
 # Debug stuff
@@ -12,9 +9,6 @@ logging.basicConfig(level=logging.DEBUG)
 class MainHandler(tornado.web.RequestHandler):
     def initialize(self, client):
         self._client = client
-
-    def get(self):
-        loop.add_callback(foo)
 
     async def get(self):
         ec, height = await self._client.last_height()
@@ -33,7 +27,5 @@ if __name__ == "__main__":
     context = libbitcoin.server.TornadoContext()
     app = make_app(context)
     app.listen(8888)
-    loop = IOLoop.current()
-    context.start(loop)
-    loop.start()
+    context.start()
 
