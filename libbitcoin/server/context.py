@@ -76,6 +76,10 @@ class TornadoContext(Context):
         loop.spawn_callback(self.scheduler.run)
         loop.start()
 
+    def stop(self):
+        loop = IOLoop.current()
+        self.spawn(loop.stop)
+
     @property
     def loop(self):
         return IOLoop.current()
