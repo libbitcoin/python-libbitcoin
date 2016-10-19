@@ -4,6 +4,7 @@ typedef struct bc_ec_secret_t bc_ec_secret_t;
 
 typedef struct bc_hd_private_t bc_hd_private_t;
 uint64_t bc_hd_private__mainnet();
+uint64_t bc_hd_private__testnet();
 uint32_t bc_hd_private__to_prefix(uint64_t prefixes);
 uint64_t bc_hd_private__to_prefixes(
     uint32_t private_prefix, uint32_t public_prefix);

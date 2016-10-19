@@ -7,6 +7,7 @@ from libbitcoin.bc.string import String
 class HdPrivate:
 
     mainnet = lib.bc_hd_private__mainnet()
+    testnet = lib.bc_hd_private__testnet()
 
     def __init__(self, obj=None):
         if obj is None:

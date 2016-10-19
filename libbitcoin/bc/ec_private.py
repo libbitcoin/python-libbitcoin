@@ -2,6 +2,9 @@ from libbitcoin.bc.config import ffi, lib
 
 class EcPrivate:
 
+    mainnet = lib.bc_ec_private__mainnet()
+    testnet = lib.bc_ec_private__testnet()
+
     def __init__(self, obj=None):
         if obj is None:
             obj = lib.bc_create_ec_private()

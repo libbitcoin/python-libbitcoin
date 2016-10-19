@@ -18,6 +18,7 @@ typedef struct bc_ec_private_t bc_ec_private_t;
 uint8_t bc_ec_private__wif();
 uint8_t bc_ec_private__mainnet_p2kh();
 uint16_t bc_ec_private__mainnet();
+uint16_t bc_ec_private__testnet();
 uint8_t bc_ec_private__compressed_sentinel();
 
 /// Static functions
