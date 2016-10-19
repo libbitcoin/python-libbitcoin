@@ -89,5 +89,5 @@ class PaymentAddress:
         return self.encoded()
 
     def __repr__(self):
-        return "<bc_payment_address '%s'>" % self.encode()
+        return "<bc_payment_address '%s'>" % self.encoded()
 
