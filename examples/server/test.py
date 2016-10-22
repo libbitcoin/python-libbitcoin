@@ -8,6 +8,7 @@ def create_random_id():
     return random.randint(0, MAX_UINT32)
 
 url = "tcp://gateway.unsystem.net:9091"
+url = "tcp://5.135.30.59:9091"
 
 c = zmq.Context()
 

@@ -10,9 +10,11 @@ import libbitcoin.server
 context = libbitcoin.server.Context()
 
 async def main():
-    client = context.Client("tcp://gateway.unsystem.net:9091")
+    #client = context.Client("tcp://gateway.unsystem.net:9091")
+    #address = "13ejSKUxLT9yByyr1bsLNseLbx9H9tNj2d"
 
-    address = "13ejSKUxLT9yByyr1bsLNseLbx9H9tNj2d"
+    client = context.Client("tcp://5.135.30.59:9091")
+    address = "n4jGZ9Muei977BUCGeKyUG2qnNgCLSC1Rp"
 
     ec, history = await client.history(address)
     if ec:
