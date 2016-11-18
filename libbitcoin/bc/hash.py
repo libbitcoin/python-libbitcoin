@@ -56,7 +56,7 @@ class HashBase:
         return self.bc_hash__equals(self._obj, other._obj) == 1
 
     def __str__(self):
-        return self.data.hex()
+        return self.data[::-1].hex()
 
     def __repr__(self):
         return "<bc_%s '%s'>" % (self.bc_name, str(self))
