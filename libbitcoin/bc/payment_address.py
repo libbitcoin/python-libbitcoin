@@ -22,6 +22,18 @@ class PaymentAddress:
         return lib.bc_create_payment_address_String(address)
 
     @classmethod
+    def extract(cls, script, p2kh_version=None, p2sh_version=None):
+        if p2kh_version is None and p2sh_version is None:
+            obj = lib.bc_payment_address__extract(script._obj)
+        elif p2kh_version is not None and p2sh_version is None:
+            obj = lib.bc_payment_address__extract_Version(
+                script._obj, p2kh_version)
+        else:
+            obj = lib.bc_payment_address__extract_Options(
+                script._obj, p2kh_version, p2sh_version)
+        return cls(obj)
+
+    @classmethod
     def from_string(cls, address):
         return cls(PaymentAddress._string_init_obj(address))
 

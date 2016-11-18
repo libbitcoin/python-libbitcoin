@@ -15,6 +15,8 @@ uint8_t bc_payment_address__mainnet_p2sh();
 /// supported or the script is itself invalid.
 bc_payment_address_t* bc_payment_address__extract(
     const bc_script_t* script);
+bc_payment_address_t* bc_payment_address__extract_Version(
+    const bc_script_t* script, uint8_t p2kh_version);
 bc_payment_address_t* bc_payment_address__extract_Options(
     const bc_script_t* script, uint8_t p2kh_version, uint8_t p2sh_version);
 
