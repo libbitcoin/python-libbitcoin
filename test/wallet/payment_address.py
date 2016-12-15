@@ -2,7 +2,7 @@ from libbitcoin import bc
 
 # $ bx base16-encode "Satoshi" | bx sha256
 SECRET = "002688cc350a5333a87fa622eacec626c3d1c0ebf9f3793de3885fa254d7e393"
-SCRIPT = "dup hash160 [ 18c0bd8d1818f1bf99cb1df2269c645318ef7b73 ] equalverify checksig"
+SCRIPT = "dup hash160 [18c0bd8d1818f1bf99cb1df2269c645318ef7b73] equalverify checksig"
 
 # $ bx base16-encode "Satoshi" | bx sha256 | bx ec-to-public
 COMPRESSED = "03d24123978d696a6c964f2dcb1d1e000d4150102fbbcc37f020401e35fb4cb745"

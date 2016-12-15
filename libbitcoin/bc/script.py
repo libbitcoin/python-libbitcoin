@@ -3,23 +3,18 @@ from libbitcoin.bc.config import ffi, lib
 from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.error import ErrorCode
 from libbitcoin.bc.hash import HashDigest
-from libbitcoin.bc.operation import OperationStack
+from libbitcoin.bc.operation import OperationList
 from libbitcoin.bc.string import String
 
 class SignatureHashAlgorithm(Enum):
-    all = lib.bc_signature_hash_algorithm__all
-    none = lib.bc_signature_hash_algorithm__none
-    single = lib.bc_signature_hash_algorithm__single
-    anyone_can_pay = lib.bc_signature_hash_algorithm__anyone_can_pay
-    all_anyone_can_pay = lib.bc_signature_hash_algorithm__all_anyone_can_pay
-    none_anyone_can_pay = lib.bc_signature_hash_algorithm__none_anyone_can_pay
-    single_anyone_can_pay = lib.bc_signature_hash_algorithm__single_anyone_can_pay
-    mask = lib.bc_signature_hash_algorithm__mask
-
-class ScriptParseMode(Enum):
-    strict = lib.bc_script_parse_mode__strict
-    raw_data = lib.bc_script_parse_mode__raw_data
-    raw_data_fallback = lib.bc_script_parse_mode__raw_data_fallback
+    all = lib.bc_sighash_algorithm__all
+    none = lib.bc_sighash_algorithm__none
+    single = lib.bc_sighash_algorithm__single
+    anyone_can_pay = lib.bc_sighash_algorithm__anyone_can_pay
+    all_anyone_can_pay = lib.bc_sighash_algorithm__all_anyone_can_pay
+    none_anyone_can_pay = lib.bc_sighash_algorithm__none_anyone_can_pay
+    single_anyone_can_pay = lib.bc_sighash_algorithm__single_anyone_can_pay
+    mask = lib.bc_sighash_algorithm__mask
 
 class Script:
 
@@ -91,7 +86,7 @@ class Script:
     @property
     def operations(self):
         obj = lib.bc_script__operations(self._obj)
-        return OperationStack(obj)
+        return OperationList(obj)
     @operations.setter
     def operations(self, ops):
         lib.bc_script__set_operations(self._obj, ops._obj)

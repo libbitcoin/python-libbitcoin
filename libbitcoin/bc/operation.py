@@ -53,7 +53,7 @@ class Operation:
     def __repr__(self):
         return "<bc_operation (%s, %s)>" % (self.code.name, self.data.hex())
 
-class OperationStack(VectorBase, metaclass=VectorMeta):
-    bc_name = "operation_stack"
+class OperationList(VectorBase, metaclass=VectorMeta):
+    bc_name = "operation_list"
     item_type = Operation
 
