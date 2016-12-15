@@ -2,7 +2,7 @@ from libbitcoin import bc
 
 def from_data_fails():
     data = b"0" * 10
-    header = bc.Header.from_data(data, False)
+    header = bc.Header.from_data(data)
     assert not header.is_valid()
 
 def roundtrip_to_data_factory_from_data_chunk():
@@ -15,9 +15,9 @@ def roundtrip_to_data_factory_from_data_chunk():
         68644
     ])
 
-    data = expected.to_data(False)
+    data = expected.to_data()
 
-    result = bc.Header.from_data(data, False)
+    result = bc.Header.from_data(data)
 
     assert result.is_valid()
     assert expected == result

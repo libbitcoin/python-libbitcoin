@@ -20,18 +20,13 @@ class Header:
             values[2]._obj,     # merkle
             values[3],          # timestamp
             values[4],          # bits
-            values[5],          # nonce
-            values[6])          # transaction count
+            values[5])          # nonce
         return cls(obj)
 
     @classmethod
-    def from_data(cls, data, transaction_count=True):
+    def from_data(cls, data):
         data = DataChunk(data)
-        if transaction_count:
-            obj = lib.bc_header__factory_from_data(data._obj)
-        else:
-            obj = lib.bc_header__factory_from_data_without_transaction_count(
-                data._obj)
+        obj = lib.bc_header__factory_from_data(data._obj)
         return cls(obj)
 
     def __del__(self):
@@ -46,11 +41,8 @@ class Header:
     def __eq__(self, other):
         return lib.bc_header__equals(self._obj, other._obj) == 1
 
-    def to_data(self, transaction_count=True):
-        if transaction_count:
-            obj = lib.bc_header__to_data(self._obj)
-        else:
-            obj = lib.bc_header__to_data_without_transaction_count(self._obj)
+    def to_data(self):
+        obj = lib.bc_header__to_data(self._obj)
         return DataChunk(obj).data
 
     def is_valid(self):

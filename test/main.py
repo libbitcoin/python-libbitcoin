@@ -1,4 +1,4 @@
-#import chain.header
+import chain.header
 #import chain.input
 #import chain.output
 import chain.satoshi_words
