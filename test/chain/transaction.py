@@ -9,7 +9,7 @@ def is_coinbase_returns_true():
     input = bc.Input()
     input.previous_output = bc.OutputPoint.from_tuple(bc.null_hash,
                                                       bc.max_input_sequence)
-    instance.inputs.append(input)
+    instance.set_inputs([input])
     assert instance.is_coinbase()
 
 def is_final_locktime_zero_returns_true():
@@ -40,7 +40,7 @@ def is_final_locktime_input_not_final_returns_false():
     instance.locktime = 101
     input = bc.Input()
     input.sequence = 1
-    instance.inputs.append(input)
+    instance.set_inputs([input])
     assert not instance.is_final(height, time)
 
 def is_final_locktime_inputs_final_returns_true():
@@ -50,7 +50,7 @@ def is_final_locktime_inputs_final_returns_true():
     instance.locktime = 101
     input = bc.Input()
     input.sequence = bc.max_input_sequence
-    instance.inputs.append(input)
+    instance.set_inputs([input])
     assert instance.is_final(height, time)
 
 def is_locktime_conflict_locktime_zero_returns_false():
@@ -63,7 +63,7 @@ def is_locktime_conflict_input_sequence_not_maximum_returns_false():
     instance.locktime = 2143
     input = bc.Input()
     input.sequence = 1
-    instance.inputs.append(input)
+    instance.set_inputs([input])
     assert not instance.is_locktime_conflict()
 
 def is_locktime_conflict_no_inputs_returns_true():
@@ -76,7 +76,7 @@ def is_locktime_conflict_input_max_sequence_returns_true():
     instance.locktime = 2143
     input = bc.Input()
     input.sequence = bc.max_input_sequence
-    instance.inputs.append(input)
+    instance.set_inputs([input])
     assert instance.is_locktime_conflict()
 
 def total_output_value_returns_zero():
@@ -86,12 +86,17 @@ def total_output_value_returns_zero():
 def total_output_value_returns_positive():
     expected = 1234
     instance = bc.Transaction()
+
+    outputs = []
     output = bc.Output()
     output.value = 1200
-    instance.outputs.append(output)
+    outputs.append(output)
+
     output = bc.Output()
     output.value = 34
-    instance.outputs.append(output)
+    outputs.append(output)
+
+    instance.set_outputs(outputs)
     assert instance.total_output_value() == expected
 
 def from_data_fails():

@@ -11,8 +11,8 @@ def satoshi_words_mainnet():
     coinbase_tx = block.transactions[0]
 
     # Coinbase tx has a single input.
-    assert len(coinbase_tx.inputs) == 1
-    coinbase_input = coinbase_tx.inputs[0]
+    assert len(coinbase_tx.inputs()) == 1
+    coinbase_input = coinbase_tx.inputs()[0]
 
     # Convert the input script to its raw format.
     raw_message = coinbase_input.script.to_data(False)
