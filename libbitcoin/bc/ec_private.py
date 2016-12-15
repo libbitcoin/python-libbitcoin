@@ -24,3 +24,8 @@ class EcPrivate:
     def __del__(self):
         lib.bc_destroy_ec_private(self._obj)
 
+    def to_payment_address(self):
+        from libbitcoin.bc.payment_address import PaymentAddress
+        obj = lib.bc_ec_private__to_payment_address(self._obj)
+        return PaymentAddress(obj)
+

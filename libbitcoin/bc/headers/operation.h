@@ -5,51 +5,93 @@ typedef struct bc_short_hash_t bc_short_hash_t;
 
 typedef struct bc_operation_t bc_operation_t;
 
-size_t bc_operation__max_null_data_size();
-bc_operation_t* bc_operation__factory_from_data(const bc_data_chunk_t* data);
-bool bc_operation__is_push_only(const bc_operation_stack_t* operations);
-/// unspendable pattern (standard)
-bool bc_operation__is_null_data_pattern(const bc_operation_stack_t* ops);
-/// payment script patterns (standard)
-bool bc_operation__is_pay_multisig_pattern(const bc_operation_stack_t* ops);
-bool bc_operation__is_public_key_pattern(const bc_operation_stack_t* ops);
-bool bc_operation__is_pay_key_hash_pattern(const bc_operation_stack_t* ops);
-bool bc_operation__is_pay_script_hash_pattern(const bc_operation_stack_t* ops);
-/// signature script patterns (standard)
-bool bc_operation__is_sign_multisig_pattern(const bc_operation_stack_t* ops);
-bool bc_operation__is_sign_public_key_pattern(const bc_operation_stack_t* ops);
-bool bc_operation__is_sign_key_hash_pattern(const bc_operation_stack_t* ops);
-bool bc_operation__is_sign_script_hash_pattern(const bc_operation_stack_t* ops);
-/// stack factories
-bc_operation_stack_t* bc_operation__to_null_data_pattern(
-    const bc_data_chunk_t* data);
-bc_operation_stack_t* bc_operation__to_pay_multisig_pattern_PointList(
-    uint8_t signatures,
-    const bc_point_list_t* points);
-bc_operation_stack_t* bc_operation__to_pay_multisig_pattern(
-    uint8_t signatures,
-    const bc_data_stack_t* points);
-bc_operation_stack_t* bc_operation__to_pay_public_key_pattern(
-    const bc_data_chunk_t* point);
-bc_operation_stack_t* bc_operation_to_pay_key_hash_pattern(
-    const bc_short_hash_t* hash);
-bc_operation_stack_t* bc_operation__to_pay_script_hash_pattern(
-    const bc_short_hash_t* hash);
-
+// Constructors.
+//-------------------------------------------------------------------------
 bc_operation_t* bc_create_operation();
+bc_operation_t* bc_create_operation_copy(const bc_operation_t* other);
+bc_operation_t* bc_create_operation_Data(const bc_data_chunk_t* uncoded);
+bc_operation_t* bc_create_operation_Data_nominimal(
+    const bc_data_chunk_t* uncoded);
+bc_operation_t* bc_create_operation_Opcode(bc_opcode_t code);
+
+// Destructor.
+//-------------------------------------------------------------------------
 void bc_destroy_operation(bc_operation_t* self);
 
-// Class members
-bool bc_operation__from_data(bc_operation_t* self, const bc_data_chunk_t* data);
-bc_data_chunk_t* bc_operation__to_data(const bc_operation_t* self);
-bc_string_t* bc_operation__to_string(
-    const bc_operation_t* self, uint32_t flags);
-bool bc_operation__is_valid(const bc_operation_t* self);
-void bc_operation__reset(bc_operation_t* self);
-uint64_t bc_operation__serialized_size(const bc_operation_t* self);
+// Operators.
+//-------------------------------------------------------------------------
+void bc_operation__copy(bc_operation_t* self, const bc_operation_t* other);
 
+bool bc_operation__equals(
+    const bc_operation_t* self, const bc_operation_t* other);
+bool bc_operation__not_equals(
+    const bc_operation_t* self, const bc_operation_t* other);
+
+// Deserialization.
+//-------------------------------------------------------------------------
+bc_operation_t* bc_operation__factory_from_data(const bc_data_chunk_t* encoded);
+
+bool bc_operation__from_data(bc_operation_t* self,
+    const bc_data_chunk_t* encoded);
+
+bool bc_operation__from_string(bc_operation_t* self, const char* mnemonic);
+
+bool bc_operation__is_valid(const bc_operation_t* self);
+
+// Serialization.
+//-------------------------------------------------------------------------
+bc_data_chunk_t* bc_operation__to_data(const bc_operation_t* self);
+
+bc_string_t* bc_operation__to_string(
+    const bc_operation_t* self, uint32_t active_forks);
+
+// Properties (size, accessors, cache).
+//-------------------------------------------------------------------------
+
+size_t bc_operation__serialized_size(const bc_operation_t* self);
+
+/// Get the op code [0..255], if is_valid is consistent with data.
 bc_opcode_t bc_operation__code(const bc_operation_t* self);
-void bc_operation__set_code(bc_operation_t* self, bc_opcode_t code);
+
+/// Get the data, empty if not a push code or if invalid.
 bc_data_chunk_t* bc_operation__data(const bc_operation_t* self);
-void bc_operation__set_data(bc_operation_t* self, bc_data_chunk_t* data);
+
+// Utilities.
+//-------------------------------------------------------------------------
+
+/// Compute the minimal data opcode based on size alone.
+bc_opcode_t bc_operation__opcode_from_size(size_t size);
+
+/// Compute the minimal data opcode for a given chunk of data.
+/// If a numeric code is used then corresponding data must be set to empty.
+bc_opcode_t bc_operation__opcode_from_data(const bc_data_chunk_t* data);
+
+/// Convert the [1..16] value to the corresponding opcode (or undefined).
+bc_opcode_t bc_operation__opcode_from_positive(uint8_t value);
+
+/// Convert the opcode to the corresponding [1..16] value (or undefined).
+uint8_t bc_operation__opcode_to_positive(bc_opcode_t code);
+
+/// Categories of opcodes.
+bool bc_operation__is_push_Static(bc_opcode_t code);
+bool bc_operation__is_counted_Static(bc_opcode_t code);
+bool bc_operation__is_numeric_Static(bc_opcode_t code);
+bool bc_operation__is_positive_Static(bc_opcode_t code);
+bool bc_operation__is_disabled_Static(bc_opcode_t code);
+bool bc_operation__is_conditional_Static(bc_opcode_t code);
+bool bc_operation__is_relaxed_push_Static(bc_opcode_t code);
+
+// Validation.
+//-------------------------------------------------------------------------
+
+/// Categories of opcodes.
+bool bc_operation__is_push(const bc_operation_t* self);
+bool bc_operation__is_counted(const bc_operation_t* self);
+bool bc_operation__is_positive(const bc_operation_t* self);
+bool bc_operation__is_disabled(const bc_operation_t* self);
+bool bc_operation__is_conditional(const bc_operation_t* self);
+bool bc_operation__is_relaxed_push(const bc_operation_t* self);
+
+/// Validate the data against the code.
+bool bc_operation__is_oversized(const bc_operation_t* self);
 

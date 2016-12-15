@@ -17,34 +17,50 @@ uint8_t bc_byte_bits();
 
 uint32_t bc_no_previous_output();
 uint32_t bc_max_input_sequence();
+uint64_t bc_sighash_null_value();
 
-// Various consensus constants.
+// Script/interpreter constants.
+//-----------------------------------------------------------------------------
+
+size_t bc_max_number_size();
+size_t bc_max_cltv_number_size();
+size_t bc_max_counted_ops();
+size_t bc_max_stack_size();
+size_t bc_max_script_size();
+size_t bc_max_push_data_size();
+size_t bc_max_script_public_key_count();
+size_t bc_multisig_default_sigops();
+
+// This is policy, not consensus.
+size_t bc_max_null_data_size();
+
+// Various validation constants.
 //-----------------------------------------------------------------------------
 
 size_t bc_min_coinbase_size();
 size_t bc_max_coinbase_size();
-size_t bc_median_time_past_blocks();
+size_t bc_median_time_past_interval();
 size_t bc_max_block_size();
 size_t bc_max_block_sigops();
-size_t bc_reward_interval();
 size_t bc_coinbase_maturity();
 size_t bc_time_stamp_future_hours();
-size_t bc_max_work_bits();
 size_t bc_locktime_threshold();
 
 // Timespan constants.
 //-----------------------------------------------------------------------------
 
-size_t bc_retargeting_factor();
-size_t bc_target_spacing_seconds();
-size_t bc_target_timespan_seconds();
+uint32_t bc_proof_of_work_limit();
+uint32_t bc_retargeting_factor();
+uint32_t bc_target_spacing_seconds();
+uint32_t bc_double_spacing_seconds();
+uint32_t bc_target_timespan_seconds();
+
+// The upper and lower bounds for the retargeting timespan.
+uint32_t bc_min_timespan();
+uint32_t bc_max_timespan();
 
 // The target number of blocks for 2 weeks of work (2016 blocks).
 size_t bc_retargeting_interval();
-
-// The upper and lower bounds for the retargeting timespan.
-size_t bc_timespan_lower_bound();
-size_t bc_timespan_upper_bound();
 
 // Fork constants.
 //-----------------------------------------------------------------------------
@@ -65,16 +81,9 @@ size_t bc_mainnet_active();
 size_t bc_mainnet_enforce();
 size_t bc_mainnet_sample();
 
-// Block 173805 is the first mainnet block after date-based activation.
 // Block 514 is the first testnet block after date-based activation.
-size_t bc_mainnet_bip16_activation_height();
-size_t bc_testnet_bip16_activation_height();
-
-// github.com/bitcoin/bips/blob/master/bip-0030.mediawiki#specification
-size_t bc_mainnet_bip30_exception_height1();
-size_t bc_mainnet_bip30_exception_height2();
-size_t bc_testnet_bip30_exception_height1();
-size_t bc_testnet_bip30_exception_height2();
+// Block 173805 is the first mainnet block after date-based activation.
+uint32_t bc_bip16_activation_time();
 
 // Network protocol constants.
 //-----------------------------------------------------------------------------
@@ -82,11 +91,23 @@ size_t bc_testnet_bip30_exception_height2();
 size_t bc_command_size();
 size_t bc_max_inventory_count();
 
+/// Variable integer prefix sentinels.
+uint8_t bc_varint_two_bytes();
+uint8_t bc_varint_four_bytes();
+uint8_t bc_varint_eight_bytes();
+
+// String padding sentinel.
+uint8_t bc_string_terminator();
+
 // Currency unit constants (uint64_t).
 //-----------------------------------------------------------------------------
 
-uint64_t bc_initial_block_reward();
 uint64_t bc_satoshi_per_bitcoin();
 
+uint64_t bc_initial_block_reward_bitcoin();
+uint64_t bc_initial_block_reward_satoshi();
+
+uint64_t bc_reward_interval();
+uint64_t bc_recursive_money();
 uint64_t bc_max_money();
 

@@ -16,7 +16,7 @@ async def main():
     else:
         url = "tcp://gateway.unsystem.net:9091"
         # Testnet URL
-        url = "tcp://5.135.30.59:9091"
+        url = "tcp://163.172.84.141:9091"
 
     client_settings = libbitcoin.server.ClientSettings()
     client_settings.query_expire_time = None

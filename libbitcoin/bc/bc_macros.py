@@ -53,3 +53,19 @@ def vector(typename, itemtype):
     void bc_TYPENAME__resize(bc_TYPENAME_t* self, size_t count);
     """.replace("TYPENAME", typename).replace("ITEMTYPE", itemtype)
 
+def int_vector(typename, itemtype):
+    return """
+    typedef struct bc_TYPENAME_t bc_TYPENAME_t;
+    bc_TYPENAME_t* bc_create_TYPENAME();
+    void bc_destroy_TYPENAME(bc_TYPENAME_t* self);
+    ITEMTYPE bc_TYPENAME__at(bc_TYPENAME_t* self, size_t pos);
+    size_t bc_TYPENAME__size(const bc_TYPENAME_t* self);
+    bool bc_TYPENAME__empty(const bc_TYPENAME_t* self);
+    void bc_TYPENAME__clear(bc_TYPENAME_t* self);
+    void bc_TYPENAME__erase(bc_TYPENAME_t* self, size_t pos);
+    void bc_TYPENAME__insert(bc_TYPENAME_t* self,
+        size_t pos, ITEMTYPE obj);
+    void bc_TYPENAME__push_back(bc_TYPENAME_t* self, ITEMTYPE obj);
+    void bc_TYPENAME__resize(bc_TYPENAME_t* self, size_t count);
+    """.replace("TYPENAME", typename).replace("ITEMTYPE", itemtype)
+

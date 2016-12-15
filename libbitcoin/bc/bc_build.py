@@ -33,13 +33,16 @@ cdef += bc_macros.hash_type("short_hash")
 cdef += bc_macros.hash_type("mini_hash")
 
 cdef += bc_macros.vector("string_list", "bc_string_t")
-cdef += bc_macros.vector("operation_stack", "bc_operation_t")
+cdef += bc_macros.vector("operation_list", "bc_operation_t")
 cdef += bc_macros.vector("output_info_list", "bc_output_info_t")
 cdef += bc_macros.vector("output_list", "bc_output_t")
 cdef += bc_macros.vector("input_list", "bc_input_t")
 cdef += bc_macros.vector("transaction_list", "bc_transaction_t")
 cdef += bc_macros.vector("header_list", "bc_header_t")
 cdef += bc_macros.vector("chain_point_list", "bc_point_t")
+
+cdef += bc_macros.int_vector("block_indexes", "size_t")
+cdef += bc_macros.int_vector("point_indexes", "uint32_t")
 
 ffibuilder = FFI()
 ffibuilder.set_source("_bc", None)

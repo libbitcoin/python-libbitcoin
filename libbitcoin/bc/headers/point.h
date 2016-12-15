@@ -1,15 +1,5 @@
 typedef struct bc_point_iterator_t bc_point_iterator_t;
-
-// Immutable vector of uint32_t
 typedef struct bc_point_indexes_t bc_point_indexes_t;
-// Constructor
-bc_point_indexes_t* bc_create_point_indexes(
-    const uint32_t* indexes, size_t size);
-// Destructor
-void bc_destroy_point_indexes(bc_point_indexes_t* self);
-// Member functions
-size_t bc_point_indexes_size(const bc_point_indexes_t* self);
-uint32_t bc_point_indexes_at(const bc_point_indexes_t* self, size_t pos);
 
 typedef struct bc_point_t bc_point_t;
 // Static values

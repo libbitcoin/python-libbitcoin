@@ -121,26 +121,3 @@ typedef enum bc_opcode_t
 
 } bc_opcode_t;
 
-typedef enum bc_rule_fork_t
-{
-    bc_rule_fork__no_rules = 0,
-
-    /// pay-to-script-hash enabled
-    bc_rule_fork__bip16_rule = 1,
-
-    /// no duplicated unspent transaction ids
-    bc_rule_fork__bip30_rule = 2,
-
-    /// coinbase must include height
-    bc_rule_fork__bip34_rule = 4,
-
-    /// strict DER signatures required
-    bc_rule_fork__bip66_rule = 8,
-
-    /// nop2 becomes check locktime verify
-    bc_rule_fork__bip65_rule = 16,
-
-    bc_rule_fork__all_rules = 0xffffffff
-
-} bc_rule_fork_t;
-

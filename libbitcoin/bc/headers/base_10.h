@@ -1,3 +1,5 @@
+typedef struct bc_string_t bc_string_t;
+
 uint8_t bc_btc_decimal_places();
 uint8_t bc_mbtc_decimal_places();
 uint8_t bc_ubtc_decimal_places();
