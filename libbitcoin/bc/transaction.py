@@ -81,7 +81,7 @@ class Transaction:
 
     def inputs(self):
         obj = lib.bc_transaction__inputs(self._obj)
-        return InputList(obj)
+        return list(InputList(obj))
     def set_inputs(self, inputs):
         input_list = InputList()
         [input_list.append(input) for input in inputs]
@@ -89,7 +89,7 @@ class Transaction:
 
     def outputs(self):
         obj = lib.bc_transaction__outputs(self._obj)
-        return OutputList(obj)
+        return list(OutputList(obj))
     def set_outputs(self, outputs):
         output_list = OutputList()
         [output_list.append(output) for output in outputs]
