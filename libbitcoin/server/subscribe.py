@@ -16,10 +16,11 @@ class SubscribeResult:
 
 class Subscription:
 
-    def __init__(self, prefix, data, client):
+    def __init__(self, prefix, data, client, call_later):
         self._prefix = prefix
         self._data = data
         self._client = client
+        self._call_later = call_later
         self._queue = asyncio.Queue()
         self._stopped = False
         self._reschedule()
@@ -36,9 +37,8 @@ class Subscription:
         self._reschedule()
 
     def _reschedule(self):
-        scheduler = self._client._context.scheduler
         renew_time = self._client.settings.renew_time
-        scheduler.add(renew_time, self._renew)
+        self._call_later(renew_time, self._renew)
 
     async def updates(self):
         update = await self._queue.get()

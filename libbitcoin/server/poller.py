@@ -60,6 +60,9 @@ class Poller:
     def add_future(self, request_id, future):
         self._futures[request_id] = future
 
+    def delete_future(self, request_id):
+        del self._futures[request_id]
+
     def add_handler(self, command, handler):
         self._handlers[command] = handler
 

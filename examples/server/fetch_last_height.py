@@ -19,7 +19,7 @@ async def main():
         url = "tcp://163.172.84.141:9091"
 
     client_settings = libbitcoin.server.ClientSettings()
-    client_settings.query_expire_time = None
+    client_settings.query_expire_time = 1.0
     if tor_enabled:
         client_settings.socks5 = "127.0.0.1:9150"
 

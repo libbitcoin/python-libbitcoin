@@ -8,6 +8,8 @@ import libbitcoin.server
 import libbitcoin.server.serialize
 import libbitcoin.server.bitcoin_utils
 import libbitcoin.server.subscribe
+from libbitcoin.server_fake_async.fake_async_socket \
+    import ThreadsafeFakeAsyncSocket
 
 def create_random_id():
     MAX_UINT32 = 4294967295
@@ -81,22 +83,12 @@ class ClientSettings:
 
 class Client:
 
-    def __init__(self, address, context, settings):
-        self._address = address
-        self._context = context
+    def __init__(self, context, url, settings=ClientSettings()):
+        self._call_later = context.call_later
+        self._socket = ThreadsafeFakeAsyncSocket(context, url, settings)
         self.settings = settings
-        self._setup_socket()
-
         self._subscribe_manager = libbitcoin.server.subscribe.SubscribeManager()
-
-    def _setup_socket(self):
-        self._socket = self._context.zmq_context.socket(zmq.DEALER)
-        if self.settings.socks5:
-            socks5 = bytes(self.settings.socks5, "ascii")
-            self._socket.setsockopt(zmq.SOCKS_PROXY, socks5)
-        self._socket.connect(self._address)
-        self._context.poller.register(self._socket)
-        self._context.poller.add_handler(b"address.update", self._on_update)
+        self._socket.add_handler(b"address.update", self._on_update)
 
     async def _send_request(self, command, request_id, data):
         request = [
@@ -104,14 +96,14 @@ class Client:
             struct.pack("<I", request_id),
             data
         ]
-        await self._socket.send_multipart(request)
+        self._socket.send(request)
 
     async def request(self, request_command, request_data):
         """Make a generic request. Both options are byte objects specified like
         b"blockchain.fetch_block_header" as an example."""
-        future = self._context.Future()
+        future = asyncio.Future()
         request_id = create_random_id()
-        self._context.poller.add_future(request_id, future)
+        self._socket.add_future(request_id, future)
 
         await self._send_request(request_command, request_id, request_data)
 
@@ -119,7 +111,7 @@ class Client:
         try:
             reply = await asyncio.wait_for(future, expiry_time)
         except asyncio.TimeoutError:
-            self._context.poller.delete_future(request_id)
+            self._socket.delete_future(request_id)
             return libbitcoin.server.ErrorCode.channel_timeout, None
 
         reply_command, reply_id, ec, data = reply
@@ -334,9 +326,8 @@ class Client:
         if ec:
             return ec, None
 
-        call_later = self.scheduler.add
         subscription = libbitcoin.server.subscribe.Subscription(
-            prefix, request_data, self, call_later)
+            prefix, request_data, self)
         self._subscribe_manager.add(subscription)
 
         return ec, subscription
