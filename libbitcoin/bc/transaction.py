@@ -72,11 +72,9 @@ class Transaction:
                                                    sighash_type.value)
         return HashDigest(obj)
 
-    @property
     def locktime(self):
         return lib.bc_transaction__locktime(self._obj)
-    @locktime.setter
-    def locktime(self, locktime):
+    def set_locktime(self, locktime):
         lib.bc_transaction__set_locktime(self._obj, locktime)
 
     def inputs(self):
