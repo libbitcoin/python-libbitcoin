@@ -94,3 +94,6 @@ def bitcoin_hash(data):
     obj = lib.bc_bitcoin_hash(data._obj)
     return HashDigest(obj)
 
+def hash_literal(encoded):
+    return HashDigest.from_string(encoded, True)
+

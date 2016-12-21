@@ -43,6 +43,9 @@ cdef += bc_macros.vector("chain_point_list", "bc_point_t")
 
 cdef += bc_macros.int_vector("block_indexes", "size_t")
 cdef += bc_macros.int_vector("point_indexes", "uint32_t")
+cdef += bc_macros.int_vector("chain_state_bitss", "uint32_t")
+cdef += bc_macros.int_vector("chain_state_versions", "uint32_t")
+cdef += bc_macros.int_vector("chain_state_timestamps", "uint32_t")
 
 ffibuilder = FFI()
 ffibuilder.set_source("_bc", None)

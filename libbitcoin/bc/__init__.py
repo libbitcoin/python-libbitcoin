@@ -14,15 +14,15 @@ from libbitcoin.bc.error import ConsoleResult, Error
 from libbitcoin.bc.dictionary import Dictionary
 from libbitcoin.bc.header import Header, HeaderList
 from libbitcoin.bc.hash import HashDigest, HalfHash, QuarterHash, LongHash, \
-    ShortHash, MiniHash, null_hash, bitcoin_hash
+    ShortHash, MiniHash, null_hash, bitcoin_hash, hash_literal
 from libbitcoin.bc.hd_public import hd_first_hardened_key, HdPublic
 from libbitcoin.bc.hd_private import HdPrivate
 from libbitcoin.bc.input import Input, InputList
 from libbitcoin.bc.mnemonic import mnemonic_word_multiple, \
     mnemonic_seed_multiple, create_mnemonic, validate_mnemonic, \
     decode_mnemonic
-from libbitcoin.bc.opcode import Opcode, RuleFork, within_op_n, decode_op_n, \
-    data_to_opcode, string_to_opcode, opcode_to_string
+from libbitcoin.bc.opcode import Opcode, opcode_to_string, \
+    opcode_from_string, opcode_to_hexadecimal, opcode_from_hexadecimal
 from libbitcoin.bc.operation import Operation, OperationList
 from libbitcoin.bc.output import Output
 from libbitcoin.bc.output_point import OutputPoint, OutputInfo, OutputInfoList

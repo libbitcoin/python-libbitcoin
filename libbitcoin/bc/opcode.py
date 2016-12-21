@@ -1,156 +1,150 @@
 from enum import Enum
-from libbitcoin.bc.config import lib
+from libbitcoin.bc.config import ffi, lib
 from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.string import String
 
 class Opcode(Enum):
-    zero = 0
-    special = 1
-    pushdata1 = 76
-    pushdata2 = 77
-    pushdata4 = 78
-    negative_1 = 79
-    reserved = 80  # does nothing
-    op_1 = 81
-    op_2 = 82
-    op_3 = 83
-    op_4 = 84
-    op_5 = 85
-    op_6 = 86
-    op_7 = 87
-    op_8 = 88
-    op_9 = 89
-    op_10 = 90
-    op_11 = 91
-    op_12 = 92
-    op_13 = 93
-    op_14 = 94
-    op_15 = 95
-    op_16 = 96
-    nop = 97
-    ver = 98
-    if_ = 99
-    notif = 100
-    verif = 101
-    vernotif = 102
-    else_ = 103
-    endif = 104
-    verify = 105
-    return_ = 106
-    toaltstack = 107
-    fromaltstack = 108
-    op_2drop = 109
-    op_2dup = 110
-    op_3dup = 111
-    op_2over = 112
-    op_2rot = 113
-    op_2swap = 114
-    ifdup = 115
-    depth = 116
-    drop = 117
-    dup = 118
-    nip = 119
-    over = 120
-    pick = 121
-    roll = 122
-    rot = 123
-    swap = 124
-    tuck = 125
-    cat = 126          # disabled
-    substr = 127       # disabled
-    left = 128         # disabled
-    right = 129        # disabled
-    size = 130
-    invert = 131       # disabled
-    and_ = 132         # disabled
-    or_ = 133          # disabled
-    xor_ = 134         # disabled
-    equal = 135
-    equalverify = 136
-    reserved1 = 137
-    reserved2 = 138
-    op_1add = 139
-    op_1sub = 140
-    op_2mul = 141      # disabled
-    op_2div = 142      # disabled
-    negate = 143
-    abs = 144
-    not_ = 145
-    op_0notequal = 146
-    add = 147
-    sub = 148
-    mul = 149          # disabled
-    div = 150          # disabled
-    mod = 151          # disabled
-    lshift = 152       # disabled
-    rshift = 153       # disabled
-    booland = 154
-    boolor = 155
-    numequal = 156
-    numequalverify = 157
-    numnotequal = 158
-    lessthan = 159
-    greaterthan = 160
-    lessthanorequal = 161
-    greaterthanorequal = 162
-    min = 163
-    max = 164
-    within = 165
-    ripemd160 = 166
-    sha1 = 167
-    sha256 = 168
-    hash160 = 169
-    hash256 = 170
-    codeseparator = 171
-    checksig = 172
-    checksigverify = 173
-    checkmultisig = 174
-    checkmultisigverify = 175
-    op_nop1 = 176
-    op_nop2 = 177
-    checklocktimeverify = op_nop2
-    op_nop3 = 178
-    op_nop4 = 179
-    op_nop5 = 180
-    op_nop6 = 181
-    op_nop7 = 182
-    op_nop8 = 183
-    op_nop9 = 184
-    op_nop10 = 185
-    # These are internal use sentinels NOT opcodes.
-    # The specific values of these only need to differ from actual opcodes.
-    bad_operation = 186
-    raw_data = 187
+    zero = lib.bc_opcode__zero
+    special = lib.bc_opcode__special
+    pushdata1 = lib.bc_opcode__pushdata1
+    pushdata2 = lib.bc_opcode__pushdata2
+    pushdata4 = lib.bc_opcode__pushdata4
+    negative_1 = lib.bc_opcode__negative_1
+    reserved = lib.bc_opcode__reserved
+    op_1 = lib.bc_opcode__op_1
+    op_2 = lib.bc_opcode__op_2
+    op_3 = lib.bc_opcode__op_3
+    op_4 = lib.bc_opcode__op_4
+    op_5 = lib.bc_opcode__op_5
+    op_6 = lib.bc_opcode__op_6
+    op_7 = lib.bc_opcode__op_7
+    op_8 = lib.bc_opcode__op_8
+    op_9 = lib.bc_opcode__op_9
+    op_10 = lib.bc_opcode__op_10
+    op_11 = lib.bc_opcode__op_11
+    op_12 = lib.bc_opcode__op_12
+    op_13 = lib.bc_opcode__op_13
+    op_14 = lib.bc_opcode__op_14
+    op_15 = lib.bc_opcode__op_15
+    op_16 = lib.bc_opcode__op_16
+    nop = lib.bc_opcode__nop
+    ver = lib.bc_opcode__ver
+    if_ = lib.bc_opcode__if_
+    notif = lib.bc_opcode__notif
+    verif = lib.bc_opcode__verif
+    vernotif = lib.bc_opcode__vernotif
+    else_ = lib.bc_opcode__else_
+    endif = lib.bc_opcode__endif
+    verify = lib.bc_opcode__verify
+    return_ = lib.bc_opcode__return_
+    toaltstack = lib.bc_opcode__toaltstack
+    fromaltstack = lib.bc_opcode__fromaltstack
+    op_2drop = lib.bc_opcode__op_2drop
+    op_2dup = lib.bc_opcode__op_2dup
+    op_3dup = lib.bc_opcode__op_3dup
+    op_2over = lib.bc_opcode__op_2over
+    op_2rot = lib.bc_opcode__op_2rot
+    op_2swap = lib.bc_opcode__op_2swap
+    ifdup = lib.bc_opcode__ifdup
+    depth = lib.bc_opcode__depth
+    drop = lib.bc_opcode__drop
+    dup = lib.bc_opcode__dup
+    nip = lib.bc_opcode__nip
+    over = lib.bc_opcode__over
+    pick = lib.bc_opcode__pick
+    roll = lib.bc_opcode__roll
+    rot = lib.bc_opcode__rot
+    swap = lib.bc_opcode__swap
+    tuck = lib.bc_opcode__tuck
+    cat = lib.bc_opcode__cat
+    substr = lib.bc_opcode__substr
+    left = lib.bc_opcode__left
+    right = lib.bc_opcode__right
+    size = lib.bc_opcode__size
+    invert = lib.bc_opcode__invert
+    and_ = lib.bc_opcode__and_
+    or_ = lib.bc_opcode__or_
+    xor_ = lib.bc_opcode__xor_
+    equal = lib.bc_opcode__equal
+    equalverify = lib.bc_opcode__equalverify
+    reserved1 = lib.bc_opcode__reserved1
+    reserved2 = lib.bc_opcode__reserved2
+    op_1add = lib.bc_opcode__op_1add
+    op_1sub = lib.bc_opcode__op_1sub
+    op_2mul = lib.bc_opcode__op_2mul
+    op_2div = lib.bc_opcode__op_2div
+    negate = lib.bc_opcode__negate
+    abs = lib.bc_opcode__abs
+    not_ = lib.bc_opcode__not_
+    op_0notequal = lib.bc_opcode__op_0notequal
+    add = lib.bc_opcode__add
+    sub = lib.bc_opcode__sub
+    mul = lib.bc_opcode__mul
+    div = lib.bc_opcode__div
+    mod = lib.bc_opcode__mod
+    lshift = lib.bc_opcode__lshift
+    rshift = lib.bc_opcode__rshift
+    booland = lib.bc_opcode__booland
+    boolor = lib.bc_opcode__boolor
+    numequal = lib.bc_opcode__numequal
+    numequalverify = lib.bc_opcode__numequalverify
+    numnotequal = lib.bc_opcode__numnotequal
+    lessthan = lib.bc_opcode__lessthan
+    greaterthan = lib.bc_opcode__greaterthan
+    lessthanorequal = lib.bc_opcode__lessthanorequal
+    greaterthanorequal = lib.bc_opcode__greaterthanorequal
+    min = lib.bc_opcode__min
+    max = lib.bc_opcode__max
+    within = lib.bc_opcode__within
+    ripemd160 = lib.bc_opcode__ripemd160
+    sha1 = lib.bc_opcode__sha1
+    sha256 = lib.bc_opcode__sha256
+    hash160 = lib.bc_opcode__hash160
+    hash256 = lib.bc_opcode__hash256
+    codeseparator = lib.bc_opcode__codeseparator
+    checksig = lib.bc_opcode__checksig
+    checksigverify = lib.bc_opcode__checksigverify
+    checkmultisig = lib.bc_opcode__checkmultisig
+    checkmultisigverify = lib.bc_opcode__checkmultisigverify
+    op_nop1 = lib.bc_opcode__op_nop1
+    op_nop2 = lib.bc_opcode__op_nop2
+    checklocktimeverify = lib.bc_opcode__checklocktimeverify
+    op_nop3 = lib.bc_opcode__op_nop3
+    op_nop4 = lib.bc_opcode__op_nop4
+    op_nop5 = lib.bc_opcode__op_nop5
+    op_nop6 = lib.bc_opcode__op_nop6
+    op_nop7 = lib.bc_opcode__op_nop7
+    op_nop8 = lib.bc_opcode__op_nop8
+    op_nop9 = lib.bc_opcode__op_nop9
+    op_nop10 = lib.bc_opcode__op_nop10
+    bad_operation = lib.bc_opcode__bad_operation
+    raw_data = lib.bc_opcode__raw_data
 
-class RuleFork(Enum):
-    no_rules = lib.bc_rule_fork__no_rules
-    bip16_rule = lib.bc_rule_fork__bip16_rule
-    bip30_rule = lib.bc_rule_fork__bip30_rule
-    bip34_rule = lib.bc_rule_fork__bip34_rule
-    bip66_rule = lib.bc_rule_fork__bip66_rule
-    bip65_rule = lib.bc_rule_fork__bip65_rule
-    all_rules = lib.bc_rule_fork__all_rules
-
-def within_op_n(code):
-    """Determine if code is in the op_n range."""
-    return lib.bc_within_op_n(code.value) == 1
-
-def decode_op_n(code):
-    """Return the op_n index (i.e. value of n)."""
-    return lib.bc_decode_op_n(code.value)
-
-def data_to_opcode(value):
-    """Convert data to an opcode."""
-    value = DataChunk(value)
-    return Opcode(lib.bc_data_to_opcode(value._obj))
-
-def string_to_opcode(value):
-    """Convert a string to an opcode."""
-    value = bytes(value, "ascii")
-    return Opcode(lib.bc_string_to_opcode(value))
-
-def opcode_to_string(value, flags):
-    """Convert an opcode to a string."""
-    obj = lib.bc_opcode_to_string(value.value, flags)
+def opcode_to_string(value, active_forks):
+    """Convert the opcode to a mnemonic string."""
+    obj = lib.bc_opcode_to_string(value.value, active_forks)
     return str(String(obj))
+
+def opcode_from_string(value):
+    """Convert a string to an opcode."""
+    if isinstance(value, str):
+        value = bytes(value, "ascii")
+    out_code = ffi.new("enum bc_opcode_t*")
+    if not lib.bc_opcode_from_string(out_code, value):
+        return None
+    return Opcode(out_code[0])
+
+def opcode_to_hexadecimal(code):
+    """Convert any opcode to a string hexadecimal representation."""
+    obj = lib.bc_opcode_to_hexadecimal(value.value)
+    return str(String(obj))
+
+def opcode_from_hexadecimal(value):
+    """Convert any hexadecimal byte to an opcode."""
+    if isinstance(value, str):
+        value = bytes(value, "ascii")
+    out_code = ffi.new("enum bc_opcode_t*")
+    if not lib.bc_opcode_from_hexadecimal(out_code, value):
+        return None
+    return Opcode(out_code[0])
 

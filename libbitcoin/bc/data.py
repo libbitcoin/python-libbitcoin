@@ -1,5 +1,6 @@
 import binascii
 from libbitcoin.bc.config import ffi, lib
+from libbitcoin.bc.vector import VectorMeta, VectorBase
 
 class DataChunk:
 
@@ -46,4 +47,8 @@ class DataChunk:
 
     def __repr__(self):
         return "<bc_data_chunk '%s'>" % self.data.hex()
+
+class DataStack(VectorBase, metaclass=VectorMeta):
+    bc_name = "data_stack"
+    item_type = DataChunk
 

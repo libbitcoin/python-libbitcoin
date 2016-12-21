@@ -24,7 +24,7 @@ void bc_destroy_transaction(bc_transaction_t* self);
 
 // Operators.
 void bc_transaction__copy(
-    const bc_transaction_t* self, bc_transaction_t* other);
+    bc_transaction_t* self, const bc_transaction_t* other);
 
 bool bc_transaction__equals(
     const bc_transaction_t* self, const bc_transaction_t* other);

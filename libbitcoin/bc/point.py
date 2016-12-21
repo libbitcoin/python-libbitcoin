@@ -83,3 +83,6 @@ class ChainPointList(VectorBase, metaclass=VectorMeta):
     bc_name = "chain_point_list"
     item_type = Point
 
+class PointIndexes(IntVectorBase, metaclass=IntVectorMeta):
+    bc_name = "point_index"
+

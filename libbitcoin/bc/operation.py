@@ -5,22 +5,24 @@ from libbitcoin.bc.vector import VectorMeta, VectorBase
 
 class Operation:
 
-    def __init__(self, obj=None, data=b""):
-        if isinstance(obj, Opcode):
-            self._init_from_tuple(obj, data)
-            return
+    def __init__(self, obj=None):
         if obj is None:
             obj = lib.bc_create_operation()
         self._obj = obj
 
-    def _init_from_tuple(self, code, data):
-        self._obj = lib.bc_create_operation()
-        self.code = code
-        self.data = data
+    @classmethod
+    def from_data(cls, uncoded, minimal=True):
+        data = DataChunk(obj)
+        if minimal:
+            obj = lib.bc_create_operation_Data(data._obj)
+        else:
+            obj = lib.bc_create_operation_Data_nominimal(data._obj)
+        return cls(obj)
 
     @classmethod
-    def from_tuple(cls, code, data):
-        return cls(code, data)
+    def from_opcode(cls, code):
+        obj = lib.bc_create_operation_Opcode(code.value)
+        return cls(obj)
 
     def __del__(self):
         self._delete_object()
@@ -34,21 +36,16 @@ class Operation:
     def is_valid(self):
         lib.bc_operation__is_valid(self._obj)
 
-    @property
+    def to_data(self):
+        obj = lib.bc_operation__to_data(self._obj)
+        return DataChunk(obj).data
+
     def code(self):
         return Opcode(lib.bc_operation__code(self._obj))
-    @code.setter
-    def code(self, code):
-        lib.bc_operation__set_code(self._obj, code.value)
 
-    @property
     def data(self):
         obj = lib.bc_operation__data(self._obj)
         return DataChunk(obj).data
-    @data.setter
-    def data(self, data):
-        data = DataChunk(data)
-        lib.bc_operation__set_data(self._obj, data._obj)
 
     def __repr__(self):
         return "<bc_operation (%s, %s)>" % (self.code.name, self.data.hex())

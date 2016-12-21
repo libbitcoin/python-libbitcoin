@@ -25,12 +25,8 @@ def is_quoted_string(token):
         return False
     return token.startswith("'") and token.endswith("'")
 
-def token_to_opcode(token):
-    lower_token = token.lower()
-    return bc.string_to_opcode(lower_token)
-
 def is_opcode(token):
-    return token_to_opcode(token) != bc.Opcode.bad_operation
+    return bc.opcode_from_string(token) is not None
 
 def is_opx(value):
     return value == -1 or (1 <= value and value <= 16)
@@ -42,24 +38,7 @@ def push_literal(value):
     return bytes(chr(bc.Opcode.op_1.value + value - 1), "ascii")
 
 def push_data(data):
-    if not data:
-        code = bc.Opcode.zero
-    elif len(data) < 76:
-        code = bc.Opcode.special
-    elif len(data) <= 0xff:
-        code = bc.Opcode.pushdata1
-    elif len(data) <= 0xffff:
-        code = bc.Opcode.pushdata2
-    else:
-        assert len(data) <= 0xffffffff
-        code = bc.Opcode.pushdata4
-
-    tmp_script = bc.Script()
-    ops = bc.OperationStack()
-    ops.append(bc.Operation(code, data))
-    tmp_script.operations = ops
-    raw_tmp_script = tmp_script.to_data(False)
-    return raw_tmp_script
+    return Operation.from_data(data).to_data()
 
 sentinel = "__ENDING__"
 
@@ -94,9 +73,9 @@ def parse_token(raw_script, raw_hex, token):
     elif is_quoted_string(token):
         inner_value = bytes(token[1:-1], "ascii")
         raw_script[0] += push_data(inner_value)
-    elif is_opcode(token):
-        tokenized_opcode = token_to_opcode(token)
-        raw_script[0] += bytes([tokenized_opcode.value])
+    elif bc.opcode_from_string(token) is not None:
+        out_code = bc.opcode_from_string(token)
+        raw_script[0] += bytes([out_code.value])
     else:
         print("Token parsing failed with:", token)
         return False
@@ -116,12 +95,10 @@ def parse(result_script, format):
 
     parse_token(raw_script, raw_hex, sentinel)
 
-    if not result_script.from_data(raw_script[0], False,
-                                   bc.ScriptParseMode.strict):
+    if not result_script.from_data(raw_script[0], False):
         return False
 
-    ops = result_script.operations
-    if ops.empty():
+    if result_script.empty():
         return False
 
     return True
@@ -144,11 +121,19 @@ def new_tx(test):
     tx.inputs.append(input)
     return tx
 
-def script__from_data__testnet_119058_non_parseable__fallback():
+def script__one_hash__literal__same():
+    hash_one = bc.hash_literal(
+        "0000000000000000000000000000000000000000000000000000000000000001")
+    one_hash = bc.HashDigest.from_bytes(
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    assert hash_one == one_hash
+
+def script__from_data__testnet_119058_invalid_op_codes__success():
     raw_script = bytes.fromhex("0130323066643366303435313438356531306633383837363437356630643265396130393739343332353534313766653139316438623963623230653430643863333030326431373463336539306366323433393231383761313037623634373337633937333135633932393264653431373731636565613062323563633534353732653302ae")
 
     parsed = bc.Script()
-    assert parsed.from_data(raw_script, True, bc.ScriptParseMode.raw_data_fallback)
+    assert parsed.from_data(raw_script, False)
 
 def script__from_data__parse__fails():
     raw_script = bytes.fromhex("3045022100ff1fc58dbd608e5e05846a8e6b45a46ad49878aef6879ad1a7cf4c5a7f853683022074a6a10f6053ab3cddc5620d169c7374cd42c1416c51b9744db2c8d9febfb84d01")
@@ -446,7 +431,10 @@ def script__generate_signature_hash__all__expected():
                                                 prevout_script, sighash_type)
     assert sighash.encode_base16() == "f89572635651b2e4f89778350616989183c98d1a721c911324bf9f17a0cf5bf0"
 
-script__from_data__testnet_119058_non_parseable__fallback()
+script__one_hash__literal__same()
+script__from_data__testnet_119058_invalid_op_codes__success()
+
+#script__from_data__testnet_119058_non_parseable__fallback()
 #script__from_data__parse__fails()
 #script__from_data__to_data__roundtrips()
 #script__from_data__to_data_weird__roundtrips()
