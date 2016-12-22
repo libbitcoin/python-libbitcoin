@@ -24,8 +24,11 @@ class Script:
     @classmethod
     def from_data(cls, encoded, prefix):
         data = DataChunk(encoded)
-        obj = lib.bc_create_script_Data(data._obj, prefix)
-        return cls(obj)
+        self = cls()
+        result = lib.bc_script__from_data(self._obj, data._obj, prefix) == 1
+        if not result:
+            return None
+        return self
 
     def copy(self):
         obj = lib.bc_create_script_copy(self._obj)

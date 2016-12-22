@@ -144,8 +144,8 @@ def script__from_data__parse__success():
 def script__from_data__to_data__roundtrips():
     normal_output_script = bytes.fromhex("76a91406ccef231c2db72526df9338894ccf9355e8f12188ac")
 
-    out_script = bc.Script()
-    assert out_script.from_data(normal_output_script, False, bc.ScriptParseMode.raw_data_fallback)
+    out_script = bc.Script.from_data(normal_output_script, False)
+    assert out_script is not None
 
     roundtrip = out_script.to_data(False)
     assert roundtrip == normal_output_script
@@ -170,8 +170,8 @@ def script__from_data__to_data_weird__roundtrips():
         "560fddada820a4d933888318a23c28fb5fc67aca8530524e20"
         "74b1d185dbf5b4db4ddb0642848868685174519c6351670068")
 
-    weird = bc.Script()
-    assert weird.from_data(weird_raw_script, False, bc.ScriptParseMode.raw_data_fallback)
+    weird = bc.Script.from_data(weird_raw_script, False)
+    assert weird is not None
 
     roundtrip_result = weird.to_data(False)
     assert roundtrip_result == weird_raw_script
@@ -434,6 +434,8 @@ def script__generate_signature_hash__all__expected():
 script__one_hash__literal__same()
 script__from_data__testnet_119058_invalid_op_codes__success()
 script__from_data__parse__success()
+script__from_data__to_data__roundtrips()
+script__from_data__to_data_weird__roundtrips()
 
 #script__from_data__testnet_119058_non_parseable__fallback()
 #script__from_data__parse__fails()
