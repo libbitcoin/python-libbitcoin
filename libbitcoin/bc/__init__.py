@@ -27,8 +27,9 @@ from libbitcoin.bc.operation import Operation, OperationList
 from libbitcoin.bc.output import Output
 from libbitcoin.bc.output_point import OutputPoint, OutputInfo, OutputInfoList
 from libbitcoin.bc.payment_address import PaymentAddress
-from libbitcoin.bc.script import SignatureHashAlgorithm, Script
+from libbitcoin.bc.script import Script
 from libbitcoin.bc.script_number import ScriptNumber
+from libbitcoin.bc.sighash_algorithm import SighashAlgorithm
 from libbitcoin.bc.select_outputs import select_outputs
 from libbitcoin.bc.string import String, StringList
 from libbitcoin.bc.transaction import Transaction, TransactionList

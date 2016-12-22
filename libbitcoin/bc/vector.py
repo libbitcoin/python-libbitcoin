@@ -106,7 +106,7 @@ class IntVectorMeta(type):
         attrs["bc_vector__insert"] = method("bc_%s__insert")
         return super().__new__(cls, clsname, bases, attrs)
 
-class IntVector:
+class IntVectorBase:
 
     def __init__(self, obj=None):
         if obj is None:

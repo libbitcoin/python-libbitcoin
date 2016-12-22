@@ -2,7 +2,8 @@ from libbitcoin.bc.config import lib
 from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.hash import HashDigest
 from libbitcoin.bc.string import String
-from libbitcoin.bc.vector import VectorMeta, VectorBase
+from libbitcoin.bc.vector import VectorMeta, VectorBase, \
+                                 IntVectorMeta, IntVectorBase
 
 class Point:
 
@@ -84,5 +85,5 @@ class ChainPointList(VectorBase, metaclass=VectorMeta):
     item_type = Point
 
 class PointIndexes(IntVectorBase, metaclass=IntVectorMeta):
-    bc_name = "point_index"
+    bc_name = "point_indexes"
 

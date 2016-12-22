@@ -135,7 +135,7 @@ class Script:
         return lib.bc_script__is_pay_script_hash_pattern(self._obj,
                                                          ops._obj) == 1
 
-        def is_sign_multisig_pattern(self, ops):
+    def is_sign_multisig_pattern(self, ops):
         return lib.bc_script__is_sign_multisig_pattern(self._obj, ops._obj) == 1
 
     def is_sign_public_key_pattern(self, ops):

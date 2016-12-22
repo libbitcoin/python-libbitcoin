@@ -135,11 +135,11 @@ def script__from_data__testnet_119058_invalid_op_codes__success():
     parsed = bc.Script()
     assert parsed.from_data(raw_script, False)
 
-def script__from_data__parse__fails():
+def script__from_data__parse__success():
     raw_script = bytes.fromhex("3045022100ff1fc58dbd608e5e05846a8e6b45a46ad49878aef6879ad1a7cf4c5a7f853683022074a6a10f6053ab3cddc5620d169c7374cd42c1416c51b9744db2c8d9febfb84d01")
 
     parsed = bc.Script()
-    assert not parsed.from_data(raw_script, True, bc.ScriptParseMode.strict)
+    assert not parsed.from_data(raw_script, True)
 
 def script__from_data__to_data__roundtrips():
     normal_output_script = bytes.fromhex("76a91406ccef231c2db72526df9338894ccf9355e8f12188ac")
@@ -433,6 +433,7 @@ def script__generate_signature_hash__all__expected():
 
 script__one_hash__literal__same()
 script__from_data__testnet_119058_invalid_op_codes__success()
+script__from_data__parse__success()
 
 #script__from_data__testnet_119058_non_parseable__fallback()
 #script__from_data__parse__fails()
