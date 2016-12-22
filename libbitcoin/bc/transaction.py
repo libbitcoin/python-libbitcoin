@@ -18,11 +18,14 @@ class Transaction:
     @classmethod
     def from_data(cls, data, wire=True):
         data = DataChunk(data)
+        self = cls()
         if wire:
-            obj = lib.bc_transaction__factory_from_data(data._obj)
+            result = lib.bc_transaction__from_data(self._obj, data._obj)
         else:
-            obj = lib.bc_transaction__factory_from_data_nowire(data._obj)
-        return cls(obj)
+            result = lib.bc_transaction__from_data_nowire(self._obj, data._obj)
+        if result != 1:
+            return None
+        return self
 
     @classmethod
     def from_tuple(cls, version, locktime, inputs, outputs):

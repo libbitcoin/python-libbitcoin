@@ -176,32 +176,51 @@ def script__from_data__to_data_weird__roundtrips():
     roundtrip_result = weird.to_data(False)
     assert roundtrip_result == weird_raw_script
 
-def script__is_raw_data_operations_size_not_equal_one_returns_false():
-    instance = bc.Script()
-    assert not instance.is_raw_data()
-
-def script__is_raw_data_code_not_equal_raw_data_returns_false():
-    instance = bc.Script()
-    ops = bc.OperationStack()
-    ops.append(bc.Operation(bc.Opcode.vernotif))
-    instance.operations = ops
-    assert not instance.is_raw_data()
-
-def script__is_raw_data_returns_true():
-    instance = bc.Script()
-    ops = bc.OperationStack()
-    ops.append(bc.Operation(bc.Opcode.raw_data))
-    instance.operations = ops
-    assert instance.is_raw_data()
-
 def script__factory_from_data_chunk_test():
     raw = bytes.fromhex("76a914fc7b44566256621affb1541cc9d59f08336d276b88ac")
-    instance = bc.Script()
-    instance.from_data(raw, False, bc.ScriptParseMode.strict)
+    instance = bc.Script.from_data(raw, False)
+    assert instance is not None
     assert instance.is_valid()
 
-# Valid pay-to-script-hash scripts are valid regardless of context,
-# however after bip16 activation the scripts have additional constraints.
+def script__from_data__first_byte_invalid_wire_code__success():
+    raw = bytes.fromhex(
+        "bb566a54e38193e381aee4b896e7958ce381afe496e4babae381abe38288e381"
+        "a3e381a6e7ac91e9a194e38292e5a5aae3828fe3828ce3828be7bea9e58b99e3"
+        "8292e8a8ade38191e381a6e381afe38184e381aae38184")
+    instance = bc.Script.from_data(raw, False)
+    assert instance is not None
+
+def script__from_data__internal_invalid_wire_code__success():
+    raw = bytes.fromhex(
+        "566a54e38193e381aee4b896e7958ce381afe4bb96e4babae381abe38288e381"
+        "a3e381a6e7ac91e9a194e38292e5a5aae3828fe3828ce3828be7bea9e58b99e3"
+        "8292e8a8ade38191e381a6e381afe38184e381aae38184")
+    instance = bc.Script.from_data(raw, False)
+    assert instance is not None
+
+def script__native__block_438513_tx__valid():
+    #06:21:05.532171 DEBUG [blockchain] Input validation failed (stack false)
+    # lib         : false
+    # forks       : 62
+    # outpoint    : 8e51d775e0896e03149d585c0655b3001da0c55068b0885139ac6ec34cf76ba0:0
+    # script      : a914faa558780a5767f9e3be14992a578fc1cbcf483087
+    # inpoint     : 6b7f50afb8448c39f4714a73d2b181d3e3233e84670bdfda8f141db668226c54:0
+    # transaction : 0100000001a06bf74cc36eac395188b06850c5a01d00b355065c589d14036e89e075d7518e000000009d483045022100ba555ac17a084e2a1b621c2171fa563bc4fb75cd5c0968153f44ba7203cb876f022036626f4579de16e3ad160df01f649ffb8dbf47b504ee56dc3ad7260af24ca0db0101004c50632102768e47607c52e581595711e27faffa7cb646b4f481fe269bd49691b2fbc12106ad6704355e2658b1756821028a5af8284a12848d69a25a0ac5cea20be905848eb645fd03d3b065df88a9117cacfeffffff0158920100000000001976a9149d86f66406d316d44d58cbf90d71179dd8162dd388ac355e2658
+
+    input_index = 0
+    forks = bc.RuleFork(62)
+    encoded_script = "a914faa558780a5767f9e3be14992a578fc1cbcf483087"
+    encoded_tx = "0100000001a06bf74cc36eac395188b06850c5a01d00b355065c589d14036e89e075d7518e000000009d483045022100ba555ac17a084e2a1b621c2171fa563bc4fb75cd5c0968153f44ba7203cb876f022036626f4579de16e3ad160df01f649ffb8dbf47b504ee56dc3ad7260af24ca0db0101004c50632102768e47607c52e581595711e27faffa7cb646b4f481fe269bd49691b2fbc12106ad6704355e2658b1756821028a5af8284a12848d69a25a0ac5cea20be905848eb645fd03d3b065df88a9117cacfeffffff0158920100000000001976a9149d86f66406d316d44d58cbf90d71179dd8162dd388ac355e2658"
+
+    decoded_tx = bytes.fromhex(encoded_tx)
+    decoded_script = bytes.fromhex(encoded_script)
+
+    tx = bc.Transaction.from_data(decoded_tx)
+    assert tx is not None
+
+    input = tx.inputs()[input_index]
+    # TODO: incomplete unit test. Need validation cache first.
+
 def script__bip16__valid():
     for test in chain.script_data.valid_bip16_scripts:
         tx = new_tx(test)
@@ -436,6 +455,11 @@ script__from_data__testnet_119058_invalid_op_codes__success()
 script__from_data__parse__success()
 script__from_data__to_data__roundtrips()
 script__from_data__to_data_weird__roundtrips()
+script__factory_from_data_chunk_test()
+script__from_data__first_byte_invalid_wire_code__success()
+script__from_data__internal_invalid_wire_code__success()
+script__native__block_438513_tx__valid()
+#script__bip16__valid()
 
 #script__from_data__testnet_119058_non_parseable__fallback()
 #script__from_data__parse__fails()
