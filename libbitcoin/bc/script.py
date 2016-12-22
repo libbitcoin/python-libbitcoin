@@ -36,7 +36,7 @@ class Script:
 
     def from_string(self, mnemonic):
         if isinstance(mnemonic, str):
-            mnemonic = bytes(mnemonic)
+            mnemonic = bytes(mnemonic, "ascii")
         return lib.bc_script__from_string(self._obj, mnemonic) == 1
 
     def is_valid(self):
