@@ -83,7 +83,7 @@ class Script:
         return lib.bc_script__satoshi_content_size(self._obj)
 
     def serialized_size(self, prefix):
-        return lib.bc_script__serialized_size(self._obj)
+        return lib.bc_script__serialized_size(self._obj, prefix)
 
     def operations(self):
         obj = lib.bc_script__operations(self._obj)

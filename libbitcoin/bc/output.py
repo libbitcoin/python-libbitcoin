@@ -28,6 +28,9 @@ class Output:
     def disable_object_deleter(self):
         self._delete_object = lambda: None
 
+    def __eq__(self, other):
+        return lib.bc_output__equals(self._obj, other._obj) == 1
+
     def to_data(self):
         obj = lib.bc_output__to_data(self._obj)
         return DataChunk(obj).data
@@ -51,11 +54,10 @@ class Output:
     def signature_operations(self):
         return lib.bc_output__signature_operations(self._obj)
 
-    @property
     def value(self):
         return lib.bc_output__value(self._obj)
-    @value.setter
-    def value(self, value):
+
+    def set_value(self, value):
         lib.bc_output__set_value(self._obj, value)
 
     def script(self):

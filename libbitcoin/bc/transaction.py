@@ -5,7 +5,6 @@ from libbitcoin.bc.hash import HashDigest
 from libbitcoin.bc.input import InputList
 from libbitcoin.bc.output import OutputList
 from libbitcoin.bc.point import PointIndexes
-from libbitcoin.bc.string import String
 from libbitcoin.bc.vector import VectorMeta, VectorBase
 
 class Transaction:
@@ -30,9 +29,10 @@ class Transaction:
     @classmethod
     def from_tuple(cls, version, locktime, inputs, outputs):
         inputs = InputList.from_list(inputs)
-        outputs = OutputList.from_outputs(outputs)
+        outputs = OutputList.from_list(outputs)
         obj = lib.bc_create_transaction_Parts(version, locktime,
-                                              inputs, outputs)
+                                              inputs._obj, outputs._obj)
+        return cls(obj)
 
     def __del__(self):
         self._delete_object()
@@ -43,8 +43,12 @@ class Transaction:
     def disable_object_deleter(self):
         self._delete_object = lambda: None
 
-    def copy(self, other):
-        lib.bc_transaction__copy(self._obj, other._obj)
+    def copy(self, hash=None):
+        if hash is None:
+            obj = lib.bc_create_transaction_copy(self._obj)
+        else:
+            obj = lib.bc_create_transaction_copy_Hash(self._obj, hash._obj)
+        return Transaction(obj)
 
     def __eq__(self, other):
         return lib.bc_transaction__equals(self._obj, other._obj) == 1
@@ -56,7 +60,7 @@ class Transaction:
         if wire:
             obj = lib.bc_transaction__to_data(self._obj)
         else:
-            obj = lib.bc_transaction__to_data_wire(self._obj)
+            obj = lib.bc_transaction__to_data_nowire(self._obj)
         return DataChunk(obj).data
 
     def serialized_size(self, wire=True):

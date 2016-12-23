@@ -27,6 +27,9 @@ class Input:
     def disable_object_deleter(self):
         self._delete_object = lambda: None
 
+    def __eq__(self, other):
+        return lib.bc_input__equals(self._obj, other._obj) == 1
+
     def to_data(self):
         obj = lib.bc_input__to_data(self._obj)
         return DataChunk(obj).data

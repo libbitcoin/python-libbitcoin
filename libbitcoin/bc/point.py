@@ -62,19 +62,17 @@ class Point:
     def serialized_size(self):
         return lib.bc_point__serialized_size(self._obj)
 
-    @property
     def hash(self):
         obj = lib.bc_point__hash(self._obj)
         return HashDigest(obj)
-    @hash.setter
-    def hash(self, hash_):
+
+    def set_hash(self, hash_):
         lib.bc_point__set_hash(self._obj, hash_._obj)
 
-    @property
     def index(self):
         return lib.bc_point__index(self._obj)
-    @index.setter
-    def index(self, index):
+
+    def set_index(self, index):
         lib.bc_point__set_index(self._obj, index)
 
     def __repr__(self):
