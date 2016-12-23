@@ -15,7 +15,8 @@ invalidated_bip16_scripts = [
 # These are valid prior to and after BIP65 activation.
 # These assume a non-final tx.input[0] with locktime of > 500000000.
 valid_bip65_scripts = [
-    ( "1 500000000", "CHECKLOCKTIMEVERIFY", "Valid CLTV, true return" )
+    ( "42", "CHECKLOCKTIMEVERIFY", "Valid CLTV, true return" ),
+    ( "42", "NOP1 NOP2 NOP3 NOP4 NOP5 NOP6 NOP7 NOP8 NOP9 NOP10 42 EQUAL", "" )
 ]
 
 # These are invalid prior to and after BIP65 activation.
@@ -30,8 +31,6 @@ invalidated_bip65_scripts = [
     ( "1 -1", "CHECKLOCKTIMEVERIFY", "Negative CLTV" ),
     ( "1 100", "CHECKLOCKTIMEVERIFY", "Exceeded CLTV" ),
     ( "1 500000000", "CHECKLOCKTIMEVERIFY", "Mismatched CLTV" ),
-    ( "0 42", "CHECKLOCKTIMEVERIFY", "Valid CLTV, false return" ),
-    ( "1", "NOP1 NOP2 NOP3 NOP4 NOP5 NOP6 NOP7 NOP8 NOP9 NOP10 1 EQUAL", "" ),
     ( "'NOP_1_to_10' NOP1 NOP2 NOP3 NOP4 NOP5 NOP6 NOP7 NOP8 NOP9 NOP10", "'NOP_1_to_10' EQUAL", "" ),
     ( "NOP", "NOP2 1", "" )
 ]

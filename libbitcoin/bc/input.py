@@ -29,11 +29,7 @@ class Input:
 
     def to_data(self):
         obj = lib.bc_input__to_data(self._obj)
-        return DataChunk(obj)
-
-    def to_string(self, flags):
-        obj = lib.bc_input__to_string(self._obj, flags)
-        return str(String(obj))
+        return DataChunk(obj).data
 
     def is_valid(self):
         return lib.bc_input__is_valid(self._obj) == 1

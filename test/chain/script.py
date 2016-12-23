@@ -62,7 +62,7 @@ def parse_token(raw_script, raw_hex, token):
             raw_script[0] += push_literal(value)
         else:
             bignum = bc.MachineNumber(value)
-            raw_script[0] += push_data(bignum.data)
+            raw_script[0] += push_data(bignum.data())
     elif is_hex_data(token):
         hex_part = token[2:]
         try:
@@ -81,7 +81,7 @@ def parse_token(raw_script, raw_hex, token):
         return False
     return True
 
-def parse(format):
+def parse(result_script, format):
     format = format.strip()
     if not format:
         return True
@@ -95,30 +95,31 @@ def parse(format):
 
     parse_token(raw_script, raw_hex, sentinel)
 
-    result_script = bc.Script.from_data(raw_script[0], False)
-    if result_script is None:
+    result = bc.Script.from_data(raw_script[0], False)
+    if result is None:
         return False
 
-    if result_script.empty():
+    result_script[0] = result
+    if result_script[0].empty():
         return False
 
-    return result_script
+    return True
 
 def new_tx(test, sequence=0):
     tx = bc.Transaction()
 
-    input_script = parse(test[0])
-    if input_script is None:
-        return None
+    input_script = [bc.Script()]
+    if not parse(input_script, test[0]):
+        return tx
 
-    output_script = parse(test[1])
-    if output_script is None:
-        return None
+    output_script = [bc.Script()]
+    if not parse(output_script, test[1]):
+        return tx
 
     input = bc.Input()
     input.set_sequence(sequence)
-    input.set_script(input_script)
-    input.previous_output().validation.cache.set_script(output_script)
+    input.set_script(input_script[0])
+    input.previous_output().validation.cache.set_script(output_script[0])
 
     tx.set_inputs([input])
     return tx
@@ -226,7 +227,6 @@ def script__native__block_438513_tx__valid():
 def script__bip16__valid():
     for test in chain.script_data.valid_bip16_scripts:
         tx = new_tx(test)
-        assert tx is not None
         assert tx.is_valid(), test[2]
         assert tx.inputs(), test[2]
 
@@ -241,7 +241,8 @@ def script__bip16__valid():
 def script__bip16__invalidated():
     for test in chain.script_data.invalidated_bip16_scripts:
         tx = new_tx(test)
-        assert not tx.inputs.empty(), test[2]
+        assert tx.is_valid(), test[2]
+        assert tx.inputs(), test[2]
 
         # These are valid prior to BIP16 activation and invalid after.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
@@ -251,16 +252,14 @@ def script__bip16__invalidated():
         assert bc.Script.verify(tx, 0, bc.RuleFork.all_rules) != \
             bc.Error.success, test[2]
 
-# Prior to bip65 activation op_nop2 always returns true, but after it becomes a locktime comparer.
 def script__bip65__valid():
     for test in chain.script_data.valid_bip65_scripts:
-        tx = new_tx(test)
-        assert not tx.inputs.empty(), test[2]
+        tx = new_tx(test, 42)
+        assert tx.is_valid(), test[2]
+        assert tx.inputs(), test[2]
 
-        tx.locktime = 500000042;
-
-        tx.inputs[0].sequence = 42
-
+        tx.set_locktime(99)
+        
         # These are valid prior to and after BIP65 activation.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
             bc.Error.success, test[2]
@@ -271,14 +270,13 @@ def script__bip65__valid():
 
 def script__bip65__invalid():
     for test in chain.script_data.invalid_bip65_scripts:
-        tx = new_tx(test)
-        assert not tx.inputs.empty(), test[2]
+        tx = new_tx(test, 42)
+        assert tx.is_valid(), test[2]
+        assert tx.inputs(), test[2]
 
-        tx.locktime = 99;
+        tx.set_locktime(99)
 
-        tx.inputs[0].sequence = 42
-
-        # These are valid prior to and after BIP65 activation.
+        # These are invalid prior to and after BIP65 activation.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) != \
             bc.Error.success, test[2]
         assert bc.Script.verify(tx, 0, bc.RuleFork.bip65_rule) != \
@@ -288,12 +286,11 @@ def script__bip65__invalid():
 
 def script__bip65__invalidated():
     for test in chain.script_data.invalidated_bip65_scripts:
-        tx = new_tx(test)
-        assert not tx.inputs.empty(), test[2]
+        tx = new_tx(test, 42)
+        assert tx.is_valid(), test[2]
+        assert tx.inputs(), test[2]
 
-        tx.locktime = 99;
-
-        tx.inputs[0].sequence = 42
+        tx.set_locktime(99)
 
         # These are valid prior to and after BIP65 activation.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
@@ -306,8 +303,9 @@ def script__bip65__invalidated():
 # These are scripts potentially affected by bip66 (but should not be).
 def script__multisig__valid():
     for test in chain.script_data.valid_multisig_scripts:
-        tx = new_tx(test)
-        assert not tx.inputs.empty(), test[2]
+        tx = new_tx(test, 42)
+        assert tx.is_valid(), test[2]
+        assert tx.inputs(), test[2]
 
         # These are always valid.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
@@ -321,7 +319,8 @@ def script__multisig__valid():
 def script__multisig__invalid():
     for test in chain.script_data.invalid_multisig_scripts:
         tx = new_tx(test)
-        assert not tx.inputs.empty(), test[2]
+        assert tx.is_valid(), test[2]
+        assert tx.inputs(), test[2]
 
         # These are always invalid.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) != \
@@ -334,7 +333,8 @@ def script__multisig__invalid():
 def script__context_free__valid():
     for test in chain.script_data.valid_context_free_scripts:
         tx = new_tx(test)
-        assert not tx.inputs.empty(), test[2]
+        assert tx.is_valid(), test[2]
+        assert tx.inputs(), test[2]
 
         # These are always valid.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
@@ -345,18 +345,14 @@ def script__context_free__valid():
 def script__context_free__invalid():
     for test in chain.script_data.invalid_context_free_scripts:
         tx = new_tx(test)
-        assert not tx.inputs.empty(), test[2]
+        assert tx.is_valid(), test[2]
+        assert tx.inputs(), test[2]
 
         # These are always valid.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) != \
             bc.Error.success, test[2]
         assert bc.Script.verify(tx, 0, bc.RuleFork.all_rules) != \
             bc.Error.success, test[2]
-
-def script__invalid_parse__empty_inputs():
-    for test in chain.script_data.invalid_parse_scripts:
-        tx = new_tx(test)
-        assert tx.inputs.empty(), test[2]
 
 # These are special tests for checksig.
 def script__checksig__uses_one_hash():
@@ -370,16 +366,15 @@ def script__checksig__uses_one_hash():
 
     script_data = bytes.fromhex("76a91433cef61749d11ba2adf091a5e045678177fe3a6d88ac")
 
-    script_code = bc.Script()
-    prefix = False
-    assert script_code.from_data(script_data, prefix, bc.ScriptParseMode.strict)
+    script_code = bc.Script.from_data(script_data, False)
+    assert script_code is not None
 
     strict = True
     input_index = 1
     signature = bc.EcSignature.from_der(distinguished, strict)
     assert signature is not None
     assert bc.Script.check_signature(
-        signature, bc.SignatureHashAlgorithm.single, pubkey,
+        signature, bc.SighashAlgorithm.single, pubkey,
         script_code, parent_tx, input_index)
 
 def script__checksig__normal():
@@ -393,31 +388,29 @@ def script__checksig__normal():
 
     script_data = bytes.fromhex("76a914fcc9b36d38cf55d7d5b4ee4dddb6b2c17612f48c88ac")
 
-    script_code = bc.Script()
-    prefix = False
-    assert script_code.from_data(script_data, prefix,
-                                 bc.ScriptParseMode.strict)
+    script_code = bc.Script.from_data(script_data, False)
+    assert script_code is not None
 
     strict = True
     input_index = 0
     signature = bc.EcSignature.from_der(distinguished, strict)
     assert signature is not None
     assert bc.Script.check_signature(
-        signature, bc.SignatureHashAlgorithm.single, pubkey,
+        signature, bc.SighashAlgorithm.single, pubkey,
         script_code, parent_tx, input_index)
 
 def script__create_endorsement__single_input_single_output__expected():
     tx_data = bytes.fromhex("0100000001b3807042c92f449bbf79b33ca59d7dfec7f4cc71096704a9c526dddf496ee0970100000000ffffffff01905f0100000000001976a91418c0bd8d1818f1bf99cb1df2269c645318ef7b7388ac00000000")
     new_tx = bc.Transaction.from_data(tx_data)
 
-    prevout_script = bc.Script()
-    assert prevout_script.from_string("dup hash160 [ 88350574280395ad2c3e2ee20e322073d94e5e40 ] equalverify checksig")
+    prevout_script = bc.Script.from_string("dup hash160 [88350574280395ad2c3e2ee20e322073d94e5e40] equalverify checksig")
+    assert prevout_script is not None
 
     secret = bc.EcSecret.from_string("ce8f4b713ffdd2658900845251890f30371856be201cd1f5b3d970f793634333", True)
 
     out = bc.Endorsement()
     input_index = 0
-    sighash_type = bc.SignatureHashAlgorithm.all
+    sighash_type = bc.SighashAlgorithm.all
     assert bc.Script.create_endorsement(out, secret, prevout_script, new_tx,
                                         input_index, sighash_type)
 
@@ -427,14 +420,14 @@ def script__create_endorsement__single_input_no_output__expected():
     tx_data = bytes.fromhex("0100000001b3807042c92f449bbf79b33ca59d7dfec7f4cc71096704a9c526dddf496ee0970000000000ffffffff0000000000")
     new_tx = bc.Transaction.from_data(tx_data)
 
-    prevout_script = bc.Script()
-    assert prevout_script.from_string("dup hash160 [ 88350574280395ad2c3e2ee20e322073d94e5e40 ] equalverify checksig")
+    prevout_script = bc.Script.from_string("dup hash160 [88350574280395ad2c3e2ee20e322073d94e5e40] equalverify checksig")
+    assert prevout_script is not None
 
     secret = bc.EcSecret.from_string("ce8f4b713ffdd2658900845251890f30371856be201cd1f5b3d970f793634333", True)
 
     out = bc.Endorsement()
     input_index = 0
-    sighash_type = bc.SignatureHashAlgorithm.all
+    sighash_type = bc.SighashAlgorithm.all
     assert bc.Script.create_endorsement(out, secret, prevout_script, new_tx,
                                         input_index, sighash_type)
 
@@ -444,12 +437,12 @@ def script__generate_signature_hash__all__expected():
     tx_data = bytes.fromhex("0100000001b3807042c92f449bbf79b33ca59d7dfec7f4cc71096704a9c526dddf496ee0970000000000ffffffff0000000000")
     new_tx = bc.Transaction.from_data(tx_data)
 
-    prevout_script = bc.Script()
-    assert prevout_script.from_string("dup hash160 [ 88350574280395ad2c3e2ee20e322073d94e5e40 ] equalverify checksig")
+    prevout_script = bc.Script.from_string("dup hash160 [88350574280395ad2c3e2ee20e322073d94e5e40] equalverify checksig")
+    assert prevout_script is not None
 
     out = bc.Endorsement()
     input_index = 0
-    sighash_type = bc.SignatureHashAlgorithm.all
+    sighash_type = bc.SighashAlgorithm.all
     sighash = bc.Script.generate_signature_hash(new_tx, input_index,
                                                 prevout_script, sighash_type)
     assert sighash.encode_base16() == "f89572635651b2e4f89778350616989183c98d1a721c911324bf9f17a0cf5bf0"
@@ -464,28 +457,17 @@ script__from_data__first_byte_invalid_wire_code__success()
 script__from_data__internal_invalid_wire_code__success()
 script__native__block_438513_tx__valid()
 script__bip16__valid()
-
-#script__from_data__testnet_119058_non_parseable__fallback()
-#script__from_data__parse__fails()
-#script__from_data__to_data__roundtrips()
-#script__from_data__to_data_weird__roundtrips()
-#script__is_raw_data_operations_size_not_equal_one_returns_false()
-#script__is_raw_data_code_not_equal_raw_data_returns_false()
-#script__is_raw_data_returns_true()
-#script__factory_from_data_chunk_test()
-#script__bip16__valid()
-#script__bip16__invalidated()
-#script__bip65__valid()
-#script__bip65__invalid()
-#script__bip65__invalidated()
-#script__multisig__valid()
-#script__multisig__invalid()
-#script__context_free__valid()
-#script__context_free__invalid()
-#script__invalid_parse__empty_inputs()
-#script__checksig__uses_one_hash()
-#script__checksig__normal()
-#script__create_endorsement__single_input_single_output__expected()
-#script__create_endorsement__single_input_no_output__expected()
-#script__generate_signature_hash__all__expected()
+script__bip16__invalidated()
+script__bip65__valid()
+script__bip65__invalid()
+script__bip65__invalidated()
+script__multisig__valid()
+script__multisig__invalid()
+script__context_free__valid()
+script__context_free__invalid()
+script__checksig__uses_one_hash()
+script__checksig__normal()
+script__create_endorsement__single_input_single_output__expected()
+script__create_endorsement__single_input_no_output__expected()
+script__generate_signature_hash__all__expected()
 

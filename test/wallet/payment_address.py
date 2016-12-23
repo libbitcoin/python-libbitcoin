@@ -142,15 +142,13 @@ def payment_address__construct__uncompressed_hash_testnet__valid_expected():
 # construct script:
 
 def payment_address__construct__script__valid_expected():
-    ops = bc.Script()
-    ops.from_string(SCRIPT)
+    ops = bc.Script.from_string(SCRIPT)
     address = bc.PaymentAddress.from_script(ops)
     assert address.is_valid()
     assert str(address) == ADDRESS_SCRIPT
 
 def payment_address__construct__script_testnet__valid_expected():
-    ops = bc.Script()
-    ops.from_string(SCRIPT)
+    ops = bc.Script.from_string(SCRIPT)
     address = bc.PaymentAddress.from_script(ops, 0xc4)
     assert address.is_valid()
     assert str(address) == ADDRESS_SCRIPT_TESTNET

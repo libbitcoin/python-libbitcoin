@@ -13,7 +13,6 @@ class MachineNumber:
     def __del__(self):
         lib.bc_destroy_machine_number(self._obj)
 
-    @property
     def data(self):
         obj = lib.bc_machine_number__data(self._obj)
         return DataChunk(obj).data

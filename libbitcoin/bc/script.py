@@ -30,17 +30,22 @@ class Script:
             return None
         return self
 
+    @classmethod
+    def from_string(cls, mnemonic):
+        self = cls()
+        if isinstance(mnemonic, str):
+            mnemonic = bytes(mnemonic, "ascii")
+        result = lib.bc_script__from_string(self._obj, mnemonic) == 1
+        if not result:
+            return None
+        return self
+
     def copy(self):
         obj = lib.bc_create_script_copy(self._obj)
         return Script(obj)
 
     def __eq__(self, other):
         return lib.bc_script__equals(self._obj, other._obj) == 1
-
-    def from_string(self, mnemonic):
-        if isinstance(mnemonic, str):
-            mnemonic = bytes(mnemonic, "ascii")
-        return lib.bc_script__from_string(self._obj, mnemonic) == 1
 
     def is_valid(self):
         return lib.bc_script__is_valid(self._obj) == 1
