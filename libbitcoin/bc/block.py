@@ -16,11 +16,11 @@ class Block:
     def __del__(self):
         lib.bc_destroy_block(self._obj)
 
-    @property
     def transactions(self):
         obj = lib.bc_block__transactions(self._obj)
-        return TransactionList(obj)
-    @transactions.setter
-    def transactions(self, transactions):
-        lib.bc_block__set_transactions(self._obj, transactions._obj)
+        return list(TransactionList(obj))
+
+    def set_transactions(self, transactions):
+        tx_list = TransactionList.from_list(transactions)
+        lib.bc_block__set_transactions(self._obj, tx_list._obj)
 

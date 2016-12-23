@@ -38,7 +38,7 @@ def push_literal(value):
     return bytes(chr(bc.Opcode.op_1.value + value - 1), "ascii")
 
 def push_data(data):
-    return Operation.from_data(data).to_data()
+    return bc.Operation.from_data(data).to_data()
 
 sentinel = "__ENDING__"
 
@@ -61,7 +61,7 @@ def parse_token(raw_script, raw_hex, token):
         if is_opx(value):
             raw_script[0] += push_literal(value)
         else:
-            bignum = bc.ScriptNumber(value)
+            bignum = bc.MachineNumber(value)
             raw_script[0] += push_data(bignum.data)
     elif is_hex_data(token):
         hex_part = token[2:]
@@ -81,7 +81,7 @@ def parse_token(raw_script, raw_hex, token):
         return False
     return True
 
-def parse(result_script, format):
+def parse(format):
     format = format.strip()
     if not format:
         return True
@@ -95,30 +95,32 @@ def parse(result_script, format):
 
     parse_token(raw_script, raw_hex, sentinel)
 
-    if not result_script.from_data(raw_script[0], False):
+    result_script = bc.Script.from_data(raw_script[0], False)
+    if result_script is None:
         return False
 
     if result_script.empty():
         return False
 
-    return True
+    return result_script
 
-def new_tx(test):
-    input_script = bc.Script()
-    output_script = bc.Script()
-
+def new_tx(test, sequence=0):
     tx = bc.Transaction()
-    if not parse(input_script, test[0]):
-        return tx
 
-    if not parse(output_script, test[1]):
-        return tx
+    input_script = parse(test[0])
+    if input_script is None:
+        return None
+
+    output_script = parse(test[1])
+    if output_script is None:
+        return None
 
     input = bc.Input()
-    input.script = input_script
-    input.previous_output.cache.script = output_script
+    input.set_sequence(sequence)
+    input.set_script(input_script)
+    input.previous_output().validation.cache.set_script(output_script)
 
-    tx.inputs.append(input)
+    tx.set_inputs([input])
     return tx
 
 def script__one_hash__literal__same():
@@ -224,7 +226,9 @@ def script__native__block_438513_tx__valid():
 def script__bip16__valid():
     for test in chain.script_data.valid_bip16_scripts:
         tx = new_tx(test)
-        assert not tx.inputs.empty(), test[2]
+        assert tx is not None
+        assert tx.is_valid(), test[2]
+        assert tx.inputs(), test[2]
 
         # These are valid prior to and after BIP16 activation.
         assert bc.Script.verify(tx, 0, bc.RuleFork.no_rules) == \
@@ -459,7 +463,7 @@ script__factory_from_data_chunk_test()
 script__from_data__first_byte_invalid_wire_code__success()
 script__from_data__internal_invalid_wire_code__success()
 script__native__block_438513_tx__valid()
-#script__bip16__valid()
+script__bip16__valid()
 
 #script__from_data__testnet_119058_non_parseable__fallback()
 #script__from_data__parse__fails()

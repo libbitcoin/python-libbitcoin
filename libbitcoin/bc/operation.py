@@ -12,7 +12,7 @@ class Operation:
 
     @classmethod
     def from_data(cls, uncoded, minimal=True):
-        data = DataChunk(obj)
+        data = DataChunk(uncoded)
         if minimal:
             obj = lib.bc_create_operation_Data(data._obj)
         else:

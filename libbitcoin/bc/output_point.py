@@ -3,6 +3,19 @@ from libbitcoin.bc.output import Output
 from libbitcoin.bc.point import Point, ChainPointList
 from libbitcoin.bc.vector import VectorMeta, VectorBase
 
+class Validation:
+
+    def __init__(self, obj):
+        self._obj = obj
+
+    def __del__(self):
+        lib.bc_destroy_output_point_validation(self._obj)
+
+    @property
+    def cache(self):
+        obj = lib.bc_output_point_validation__cache(self._obj)
+        return Output(obj)
+
 class OutputPoint:
 
     def __init__(self, obj=None):
@@ -26,43 +39,13 @@ class OutputPoint:
     def __eq__(self, other):
         return lib.bc_output_point__equals(self._obj, other._obj) == 1
 
-    def reset(self):
-        lib.bc_output_point__reset(self._obj)
-
-    def is_cached(self):
-        return lib.bc_output_point__is_cached(self._obj)
-
     def is_mature(self, target_height):
         return lib.bc_output_point__is_mature(self._obj, target_height)
 
     @property
-    def spent(self):
-        return lib.bc_output_point__spent(self._obj) == 1
-    @spent.setter
-    def spent(self, spent):
-        lib.bc_output_point__set_spent(self._obj, spent)
-
-    @property
-    def confirmed(self):
-        return lib.bc_output_point__confirmed(self._obj) == 1
-    @confirmed.setter
-    def confirmed(self, confirmed):
-        lib.bc_output_point__set_confirmed(self._obj, confirmed)
-
-    @property
-    def height(self):
-        return lib.bc_output_point__height(self._obj) == 1
-    @height.setter
-    def height(self, height):
-        lib.bc_output_point__set_height(self._obj, height)
-
-    @property
-    def cache(self):
-        obj = lib.bc_output_point__cache(self._obj)
-        return Output(obj)
-    @cache.setter
-    def cache(self, cache):
-        lib.bc_output_point__set_cache(self._obj, cache._obj)
+    def validation(self):
+        obj = lib.bc_output_point__validation(self._obj)
+        return Validation(obj)
 
     def __repr__(self):
         return "<bc_output_point>"

@@ -3,6 +3,31 @@ typedef struct bc_output_t bc_output_t;
 typedef struct bc_point_t bc_point_t;
 typedef struct bc_chain_point_list_t bc_chain_point_list_t;
 
+typedef struct bc_output_point_validation_t bc_output_point_validation_t;
+
+void bc_destroy_output_point_validation(bc_output_point_validation_t* self);
+
+size_t bc_output_point_validation__not_specified(
+    const bc_output_point_validation_t* self);
+
+bool bc_output_point_validation__spent(
+    const bc_output_point_validation_t* self);
+void bc_output_point_validation__set_spent(
+    bc_output_point_validation_t* self, bool spent);
+
+bool bc_output_point_validation__confirmed(
+    const bc_output_point_validation_t* self);
+void bc_output_point_validation__set_confirmed(
+    bc_output_point_validation_t* self, bool confirmed);
+
+size_t bc_output_point_validation__height(
+    const bc_output_point_validation_t* self);
+void bc_output_point_validation__set_height(
+    bc_output_point_validation_t* self, size_t height);
+
+bc_output_t* bc_output_point_validation__cache(
+    const bc_output_point_validation_t* self);
+
 typedef struct bc_output_point_t bc_output_point_t;
 
 /// Constructors
@@ -36,6 +61,9 @@ bc_point_t* bc_output_point__point_Base(bc_output_point_t* self);
 /// True if the previous output is mature enough to spend from target.
 bool bc_output_point__is_mature(const bc_output_point_t* self,
     size_t target_height);
+
+bc_output_point_validation_t* bc_output_point__validation(
+    const bc_output_point_t* self);
 
 typedef struct bc_points_info_t bc_points_info_t;
 bc_points_info_t* bc_create_points_info();

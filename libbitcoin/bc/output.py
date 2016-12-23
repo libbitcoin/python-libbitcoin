@@ -58,12 +58,11 @@ class Output:
     def value(self, value):
         lib.bc_output__set_value(self._obj, value)
 
-    @property
     def script(self):
         obj = lib.bc_output__script(self._obj)
         return Script(obj)
-    @script.setter
-    def script(self, script):
+
+    def set_script(self, script):
         lib.bc_output__set_script(self._obj, script._obj)
 
 class OutputList(VectorBase, metaclass=VectorMeta):

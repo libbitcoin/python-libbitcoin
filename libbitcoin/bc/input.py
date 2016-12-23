@@ -41,27 +41,24 @@ class Input:
     def serialized_size(self):
         return lib.bc_input__serialized_size(self._obj)
 
-    @property
     def previous_output(self):
         obj = lib.bc_input__previous_output(self._obj)
         return OutputPoint(obj)
-    @previous_output.setter
-    def previous_output(self, previous_output):
+
+    def set_previous_output(self, previous_output):
         lib.bc_input__set_previous_output(self._obj, previous_output._obj)
 
-    @property
     def script(self):
         obj = lib.bc_input__script(self._obj)
         return Script(obj)
-    @script.setter
-    def script(self, script):
+
+    def set_script(self, script):
         lib.bc_input__set_script(self._obj, script._obj)
 
-    @property
     def sequence(self):
         return lib.bc_input__sequence(self._obj)
-    @sequence.setter
-    def sequence(self, sequence):
+
+    def set_sequence(self, sequence):
         lib.bc_input__set_sequence(self._obj, sequence)
 
     def __repr__(self):

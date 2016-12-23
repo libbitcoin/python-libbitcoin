@@ -202,6 +202,6 @@ class Script:
 
     @staticmethod
     def verify(tx, input, forks):
-        obj = lib.bc_script__verify(tx._obj, input, forks)
+        obj = lib.bc_script__verify(tx._obj, input, forks.value)
         return ErrorCode(obj)
 

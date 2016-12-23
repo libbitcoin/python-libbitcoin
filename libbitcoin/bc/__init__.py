@@ -18,6 +18,7 @@ from libbitcoin.bc.hash import HashDigest, HalfHash, QuarterHash, LongHash, \
 from libbitcoin.bc.hd_public import hd_first_hardened_key, HdPublic
 from libbitcoin.bc.hd_private import HdPrivate
 from libbitcoin.bc.input import Input, InputList
+from libbitcoin.bc.machine_number import MachineNumber
 from libbitcoin.bc.mnemonic import mnemonic_word_multiple, \
     mnemonic_seed_multiple, create_mnemonic, validate_mnemonic, \
     decode_mnemonic
@@ -29,7 +30,6 @@ from libbitcoin.bc.output_point import OutputPoint, OutputInfo, OutputInfoList
 from libbitcoin.bc.payment_address import PaymentAddress
 from libbitcoin.bc.rule_fork import RuleFork
 from libbitcoin.bc.script import Script
-from libbitcoin.bc.script_number import ScriptNumber
 from libbitcoin.bc.script_pattern import ScriptPattern
 from libbitcoin.bc.sighash_algorithm import SighashAlgorithm
 from libbitcoin.bc.select_outputs import select_outputs

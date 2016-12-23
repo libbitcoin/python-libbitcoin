@@ -40,6 +40,9 @@ bc_machine_number_t* bc_create_machine_number();
 /// Construct with specified value.
 bc_machine_number_t* bc_create_machine_number_Value(int64_t value);
 
+// Destructor
+void bc_destroy_machine_number(bc_machine_number_t* self);
+
 /// Replace the value derived from a byte vector with LSB first ordering.
 bool bc_machine_number__set_data(bc_machine_number_t* self,
     const bc_data_chunk_t* data, size_t max_size);
