@@ -5,11 +5,34 @@ from libbitcoin.bc.vector import VectorMeta, VectorBase
 
 class Validation:
 
+    not_specified = lib.bc_output_point_validation__not_specified()
+
     def __init__(self, obj):
         self._obj = obj
 
     def __del__(self):
         lib.bc_destroy_output_point_validation(self._obj)
+
+    @property
+    def spent(self):
+        return lib.bc_output_point_validation__spent(self._obj)
+    @spent.setter
+    def spent(self, spent):
+        lib.bc_output_point_validation__set_spent(self._obj, spent)
+
+    @property
+    def confirmed(self):
+        return lib.bc_output_point_validation__confirmed(self._obj)
+    @confirmed.setter
+    def confirmed(self, confirmed):
+        lib.bc_output_point_validation__set_confirmed(self._obj, confirmed)
+
+    @property
+    def height(self):
+        return lib.bc_output_point_validation__height(self._obj)
+    @height.setter
+    def height(self, height):
+        lib.bc_output_point_validation__set_height(self._obj, height)
 
     @property
     def cache(self):

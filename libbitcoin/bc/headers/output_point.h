@@ -7,8 +7,7 @@ typedef struct bc_output_point_validation_t bc_output_point_validation_t;
 
 void bc_destroy_output_point_validation(bc_output_point_validation_t* self);
 
-size_t bc_output_point_validation__not_specified(
-    const bc_output_point_validation_t* self);
+size_t bc_output_point_validation__not_specified();
 
 bool bc_output_point_validation__spent(
     const bc_output_point_validation_t* self);
