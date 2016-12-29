@@ -81,8 +81,8 @@ class ClientSettings:
 
 class Client:
 
-    def __init__(self, address, context, settings):
-        self._address = address
+    def __init__(self, context, url, settings=ClientSettings()):
+        self._url = url
         self._context = context
         self.settings = settings
         self._setup_socket()
@@ -94,7 +94,7 @@ class Client:
         if self.settings.socks5:
             socks5 = bytes(self.settings.socks5, "ascii")
             self._socket.setsockopt(zmq.SOCKS_PROXY, socks5)
-        self._socket.connect(self._address)
+        self._socket.connect(self._url)
         self._context.poller.register(self._socket)
         self._context.poller.add_handler(b"address.update", self._on_update)
 

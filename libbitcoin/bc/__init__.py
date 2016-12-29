@@ -14,7 +14,7 @@ from libbitcoin.bc.error import ConsoleResult, Error
 from libbitcoin.bc.dictionary import Dictionary
 from libbitcoin.bc.header import Header, HeaderList
 from libbitcoin.bc.hash import HashDigest, HalfHash, QuarterHash, LongHash, \
-    ShortHash, MiniHash, null_hash, bitcoin_hash, hash_literal
+    ShortHash, MiniHash, null_hash, bitcoin_hash, encode_hash, hash_literal
 from libbitcoin.bc.hd_public import hd_first_hardened_key, HdPublic
 from libbitcoin.bc.hd_private import HdPrivate
 from libbitcoin.bc.input import Input, InputList

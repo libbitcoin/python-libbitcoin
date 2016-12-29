@@ -28,18 +28,18 @@ async def main():
     ec, height = await client.last_height()
     if ec:
         print("Couldn't fetch last_height:", ec, file=sys.stderr)
-        context.stop_all()
+        context.stop()
         return
     print("Last height:", height)
 
     ec, total_connections = await client.total_connections()
     if ec:
         print("Couldn't fetch total_connections:", ec, file=sys.stderr)
-        context.stop_all()
+        context.stop()
         return
     print("Total server connections:", total_connections)
 
-    context.stop_all()
+    context.stop()
 
 if __name__ == '__main__':
     tasks = [

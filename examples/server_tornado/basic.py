@@ -10,7 +10,7 @@ async def hello(client):
 def main():
     context = TornadoContext()
 
-    url = "tcp://gateway.unsystem.net:9091"
+    url = "tcp://163.172.84.141:9091"
     client = Client(context, url)
 
     def signal_handler(signum, frame):

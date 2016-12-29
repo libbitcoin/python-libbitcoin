@@ -4,7 +4,7 @@ import io
 import libbitcoin.server.models
 
 def serialize_hash(hashval):
-    return hashval[::-1]
+    return hashval
 
 def serialize_uint32(u):
     rs = b""
