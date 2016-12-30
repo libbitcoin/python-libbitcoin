@@ -24,6 +24,7 @@ cdef += bc_macros.byte_array("wif_uncompressed")
 cdef += bc_macros.byte_array("wif_compressed")
 cdef += bc_macros.byte_array("aes_secret")
 cdef += bc_macros.byte_array("aes_block")
+cdef += bc_macros.byte_array("message_signature")
 
 cdef += bc_macros.hash_type("hash_digest")
 cdef += bc_macros.hash_type("half_hash")

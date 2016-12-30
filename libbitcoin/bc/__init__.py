@@ -19,6 +19,7 @@ from libbitcoin.bc.hd_public import hd_first_hardened_key, HdPublic
 from libbitcoin.bc.hd_private import HdPrivate
 from libbitcoin.bc.input import Input, InputList
 from libbitcoin.bc.machine_number import MachineNumber
+from libbitcoin.bc.message import hash_message, sign_message, verify_message
 from libbitcoin.bc.mnemonic import mnemonic_word_multiple, \
     mnemonic_seed_multiple, create_mnemonic, validate_mnemonic, \
     decode_mnemonic

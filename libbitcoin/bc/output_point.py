@@ -65,6 +65,12 @@ class OutputPoint:
         base_obj = lib.bc_output_point__point_Base(self._obj)
         return Point(base_obj)
 
+    def hash(self):
+        return self.base.hash()
+
+    def index(self):
+        return self.base.index()
+
     def __eq__(self, other):
         return lib.bc_output_point__equals(self._obj, other._obj) == 1
 

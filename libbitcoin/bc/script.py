@@ -61,6 +61,9 @@ class Script:
         obj = lib.bc_script__to_string(self._obj, active_forks)
         return str(String(obj))
 
+    def __str__(self):
+        return self.to_string(0)
+
     def empty(self):
         return lib.bc_script__empty(self._obj) == 1
 
