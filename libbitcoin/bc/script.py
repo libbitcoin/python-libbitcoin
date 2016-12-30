@@ -91,7 +91,7 @@ class Script:
 
     def operations(self):
         obj = lib.bc_script__operations(self._obj)
-        return OperationList(obj)
+        return list(OperationList(obj))
 
     @staticmethod
     def generate_signature_hash(tx, input_index,
@@ -115,73 +115,93 @@ class Script:
             out._obj, secret._obj, prevout_script._obj, tx._obj,
             input_index, sighash_type.value) == 1
 
-    def is_enabled(self, active_forks, fork):
+    @staticmethod
+    def is_enabled(active_forks, fork):
         """Determine if the fork is enabled in the active forks set."""
-        return lib.bc_script__is_enabled(self._obj, active_forks,
+        return lib.bc_script__is_enabled(active_forks,
                                          fork.value) == 1
 
-    def is_push_only(self, ops):
-        return lib.bc_script__is_push_only(self._obj, ops._obj) == 1
+    @staticmethod
+    def is_push_only(ops):
+        ops = OperationList.from_list(ops)
+        return lib.bc_script__is_push_only(ops._obj) == 1
 
-    def is_relaxed_push(self, ops):
-        return lib.bc_script__is_relaxed_push(self._obj, ops._obj) == 1
+    @staticmethod
+    def is_relaxed_push(ops):
+        ops = OperationList.from_list(ops)
+        return lib.bc_script__is_relaxed_push(ops._obj) == 1
 
-    def is_coinbase_pattern(self, ops, height):
-        return lib.bc_script__is_coinbase_pattern(self._obj, ops._obj,
-                                                  height) == 1
+    @staticmethod
+    def is_coinbase_pattern(ops, height):
+        ops = OperationList.from_list(ops)
+        return lib.bc_script__is_coinbase_pattern(ops._obj, height) == 1
 
-    def is_null_data_pattern(self, ops):
-        return lib.bc_script__is_null_data_pattern(self._obj, ops._obj) == 1
+    @staticmethod
+    def is_null_data_pattern(ops):
+        ops = OperationList.from_list(ops)
+        return lib.bc_script__is_null_data_pattern(ops._obj) == 1
 
-    def is_pay_multisig_pattern(self, ops):
-        return lib.bc_script__is_pay_multisig_pattern(self._obj, ops._obj) == 1
+    @staticmethod
+    def is_pay_multisig_pattern(ops):
+        ops = OperationList.from_list(ops)
+        return lib.bc_script__is_pay_multisig_pattern(ops._obj) == 1
 
-    def is_pay_public_key_pattern(self, ops):
-        return lib.bc_script__is_pay_public_key_pattern(self._obj,
-                                                        ops._obj) == 1
+    @staticmethod
+    def is_pay_public_key_pattern(ops):
+        ops = OperationList.from_list(ops)
+        return lib.bc_script__is_pay_public_key_pattern(ops._obj) == 1
 
-    def is_pay_key_hash_pattern(self, ops):
-        return lib.bc_script__is_pay_key_hash_pattern(self._obj, ops._obj) == 1
+    @staticmethod
+    def is_pay_key_hash_pattern(ops):
+        ops = OperationList.from_list(ops)
+        return lib.bc_script__is_pay_key_hash_pattern(ops._obj) == 1
 
-    def is_pay_script_hash_pattern(self, ops):
-        return lib.bc_script__is_pay_script_hash_pattern(self._obj,
-                                                         ops._obj) == 1
+    @staticmethod
+    def is_pay_script_hash_pattern(ops):
+        ops = OperationList.from_list(ops)
+        return lib.bc_script__is_pay_script_hash_pattern(ops._obj) == 1
 
-    def is_sign_multisig_pattern(self, ops):
-        return lib.bc_script__is_sign_multisig_pattern(self._obj, ops._obj) == 1
+    @staticmethod
+    def is_sign_multisig_pattern(ops):
+        ops = OperationList.from_list(ops)
+        return lib.bc_script__is_sign_multisig_pattern(ops._obj) == 1
 
-    def is_sign_public_key_pattern(self, ops):
-        return lib.bc_script__is_sign_public_key_pattern(self._obj,
-                                                         ops._obj) == 1
+    @staticmethod
+    def is_sign_public_key_pattern(ops):
+        ops = OperationList.from_list(ops)
+        return lib.bc_script__is_sign_public_key_pattern(ops._obj) == 1
 
-    def is_sign_key_hash_pattern(self, ops):
-        return lib.bc_script__is_sign_key_hash_pattern(self._obj, ops._obj) == 1
+    @staticmethod
+    def is_sign_key_hash_pattern(ops):
+        ops = OperationList.from_list(ops)
+        return lib.bc_script__is_sign_key_hash_pattern(ops._obj) == 1
 
-    def is_sign_script_hash_pattern(self, ops):
-        return lib.bc_script__is_sign_script_hash_pattern(self._obj,
-                                                          ops._obj) == 1
+    @staticmethod
+    def is_sign_script_hash_pattern(ops):
+        ops = OperationList.from_list(ops)
+        return lib.bc_script__is_sign_script_hash_pattern(ops._obj) == 1
 
     @staticmethod
     def to_null_data_pattern(data):
         data = DataChunk(data)
         obj = lib.bc_script__to_null_data_pattern(data._obj)
-        return OperationList(obj)
+        return list(OperationList(obj))
 
     @staticmethod
     def to_pay_public_key_pattern(data):
         data = DataChunk(data)
         obj = lib.bc_script__to_pay_public_key_pattern(data._obj)
-        return OperationList(obj)
+        return list(OperationList(obj))
 
     @staticmethod
     def to_pay_key_hash_pattern(hash):
         obj = lib.bc_script__to_pay_key_hash_pattern(hash._obj)
-        return OperationList(obj)
+        return list(OperationList(obj))
 
     @staticmethod
     def to_pay_script_hash_pattern(hash):
         obj = lib.bc_script__to_pay_script_hash_pattern(hash._obj)
-        return OperationList(obj)
+        return list(OperationList(obj))
 
     @staticmethod
     def to_pay_multisig_pattern(signatures, points):
