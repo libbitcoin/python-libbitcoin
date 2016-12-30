@@ -1,6 +1,6 @@
 from libbitcoin.bc.config import lib
 from libbitcoin.bc.data import DataChunk
-from libbitcoin.bc.hash import HashDigest
+from libbitcoin.bc.hash import HashDigest, encode_hash
 from libbitcoin.bc.string import String
 from libbitcoin.bc.vector import VectorMeta, VectorBase, \
                                  IntVectorMeta, IntVectorBase
@@ -46,13 +46,6 @@ class Point:
         obj = lib.bc_point__to_data(self._obj)
         return DataChunk(obj)
 
-    def to_string(self):
-        obj = lib.bc_point__to_string(self._obj)
-        return str(String(obj))
-
-    def __str__(self):
-        return self.to_string()
-
     def is_valid(self):
         return lib.bc_point__is_valid(self._obj) == 1
 
@@ -76,7 +69,7 @@ class Point:
         lib.bc_point__set_index(self._obj, index)
 
     def __repr__(self):
-        return "<bc_point %s:%s>" % (str(self.hash), self.index)
+        return "<bc_point %s:%s>" % (encode_hash(self.hash()), self.index())
 
 class ChainPointList(VectorBase, metaclass=VectorMeta):
     bc_name = "chain_point_list"
