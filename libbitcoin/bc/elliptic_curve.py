@@ -22,7 +22,7 @@ class EcSecret(ByteArrayBase, metaclass=ByteArrayMeta):
         signature = EcSignature()
         if lib.bc_sign(signature._obj, self._obj, sighash._obj) == 0:
             return None
-        return signature
+        return signature.data
 
     def __iadd__(self, secret):
         if lib.bc_ec_add(self._obj, secret._obj) == 0:
