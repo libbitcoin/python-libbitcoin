@@ -1,6 +1,7 @@
 from libbitcoin.bc.config import lib
 from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.output_point import OutputPoint
+from libbitcoin.bc.point import Point
 from libbitcoin.bc.script import Script
 from libbitcoin.bc.string import String
 from libbitcoin.bc.vector import VectorMeta, VectorBase
@@ -45,6 +46,11 @@ class Input:
         return OutputPoint(obj)
 
     def set_previous_output(self, previous_output):
+        if isinstance(previous_output, tuple) or \
+           isinstance(previous_output, list):
+            previous_output = OutputPoint.from_tuple(previous_output)
+        if isinstance(previous_output, Point):
+            previous_output = OutputPoint.from_point(previous_output)
         lib.bc_input__set_previous_output(self._obj, previous_output._obj)
 
     def script(self):

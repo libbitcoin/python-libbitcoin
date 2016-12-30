@@ -48,8 +48,14 @@ class OutputPoint:
 
     @classmethod
     def from_tuple(cls, hash_, index):
+        if isinstance(hash_, bytes):
+            hash_ = bc.HashDigest.from_bytes(hash_)
         obj = lib.bc_create_output_point_Tuple(hash_._obj, index)
         return cls(obj)
+
+    @classmethod
+    def from_point(cls, point):
+        return cls.from_tuple(point.hash(), point.index())
 
     def __del__(self):
         lib.bc_destroy_output_point(self._obj)
@@ -86,7 +92,7 @@ class PointsInfo:
     @property
     def points(self):
         obj = lib.bc_points_info__points(self._obj)
-        return ChainPointList(obj)
+        return list(ChainPointList(obj))
     @points.setter
     def points(self, points):
         lib.bc_points_info__set_points(self._obj, points._obj)
