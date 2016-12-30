@@ -9,6 +9,9 @@ class PaymentAddress:
     mainnet_p2kh = lib.bc_payment_address__mainnet_p2kh()
     mainnet_p2sh = lib.bc_payment_address__mainnet_p2sh()
 
+    testnet_p2kh = lib.bc_payment_address__testnet_p2kh()
+    testnet_p2sh = lib.bc_payment_address__testnet_p2sh()
+
     def __init__(self, obj=None):
         if isinstance(obj, str):
             obj = PaymentAddress._string_init_obj(obj)
