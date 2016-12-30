@@ -18,6 +18,7 @@ class Script:
 
     @classmethod
     def from_ops(cls, ops):
+        ops = OperationList.from_list(ops)
         obj = lib.bc_create_script_Ops(ops._obj)
         return cls(obj)
 
