@@ -1,6 +1,7 @@
 from enum import Enum
 from libbitcoin.bc.config import ffi, lib
 from libbitcoin.bc.data import DataChunk, DataStack
+from libbitcoin.bc.elliptic_curve import Endorsement
 from libbitcoin.bc.error import ErrorCode
 from libbitcoin.bc.hash import HashDigest
 from libbitcoin.bc.operation import Operation, OperationList
@@ -109,11 +110,14 @@ class Script:
             script_code._obj, tx._obj, input_index) == 1
 
     @staticmethod
-    def create_endorsement(out, secret, prevout_script, tx,
+    def create_endorsement(secret, prevout_script, tx,
                            input_index, sighash_type):
-        return lib.bc_script__create_endorsement(
+        out = Endorsement()
+        if lib.bc_script__create_endorsement(
             out._obj, secret._obj, prevout_script._obj, tx._obj,
-            input_index, sighash_type.value) == 1
+            input_index, sighash_type.value) != 1:
+            return None
+        return out.data
 
     @staticmethod
     def is_enabled(active_forks, fork):

@@ -16,12 +16,14 @@ async def main():
     else:
         url = "tcp://gateway.unsystem.net:9091"
         # Testnet URL
-        url = "tcp://163.172.84.141:9091"
+        #url = "tcp://163.172.84.141:9091"
 
     client_settings = libbitcoin.server.ClientSettings()
     client_settings.query_expire_time = 1.0
     if tor_enabled:
         client_settings.socks5 = "127.0.0.1:9150"
+
+    print("Connecting:", url)
 
     client = context.Client(url, settings=client_settings)
 
