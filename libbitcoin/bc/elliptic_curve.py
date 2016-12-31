@@ -45,6 +45,8 @@ class EcCompressed(ByteArrayBase, metaclass=ByteArrayMeta):
         return out
 
     def verify(self, hash_, signature):
+        if isinstance(signature, bytes):
+            signature = EcSignature.from_bytes(signature)
         return lib.bc_verify_signature_compressed(self._obj, hash_._obj,
                                                   signature._obj) == 1
 

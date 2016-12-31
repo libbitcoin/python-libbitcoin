@@ -408,13 +408,13 @@ def script__create_endorsement__single_input_single_output__expected():
 
     secret = bc.EcSecret.from_string("ce8f4b713ffdd2658900845251890f30371856be201cd1f5b3d970f793634333", True)
 
-    out = bc.Endorsement()
     input_index = 0
     sighash_type = bc.SighashAlgorithm.all
-    assert bc.Script.create_endorsement(out, secret, prevout_script, new_tx,
-                                        input_index, sighash_type)
+    out = bc.Script.create_endorsement(secret, prevout_script, new_tx,
+                                       input_index, sighash_type)
+    assert out is not None
 
-    assert str(out) == "3045022100e428d3cc67a724cb6cfe8634aa299e58f189d9c46c02641e936c40cc16c7e8ed0220083949910fe999c21734a1f33e42fca15fb463ea2e08f0a1bccd952aacaadbb801"
+    assert out.hex() == "3045022100e428d3cc67a724cb6cfe8634aa299e58f189d9c46c02641e936c40cc16c7e8ed0220083949910fe999c21734a1f33e42fca15fb463ea2e08f0a1bccd952aacaadbb801"
 
 def script__create_endorsement__single_input_no_output__expected():
     tx_data = bytes.fromhex("0100000001b3807042c92f449bbf79b33ca59d7dfec7f4cc71096704a9c526dddf496ee0970000000000ffffffff0000000000")
@@ -425,13 +425,13 @@ def script__create_endorsement__single_input_no_output__expected():
 
     secret = bc.EcSecret.from_string("ce8f4b713ffdd2658900845251890f30371856be201cd1f5b3d970f793634333", True)
 
-    out = bc.Endorsement()
     input_index = 0
     sighash_type = bc.SighashAlgorithm.all
-    assert bc.Script.create_endorsement(out, secret, prevout_script, new_tx,
-                                        input_index, sighash_type)
+    out = bc.Script.create_endorsement(secret, prevout_script, new_tx,
+                                       input_index, sighash_type)
+    assert out is not None
 
-    assert str(out) == "3045022100ba57820be5f0b93a0d5b880fbf2a86f819d959ecc24dc31b6b2d4f6ed286f253022071ccd021d540868ee10ca7634f4d270dfac7aea0d5912cf2b104111ac9bc756b01"
+    assert out.hex() == "3045022100ba57820be5f0b93a0d5b880fbf2a86f819d959ecc24dc31b6b2d4f6ed286f253022071ccd021d540868ee10ca7634f4d270dfac7aea0d5912cf2b104111ac9bc756b01"
 
 def script__generate_signature_hash__all__expected():
     tx_data = bytes.fromhex("0100000001b3807042c92f449bbf79b33ca59d7dfec7f4cc71096704a9c526dddf496ee0970000000000ffffffff0000000000")
@@ -440,12 +440,11 @@ def script__generate_signature_hash__all__expected():
     prevout_script = bc.Script.from_string("dup hash160 [88350574280395ad2c3e2ee20e322073d94e5e40] equalverify checksig")
     assert prevout_script is not None
 
-    out = bc.Endorsement()
     input_index = 0
     sighash_type = bc.SighashAlgorithm.all
     sighash = bc.Script.generate_signature_hash(new_tx, input_index,
                                                 prevout_script, sighash_type)
-    assert sighash.encode_base16() == "f89572635651b2e4f89778350616989183c98d1a721c911324bf9f17a0cf5bf0"
+    assert sighash.data.hex() == "f89572635651b2e4f89778350616989183c98d1a721c911324bf9f17a0cf5bf0"
 
 script__one_hash__literal__same()
 script__from_data__testnet_119058_invalid_op_codes__success()

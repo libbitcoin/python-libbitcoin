@@ -5,6 +5,7 @@ import chain.satoshi_words
 import chain.script
 import chain.transaction
 import math_.elliptic_curve
+import math_.stealth
 import wallet.hd_public
 import wallet.hd_private
 import wallet.mnemonic

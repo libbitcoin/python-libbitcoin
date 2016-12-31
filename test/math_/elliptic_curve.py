@@ -33,7 +33,7 @@ def elliptic_curve__sign__positive__test():
     sighash = bc.HashDigest.from_string(SIGHASH3, True)
     signature = secret.sign(sighash)
     assert signature is not None
-    assert signature.encode_base16() == EC_SIGNATURE3
+    assert signature.hex() == EC_SIGNATURE3
 
 def elliptic_curve__encode_signature__positive__test():
     signature = bc.EcSignature.from_string(EC_SIGNATURE3)
