@@ -26,8 +26,12 @@ class StealthAddress:
 
     @classmethod
     def from_string(cls, encoded):
-        obj = lib.bc_create_stealth_address_String(encoded)
-        return cls(obj)
+        if isinstance(encoded, str):
+            encoded = bytes(encoded, "ascii")
+        self = cls(lib.bc_create_stealth_address_String(encoded))
+        if not self.is_valid():
+            return None
+        return self
 
     @classmethod
     def from_tuple(cls, filter_, scan_key, spend_keys,
@@ -48,7 +52,7 @@ class StealthAddress:
         return lib.bc_stealth_address__equals(self._obj, other._obj)
 
     def is_valid(self):
-        return lib.bc_stealth_address__is_valid() == 1
+        return lib.bc_stealth_address__is_valid(self._obj) == 1
 
     def encoded(self):
         obj = lib.bc_stealth_address__encoded(self._obj)
