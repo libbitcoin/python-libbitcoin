@@ -174,21 +174,21 @@ def payment_address__construct__copy__valid_expected():
 def payment_address__version__default__mainnet():
     public = bc.EcPublic.from_string(COMPRESSED)
     address = bc.PaymentAddress.from_point(public)
-    assert address.version == bc.PaymentAddress.mainnet_p2kh
+    assert address.version() == bc.PaymentAddress.mainnet_p2kh
 
 def payment_address__version__testnet__testnet():
     testnet = 0x6f
     public = bc.EcPublic.from_string(COMPRESSED)
     address = bc.PaymentAddress.from_point(public, testnet)
     assert address.is_valid()
-    assert address.version == testnet
+    assert address.version() == testnet
 
 def payment_address__version__script__valid_mainnet_p2sh():
     ops = bc.Script()
     assert ops.from_string(SCRIPT)
     address = bc.PaymentAddress.from_script(ops)
     assert address.is_valid()
-    assert address.version == bc.PaymentAddress.mainnet_p2sh
+    assert address.version() == bc.PaymentAddress.mainnet_p2sh
 
 # hash property:
 
@@ -196,7 +196,7 @@ def payment_address__hash__compressed_point__expected():
     public = bc.EcPublic.from_string(COMPRESSED)
     address = bc.PaymentAddress.from_point(public)
     assert address.is_valid()
-    assert str(address.hash) == COMPRESSED_HASH
+    assert str(address.hash()) == COMPRESSED_HASH
 
 payment_address__construct__default__invalid()
 payment_address__construct__string_invalid__invalid()

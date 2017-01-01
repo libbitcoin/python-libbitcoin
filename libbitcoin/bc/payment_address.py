@@ -94,11 +94,9 @@ class PaymentAddress:
         obj = lib.bc_payment_address__encoded(self._obj)
         return str(String(obj))
 
-    @property
     def version(self):
         return lib.bc_payment_address__version(self._obj)
 
-    @property
     def hash(self):
         obj = lib.bc_payment_address__hash(self._obj)
         return ShortHash(obj)
