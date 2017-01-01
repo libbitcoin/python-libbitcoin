@@ -3,7 +3,6 @@ from libbitcoin import bc
 
 pocket_main_key = "tprv8ctN3HAF9dCgX9ggdCwiZHa7c3UHuG2Ev4jgYWDhTHDUVWKKsg7znbr3vYtmCzVqcMQsjd9cSKsyKGaDvTAUMkw1UphETe1j8LcT21eWPkH"
 
-# [ephemkey:32] [address:20] [tx_hash:32]
 main_key = bc.HdPrivate.from_string(pocket_main_key)
 
 # Receiver generates a new scan private.
@@ -32,6 +31,20 @@ send_addr = bc.PaymentAddress.from_point(sender_public,
 print("Derived address:", send_addr)
 print("Ephem key:", ephemeral_public)
 print()
+
+#########################################
+# Send sends BTC to send_addr
+# Output before is ephemeral_public
+# Padded to 40 bytes
+#########################################
+
+#########################################
+# Receiver scans the blockchain
+# And gets a list of keys and addrs for scanning
+#########################################
+
+# Rows:
+#   [ephemkey:32] [address:20] [tx_hash:32]
 
 # Now the receiver should be able to regenerate the send_addr
 # using just the ephemeral_public.
