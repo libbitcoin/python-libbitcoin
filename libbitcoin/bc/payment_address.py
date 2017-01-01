@@ -39,7 +39,10 @@ class PaymentAddress:
 
     @classmethod
     def from_string(cls, address):
-        return cls(PaymentAddress._string_init_obj(address))
+        self = cls(PaymentAddress._string_init_obj(address))
+        if not self.is_valid():
+            return None
+        return self
 
     @classmethod
     def from_hash(cls, hash_, version=None):
