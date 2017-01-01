@@ -1,6 +1,7 @@
 from libbitcoin.bc.config import lib
 from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.byte_array import ByteArrayBase, ByteArrayMeta
+from libbitcoin.bc.vector import VectorMeta, VectorBase
 
 class Endorsement(DataChunk):
 
@@ -59,6 +60,10 @@ class EcCompressed(ByteArrayBase, metaclass=ByteArrayMeta):
         if lib.bc_ec_multiply_compressed(self._obj, secret._obj) == 0:
             return None
         return self
+
+class PointList(VectorBase, metaclass=VectorMeta):
+    bc_name = "point_list"
+    item_type = EcCompressed
 
 class EcUncompressed(ByteArrayBase, metaclass=ByteArrayMeta):
 

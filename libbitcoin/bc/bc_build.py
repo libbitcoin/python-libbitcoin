@@ -42,6 +42,7 @@ cdef += bc_macros.vector("transaction_list", "bc_transaction_t")
 cdef += bc_macros.vector("header_list", "bc_header_t")
 cdef += bc_macros.vector("chain_point_list", "bc_point_t")
 cdef += bc_macros.vector("data_stack", "bc_data_chunk_t")
+cdef += bc_macros.vector("point_list", "bc_ec_compressed_t")
 
 cdef += bc_macros.int_vector("block_indexes", "size_t")
 cdef += bc_macros.int_vector("point_indexes", "uint32_t")

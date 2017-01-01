@@ -1,6 +1,7 @@
 from libbitcoin.bc.config import ffi, lib
 from libbitcoin.bc.ec_private import EcPrivate
-from libbitcoin.bc.elliptic_curve import EcSecret
+from libbitcoin.bc.ec_public import EcPublic
+from libbitcoin.bc.elliptic_curve import EcCompressed, EcSecret
 from libbitcoin.bc.hash import ShortHash
 from libbitcoin.bc.string import String
 
@@ -58,6 +59,8 @@ class PaymentAddress:
 
     @classmethod
     def from_point(cls, point, version=None):
+        if isinstance(point, EcCompressed):
+            point = EcPublic.from_compressed(point)
         if version is None:
             obj = lib.bc_create_payment_address_Point(point._obj)
         else:

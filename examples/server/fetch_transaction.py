@@ -10,10 +10,11 @@ import libbitcoin.server
 context = libbitcoin.server.Context()
 
 async def main():
-    client = context.Client("tcp://gateway.unsystem.net:9091")
+    client = context.Client("tcp://163.172.84.141:8081")
+    #client = context.Client("tcp://gateway.unsystem.net:9091")
 
-    idx = "77cb1e9d44f1b8e8341e6e6848bf34ea6cb7a88bdaad0126ac1254093480f13f"
-    idx = bytes.fromhex(idx)
+    idx = "083207bea408c5eaf8a2c625ea6a7ecf3fdabe9642a574d01408d61e096cbbfb"
+    idx = bytes.fromhex(idx)[::-1]
 
     ec, tx_data = await client.transaction(idx)
     if ec:

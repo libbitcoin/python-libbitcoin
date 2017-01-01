@@ -39,7 +39,13 @@ class ByteArrayBase:
         return cls.from_bytes(data)
 
     def __del__(self):
+        self._delete_object()
+
+    def _delete_object(self):
         self.bc_destroy_object(self._obj)
+
+    def disable_object_deleter(self):
+        self._delete_object = lambda: None
 
     def __len__(self):
         return self.size
@@ -51,6 +57,9 @@ class ByteArrayBase:
     def encode_base16(self):
         obj = self.bc_object__encode_base16(self._obj)
         return str(String(obj))
+
+    def __str__(self):
+        return self.encode_base16()
 
     def __eq__(self, other):
         return self.data == other.data
