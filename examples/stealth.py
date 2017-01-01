@@ -46,8 +46,20 @@ class Sender:
         return os.urandom(size)
 
     @staticmethod
-    def _random_ephemeral_secret():
+    def _random_secret():
         return bc.EcSecret.from_bytes(Sender._random_data(bc.EcSecret.size))
+
+    @staticmethod
+    def _is_suitable_secret(secret):
+        spend_public_start_byte = secret.to_public().data[0]
+        return spend_public_start_byte == bc.ephemeral_public_key_sign
+
+    @staticmethod
+    def _random_ephemeral_secret():
+        secret = None
+        while secret is None or not Sender._is_suitable_secret(secret):
+            secret = Sender._random_secret()
+        return secret
 
     def send_to_stealth_address(self, stealth_addr, ephemeral_private=None):
         # Sender generates a new ephemeral key.
@@ -66,6 +78,12 @@ class Sender:
             self.sender_public,
             version=bc.PaymentAddress.testnet_p2kh)
 
+        metadata = ephemeral_public.data[1:]
+        assert len(metadata) == 32
+        #meta_output_script = bc.Script.from_ops(
+        #    bc.Opcode.return_,
+        #    ephemeral_public + Sender._random_data
+        #)
         return ephemeral_public, self._send_address
 
 # Receiver creates the secret keys.
@@ -74,7 +92,6 @@ main_key = bc.HdPrivate.from_string(pocket_main_key)
 # Scan private.
 scan_private = main_key.derive_private(
     0 + bc.hd_first_hardened_key).secret()
-# Spend private.
 spend_private = main_key.derive_private(
     1 + bc.hd_first_hardened_key).secret()
 
@@ -86,11 +103,10 @@ stealth_addr = receiver.generate_stealth_address()
 print("Sending to:", stealth_addr)
 
 assert str(stealth_addr) == "vJmudwspxzmEoz1AP5tTrRMcuop6XjNWa1SnjHFmLeSc9DAkro6J6oYnD7MubLHx9wT3rm7D6xgA8U9Lr9zjzijhVSuUbYdMNYUN27"
-
 # Instead of generating a random ephemeral_private, we are going to
 # use this one instead.
 ephemeral_private = bc.EcSecret.from_bytes(bytes.fromhex(
-    "a4649dffc2f14e862c2c88702482201b4cb40c532b6bbb9dcce018afd8e83581"))
+    "f91e673103863bbeb0ef1852cd8eade6b73ea55afc9b1873be62bf628eac072a"))
 
 ephemeral_public, send_address = sender.send_to_stealth_address(
     stealth_addr, ephemeral_private)
@@ -114,7 +130,7 @@ ephemeral_public, send_address = sender.send_to_stealth_address(
 print("Derived key:", send_address)
 print("Ephemeral key:", ephemeral_public)
 
-assert str(send_address) == "myAwkjKJhPhKi1bVwUHJEkk7JnEb98MSdU"
+#assert str(send_address) == "mkJDWtXDQHHhEtLFq1iA8XfSVXucA7LE8D"
 
 # Now the receiver should be able to regenerate the send_address
 # using just the ephemeral_public.
@@ -139,5 +155,5 @@ if receiver.derive_address(ephemeral_public) == send_address:
     receive_private = receiver.derive_private(ephemeral_public)
     print("Receive private:", receive_private)
 
-    assert receive_private.data.hex() == "34d0491bd9e9cb2b5cb0f4e8e33a33720e3446f51dc753cf2299e6454a1943b9"
+    assert receive_private.data.hex() == "fc696c9f7143916f24977210c806101866c7fa13cc06982978d80518c91af2fb"
 

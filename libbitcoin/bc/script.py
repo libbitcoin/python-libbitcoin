@@ -4,7 +4,7 @@ from libbitcoin.bc.data import DataChunk, DataStack
 from libbitcoin.bc.elliptic_curve import Endorsement
 from libbitcoin.bc.error import ErrorCode
 from libbitcoin.bc.hash import HashDigest
-from libbitcoin.bc.operation import Operation, OperationList
+from libbitcoin.bc.operation import Opcode, Operation, OperationList
 from libbitcoin.bc.string import String
 
 class Script:
@@ -17,8 +17,18 @@ class Script:
     def __del__(self):
         lib.bc_destroy_script(self._obj)
 
+    @staticmethod
+    def _convert(op):
+        if isinstance(op, Opcode):
+            return bc.Operation.from_opcode(op)
+        if isinstance(op, bytes):
+            return bc.Operation.from_bytes(op)
+        assert isinstance(op, Operation)
+        return op
+
     @classmethod
     def from_ops(cls, ops):
+        ops = [Script._convert(op) for op in ops]
         ops = OperationList.from_list(ops)
         obj = lib.bc_create_script_Ops(ops._obj)
         return cls(obj)
