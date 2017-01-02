@@ -46,6 +46,8 @@ class PaymentAddress:
 
     @classmethod
     def from_hash(cls, hash_, version=None):
+        if isinstance(hash_, bytes):
+            hash_ = ShortHash.from_bytes(hash_)
         if version is None:
             obj = lib.bc_create_payment_address_Hash(hash_._obj)
         else:
@@ -102,6 +104,10 @@ class PaymentAddress:
         return ShortHash(obj)
 
     def __eq__(self, other):
+        if isinstance(other, str):
+            other = PaymentAddress.from_string(other)
+        if other is None:
+            return False
         return lib.bc_payment_address__equals(self._obj, other._obj) == 1
 
     def __str__(self):

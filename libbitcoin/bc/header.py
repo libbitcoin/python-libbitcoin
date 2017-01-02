@@ -93,6 +93,10 @@ class Header:
     def nonce(self, nonce):
         lib.bc_header__set_nonce(self._obj, nonce)
 
+    def hash(self):
+        obj = lib.bc_header__hash(self._obj)
+        return HashDigest(obj)
+
     @property
     def transaction_count(self):
         return lib.bc_header__transaction_count(self._obj)

@@ -66,6 +66,8 @@ void bc_header__set_bits(bc_header_t* self, uint32_t bits);
 uint32_t bc_header__nonce(const bc_header_t* self);
 void bc_header__set_nonce(bc_header_t* self, uint32_t nonce);
 
+bc_hash_digest_t* bc_header__hash(const bc_header_t* self);
+
 // Validation.
 //-----------------------------------------------------------------------------
 

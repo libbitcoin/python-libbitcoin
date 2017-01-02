@@ -53,6 +53,8 @@ class HashBase:
         return str(String(obj))
 
     def __eq__(self, other):
+        if other is None:
+            return False
         return self.bc_hash__equals(self._obj, other._obj) == 1
 
     def __str__(self):
