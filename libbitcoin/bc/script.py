@@ -20,9 +20,9 @@ class Script:
     @staticmethod
     def _convert(op):
         if isinstance(op, Opcode):
-            return bc.Operation.from_opcode(op)
+            return Operation.from_opcode(op)
         if isinstance(op, bytes):
-            return bc.Operation.from_bytes(op)
+            return Operation.from_data(op)
         assert isinstance(op, Operation)
         return op
 

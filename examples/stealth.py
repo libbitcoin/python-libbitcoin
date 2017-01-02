@@ -4,12 +4,13 @@ from libbitcoin import bc
 
 class Receiver:
 
-    def __init__(self, scan_private, spend_private):
+    def __init__(self, scan_private, spend_private,
+                 version=bc.PaymentAddress.mainnet_p2kh):
         self.scan_private = scan_private
         self.spend_private = spend_private
+        self._version = version
 
     def generate_stealth_address(self):
-
         # Receiver generates a new scan private.
         scan_public = self.scan_private.to_public()
 
@@ -27,8 +28,7 @@ class Receiver:
             ephemeral_public, self.scan_private, spend_public)
 
         self.derived_address = bc.PaymentAddress.from_point(
-            self.receiver_public,
-            version=bc.PaymentAddress.testnet_p2kh)
+            self.receiver_public, self._version)
         return self.derived_address
 
     def derive_private(self, ephemeral_public):
@@ -38,27 +38,18 @@ class Receiver:
 
 class Sender:
 
-    def __init__(self):
-        pass
+    def __init__(self, version=bc.PaymentAddress.mainnet_p2kh):
+        self._version = version
 
     @staticmethod
     def _random_data(size):
         return os.urandom(size)
 
     @staticmethod
-    def _random_secret():
-        return bc.EcSecret.from_bytes(Sender._random_data(bc.EcSecret.size))
-
-    @staticmethod
-    def _is_suitable_secret(secret):
-        spend_public_start_byte = secret.to_public().data[0]
-        return spend_public_start_byte == bc.ephemeral_public_key_sign
-
-    @staticmethod
     def _random_ephemeral_secret():
-        secret = None
-        while secret is None or not Sender._is_suitable_secret(secret):
-            secret = Sender._random_secret()
+        seed = Sender._random_data(bc.EcSecret.size)
+        secret = bc.create_ephemeral_key(seed)
+        assert secret is not None
         return secret
 
     def send_to_stealth_address(self, stealth_addr, ephemeral_private=None):
@@ -75,16 +66,15 @@ class Sender:
                                            ephemeral_private,
                                            spend_keys[0])
         self._send_address = bc.PaymentAddress.from_point(
-            self.sender_public,
-            version=bc.PaymentAddress.testnet_p2kh)
+            self.sender_public, self._version)
 
         metadata = ephemeral_public.data[1:]
         assert len(metadata) == 32
-        #meta_output_script = bc.Script.from_ops(
-        #    bc.Opcode.return_,
-        #    ephemeral_public + Sender._random_data
-        #)
-        return ephemeral_public, self._send_address
+        meta_script = bc.Script.from_ops([
+            bc.Opcode.return_,
+            metadata + Sender._random_data(8)
+        ])
+        return meta_script, self._send_address
 
 # Receiver creates the secret keys.
 pocket_main_key = "tprv8ctN3HAF9dCgX9ggdCwiZHa7c3UHuG2Ev4jgYWDhTHDUVWKKsg7znbr3vYtmCzVqcMQsjd9cSKsyKGaDvTAUMkw1UphETe1j8LcT21eWPkH"
@@ -95,8 +85,8 @@ scan_private = main_key.derive_private(
 spend_private = main_key.derive_private(
     1 + bc.hd_first_hardened_key).secret()
 
-receiver = Receiver(scan_private, spend_private)
-sender = Sender()
+receiver = Receiver(scan_private, spend_private, bc.PaymentAddress.testnet_p2kh)
+sender = Sender(bc.PaymentAddress.testnet_p2kh)
 
 stealth_addr = receiver.generate_stealth_address()
 
@@ -108,7 +98,7 @@ assert str(stealth_addr) == "vJmudwspxzmEoz1AP5tTrRMcuop6XjNWa1SnjHFmLeSc9DAkro6
 ephemeral_private = bc.EcSecret.from_bytes(bytes.fromhex(
     "f91e673103863bbeb0ef1852cd8eade6b73ea55afc9b1873be62bf628eac072a"))
 
-ephemeral_public, send_address = sender.send_to_stealth_address(
+meta_script, send_address = sender.send_to_stealth_address(
     stealth_addr, ephemeral_private)
 
 #########################################
@@ -127,10 +117,17 @@ ephemeral_public, send_address = sender.send_to_stealth_address(
 # And gets a list of keys and addresses for scanning
 #########################################
 
+assert bc.is_stealth_script(meta_script)
+ephemeral_public = \
+    bytes([bc.ephemeral_public_key_sign]) + \
+    meta_script.operations()[1].data()[:32]
+ephemeral_public = bc.EcCompressed.from_bytes(ephemeral_public)
+assert ephemeral_public is not None
+
 print("Derived key:", send_address)
 print("Ephemeral key:", ephemeral_public)
 
-#assert str(send_address) == "mkJDWtXDQHHhEtLFq1iA8XfSVXucA7LE8D"
+assert str(send_address) == "mtKffkQLTw2D6f6mTkrWfi8qxLv4jL1LrK"
 
 # Now the receiver should be able to regenerate the send_address
 # using just the ephemeral_public.
