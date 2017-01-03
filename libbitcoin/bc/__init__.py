@@ -23,7 +23,7 @@ from libbitcoin.bc.message import hash_message, sign_message, verify_message
 from libbitcoin.bc.mnemonic import mnemonic_word_multiple, \
     mnemonic_seed_multiple, create_mnemonic, validate_mnemonic, \
     decode_mnemonic
-from libbitcoin.bc.opcode import Opcode, opcode_to_string, \
+from libbitcoin.bc.opcode_ import Opcode, opcode_to_string, \
     opcode_from_string, opcode_to_hexadecimal, opcode_from_hexadecimal
 from libbitcoin.bc.operation import Operation, OperationList
 from libbitcoin.bc.output import Output

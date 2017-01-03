@@ -1,6 +1,6 @@
 from libbitcoin.bc.config import lib
 from libbitcoin.bc.data import DataChunk
-from libbitcoin.bc.opcode import Opcode
+from libbitcoin.bc.opcode_ import Opcode
 from libbitcoin.bc.vector import VectorMeta, VectorBase
 
 class Operation:
