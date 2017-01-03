@@ -1,5 +1,5 @@
 typedef struct bc_data_chunk_t bc_data_chunk_t;
-typedef struct bc_ec_private_t bc_ec_private_t;
+typedef struct bc_ec_secret_t bc_ec_secret_t;
 typedef struct bc_hash_digest_t bc_hash_digest_t;
 typedef struct bc_payment_address_t bc_payment_address_t;
 
