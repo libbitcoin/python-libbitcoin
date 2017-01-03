@@ -1,4 +1,5 @@
 typedef struct bc_data_chunk_t bc_data_chunk_t;
+typedef struct bc_payment_address_t bc_payment_address_t;
 typedef struct bc_script_t bc_script_t;
 typedef struct bc_string_t bc_string_t;
 
@@ -40,6 +41,9 @@ void bc_output__set_value(bc_output_t* self, uint64_t value);
 
 bc_script_t* bc_output__script(const bc_output_t* self);
 void bc_output__set_script(bc_output_t* self, const bc_script_t* script);
+
+/// The payment address extracted from this output as a standard script.
+bc_payment_address_t* bc_output__address(const bc_output_t* self);
 
 size_t bc_output__signature_operations(const bc_output_t* self);
 

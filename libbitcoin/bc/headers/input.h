@@ -1,5 +1,6 @@
 typedef struct bc_data_chunk_t bc_data_chunk_t;
 typedef struct bc_output_point_t bc_output_point_t;
+typedef struct bc_payment_address_t bc_payment_address_t;
 typedef struct bc_script_t bc_script_t;
 typedef struct bc_string_t bc_string_t;
 
@@ -44,6 +45,9 @@ void bc_input__set_script(bc_input_t* self, const bc_script_t* script);
 
 uint32_t bc_input__sequence(const bc_input_t* self);
 void bc_input__set_sequence(bc_input_t* self, uint32_t sequence);
+
+/// The payment address extracted from this input as a standard script.
+bc_payment_address_t* bc_input__address(const bc_input_t* self);
 
 bool bc_input__is_final(const bc_input_t* self);
 size_t bc_input__signature_operations(

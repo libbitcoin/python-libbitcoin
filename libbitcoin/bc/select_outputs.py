@@ -1,7 +1,12 @@
+from enum import Enum
 from libbitcoin.bc.config import lib
 from libbitcoin.bc.output_point import OutputInfoList, OutputInfo, PointsInfo
 
-def select_outputs(unspent, minimum_value):
+class SelectAlgorithm(Enum):
+    greedy = lib.bc_select_outputs__algorithm__greedy,
+    individual = lib.bc_select_outputs__algorithm__individual
+
+def select_outputs(unspent, minimum_value, option=None):
     bc_unspent = OutputInfoList()
     for row in unspent:
         hash, index = row[0]
@@ -12,6 +17,10 @@ def select_outputs(unspent, minimum_value):
         info.value = value
         bc_unspent.append(info)
     out = PointsInfo()
-    lib.bc_select_outputs__select(out._obj, bc_unspent._obj, minimum_value)
+    if option is None:
+        lib.bc_select_outputs__select(out._obj, bc_unspent._obj, minimum_value)
+    else:
+        lib.bc_select_outputs__select(out._obj, bc_unspent._obj, minimum_value,
+                                      option)
     return out
 
