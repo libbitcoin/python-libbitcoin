@@ -67,6 +67,9 @@ class HashDigest(HashBase, metaclass=HashMeta):
     bc_name = "hash_digest"
     size = lib.bc_hash_size()
 
+    def __str__(self):
+        return encode_hash(self)
+
 class HalfHash(HashBase, metaclass=HashMeta):
     bc_name = "half_hash"
     size = lib.bc_half_hash_size()
