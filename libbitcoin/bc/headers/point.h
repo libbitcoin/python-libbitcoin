@@ -1,5 +1,6 @@
 typedef struct bc_point_iterator_t bc_point_iterator_t;
 typedef struct bc_point_indexes_t bc_point_indexes_t;
+typedef struct bc_string_t bc_string_t;
 
 typedef struct bc_point_t bc_point_t;
 // Static values
