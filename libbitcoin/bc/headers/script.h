@@ -3,6 +3,7 @@ typedef struct bc_error_code_t bc_error_code_t;
 typedef struct bc_hash_digest_t bc_hash_digest_t;
 typedef struct bc_operation_t bc_operation_t;
 typedef struct bc_operation_list_t bc_operation_list_t;
+typedef struct bc_point_list_t bc_point_list_t;
 typedef struct bc_short_hash_t bc_short_hash_t;
 typedef struct bc_transaction_t bc_transaction_t;
 
