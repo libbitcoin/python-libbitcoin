@@ -34,6 +34,9 @@ class HdPrivate:
         obj = lib.bc_hd_private__encoded(self._obj)
         return str(String(obj))
 
+    def __str__(self):
+        return self.encoded()
+
     def secret(self):
         obj = lib.bc_hd_private__secret(self._obj)
         return EcSecret(obj)
