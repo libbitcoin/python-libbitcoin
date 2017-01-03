@@ -1,6 +1,7 @@
-typedef struct bc_string_t bc_string_t;
-typedef struct bc_hd_public_t bc_hd_public_t;
 typedef struct bc_ec_secret_t bc_ec_secret_t;
+typedef struct bc_hd_key_t bc_hd_key_t;
+typedef struct bc_hd_public_t bc_hd_public_t;
+typedef struct bc_string_t bc_string_t;
 
 typedef struct bc_hd_private_t bc_hd_private_t;
 uint64_t bc_hd_private__mainnet();
