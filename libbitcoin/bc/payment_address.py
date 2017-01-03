@@ -3,7 +3,7 @@ from libbitcoin.bc.ec_private import EcPrivate
 from libbitcoin.bc.ec_public import EcPublic
 from libbitcoin.bc.elliptic_curve import EcCompressed, EcSecret
 from libbitcoin.bc.hash import ShortHash
-from libbitcoin.bc.string import String
+from libbitcoin.bc.string_ import String
 
 class PaymentAddress:
 

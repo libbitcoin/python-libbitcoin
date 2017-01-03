@@ -3,7 +3,7 @@ from libbitcoin.bc.config import lib
 from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.elliptic_curve import EcCompressed, PointList
 from libbitcoin.bc.payment_address import PaymentAddress
-from libbitcoin.bc.string import String
+from libbitcoin.bc.string_ import String
 
 mainnet_p2kh = lib.bc_stealth_address__mainnet_p2kh()
 

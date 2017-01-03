@@ -1,7 +1,7 @@
 from enum import Enum
 from libbitcoin.bc.config import ffi, lib
 from libbitcoin.bc.data import DataChunk
-from libbitcoin.bc.string import String
+from libbitcoin.bc.string_ import String
 
 class Opcode(Enum):
     zero = lib.bc_opcode__zero

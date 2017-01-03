@@ -2,7 +2,7 @@ from libbitcoin.bc.config import lib
 from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.elliptic_curve import EcSecret
 from libbitcoin.bc.hd_public import HdPublic
-from libbitcoin.bc.string import String
+from libbitcoin.bc.string_ import String
 
 class HdPrivate:
 

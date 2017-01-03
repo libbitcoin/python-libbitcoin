@@ -1,5 +1,5 @@
 from libbitcoin.bc.config import ffi, lib
-from libbitcoin.bc.string import String
+from libbitcoin.bc.string_ import String
 
 class ByteArrayMeta(type):
 

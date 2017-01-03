@@ -1,7 +1,7 @@
 from libbitcoin.bc.config import lib
 from libbitcoin.bc.constants import max_size_t
 from libbitcoin.bc.data import DataChunk
-from libbitcoin.bc.string import String
+from libbitcoin.bc.string_ import String
 
 class Binary:
 

@@ -1,6 +1,6 @@
 from libbitcoin.bc.config import lib
 from libbitcoin.bc.elliptic_curve import EcCompressed
-from libbitcoin.bc.string import String
+from libbitcoin.bc.string_ import String
 
 hd_first_hardened_key = lib.bc_hd_first_hardened_key()
 

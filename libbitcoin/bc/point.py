@@ -1,7 +1,7 @@
 from libbitcoin.bc.config import lib
 from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.hash import HashDigest, encode_hash
-from libbitcoin.bc.string import String
+from libbitcoin.bc.string_ import String
 from libbitcoin.bc.vector import VectorMeta, VectorBase, \
                                  IntVectorMeta, IntVectorBase
 

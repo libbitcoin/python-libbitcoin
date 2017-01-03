@@ -1,6 +1,6 @@
 from enum import Enum
 from libbitcoin.bc.config import lib
-from libbitcoin.bc.string import String
+from libbitcoin.bc.string_ import String
 
 class ConsoleResult(Enum):
     failure = lib.bc_console_result__failure

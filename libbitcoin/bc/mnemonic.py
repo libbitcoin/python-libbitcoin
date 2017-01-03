@@ -1,7 +1,7 @@
 from libbitcoin.bc.config import lib
 from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.hash import LongHash
-from libbitcoin.bc.string import String, StringList
+from libbitcoin.bc.string_ import String, StringList
 
 def mnemonic_to_string_list(mnemonic):
     result = StringList()

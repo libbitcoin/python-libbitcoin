@@ -1,5 +1,5 @@
 from libbitcoin.bc.config import ffi, lib
-from libbitcoin.bc.string import String
+from libbitcoin.bc.string_ import String
 
 btc_decimal_places = lib.bc_btc_decimal_places()
 mbtc_decimal_places = lib.bc_mbtc_decimal_places()

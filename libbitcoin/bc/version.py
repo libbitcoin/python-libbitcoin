@@ -1,5 +1,5 @@
 from libbitcoin.bc.config import ffi, lib
-from libbitcoin.bc.string import String
+from libbitcoin.bc.string_ import String
 
 libbitcoin_version = ffi.string(lib.bc_libbitcoin_version()).decode()
 libbitcoin_major_version = lib.bc_libbitcoin_major_version()

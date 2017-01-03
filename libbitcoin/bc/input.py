@@ -3,7 +3,7 @@ from libbitcoin.bc.data import DataChunk
 from libbitcoin.bc.output_point import OutputPoint
 from libbitcoin.bc.point import Point
 from libbitcoin.bc.script import Script
-from libbitcoin.bc.string import String
+from libbitcoin.bc.string_ import String
 from libbitcoin.bc.vector import VectorMeta, VectorBase
 
 class Input:

@@ -5,7 +5,7 @@ from libbitcoin.bc.elliptic_curve import Endorsement
 from libbitcoin.bc.error import ErrorCode
 from libbitcoin.bc.hash import HashDigest
 from libbitcoin.bc.operation import Opcode, Operation, OperationList
-from libbitcoin.bc.string import String
+from libbitcoin.bc.string_ import String
 
 class Script:
 
