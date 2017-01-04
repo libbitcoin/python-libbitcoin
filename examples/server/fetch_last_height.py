@@ -8,18 +8,18 @@ asyncio.set_event_loop(loop)
 import libbitcoin.server
 context = libbitcoin.server.Context()
 
-tor_enabled = False
+tor_enabled = True
 
 async def main():
     if tor_enabled:
-        url = "tcp://55k4e2eaeucf3omt.onion:9091"
+        url = "tcp://iqqy3y6bdjpdij3i.onion:9091"
     else:
         url = "tcp://gateway.unsystem.net:9091"
         # Testnet URL
         #url = "tcp://163.172.84.141:9091"
 
     client_settings = libbitcoin.server.ClientSettings()
-    client_settings.query_expire_time = 1.0
+    client_settings.query_expire_time = 10.0
     if tor_enabled:
         client_settings.socks5 = "127.0.0.1:9150"
 
