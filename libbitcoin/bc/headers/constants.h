@@ -89,7 +89,10 @@ uint32_t bc_bip16_activation_time();
 //-----------------------------------------------------------------------------
 
 size_t bc_command_size();
-size_t bc_max_inventory_count();
+size_t bc_max_get_blocks();
+size_t bc_max_get_headers();
+size_t bc_max_get_data();
+size_t bc_max_inventory();
 
 /// Variable integer prefix sentinels.
 uint8_t bc_varint_two_bytes();
