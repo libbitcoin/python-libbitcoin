@@ -52,7 +52,6 @@ class VectorBase:
             raise IndexError("vector index out of range")
         obj = self.bc_vector__at(self._obj, pos)
         result = self.item_type(obj)
-        result.disable_object_deleter()
         result._keep_alive_parent = self
         return result
 
@@ -70,7 +69,6 @@ class VectorBase:
 
     def append(self, item):
         # We need to invalidate item's delete function
-        item.disable_object_deleter()
         self.bc_vector__push_back(self._obj, item._obj)
 
     def resize(self, count):
@@ -78,7 +76,6 @@ class VectorBase:
 
     def insert(self, pos, item):
         # We need to invalidate item's delete function
-        item.disable_object_deleter()
         self.bc_vector__insert(self._obj, pos, item._obj)
 
     def __iter__(self):

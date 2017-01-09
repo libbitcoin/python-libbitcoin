@@ -20,13 +20,7 @@ class Input:
         self._obj = obj
 
     def __del__(self):
-        self._delete_object()
-
-    def _delete_object(self):
         lib.bc_destroy_input(self._obj)
-
-    def disable_object_deleter(self):
-        self._delete_object = lambda: None
 
     def __eq__(self, other):
         return lib.bc_input__equals(self._obj, other._obj) == 1

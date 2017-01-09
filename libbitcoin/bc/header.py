@@ -30,13 +30,7 @@ class Header:
         return cls(obj)
 
     def __del__(self):
-        self._delete_object()
-
-    def _delete_object(self):
         lib.bc_destroy_header(self._obj)
-
-    def disable_object_deleter(self):
-        self._delete_object = lambda: None
 
     def __eq__(self, other):
         return lib.bc_header__equals(self._obj, other._obj) == 1

@@ -121,13 +121,7 @@ class OutputInfo:
         self._obj = obj
 
     def __del__(self):
-        self._delete_object()
-
-    def _delete_object(self):
         lib.bc_destroy_output_info(self._obj)
-
-    def disable_object_deleter(self):
-        self._delete_object = lambda: None
 
     @property
     def point(self):

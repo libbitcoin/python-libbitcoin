@@ -14,13 +14,7 @@ class String:
             self._obj = s
 
     def __del__(self):
-        self._delete_object()
-
-    def _delete_object(self):
         lib.bc_destroy_string(self._obj)
-
-    def disable_object_deleter(self):
-        self._delete_object = lambda: None
 
     @property
     def data(self):

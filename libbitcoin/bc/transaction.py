@@ -35,13 +35,7 @@ class Transaction:
         return cls(obj)
 
     def __del__(self):
-        self._delete_object()
-
-    def _delete_object(self):
         lib.bc_destroy_transaction(self._obj)
-
-    def disable_object_deleter(self):
-        self._delete_object = lambda: None
 
     def copy(self, hash=None):
         if hash is None:
