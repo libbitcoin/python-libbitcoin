@@ -43,7 +43,6 @@ class Context:
         self._poller_task = loop.create_task(self.poller.run())
 
     def stop(self):
-        print("Cancelling poller task")
         self._poller_task.cancel()
 
 class TornadoContext(Context):
