@@ -9,10 +9,9 @@ class Poller:
         self._zmq_poller = zmq_poller
         self._futures = {}
         self._handlers = {}
-        self._stopped = False
 
     async def run(self):
-        while not self._stopped:
+        while True:
             # Allow timeouts in case new sockets are added
             # when poller started.
             events = await self._zmq_poller.poll(timeout=0.1)
@@ -65,7 +64,4 @@ class Poller:
 
     def add_handler(self, command, handler):
         self._handlers[command] = handler
-
-    def stop(self):
-        self._stopped = True
 

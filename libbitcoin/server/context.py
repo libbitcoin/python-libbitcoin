@@ -1,3 +1,4 @@
+import asyncio
 import zmq.asyncio
 import libbitcoin.server.client
 import libbitcoin.server.poller
@@ -29,22 +30,21 @@ class Context:
 
         #self.scheduler = libbitcoin.server.scheduler.Scheduler()
 
+        self._start()
+
     def Client(self, address, settings=ClientSettings()):
         return libbitcoin.server.client.Client(self, address, settings)
 
     def Future(self):
         return self._make_future()
 
-    # asyncio prefers them called.
-    def tasks(self):
-        return [
-            self.poller.run(),
-            #self.scheduler.run()
-        ]
+    def _start(self):
+        loop = asyncio.get_event_loop()
+        self._poller_task = loop.create_task(self.poller.run())
 
     def stop(self):
-        self.poller.stop()
-        #self.scheduler.stop()
+        print("Cancelling poller task")
+        self._poller_task.cancel()
 
 class TornadoContext(Context):
 
