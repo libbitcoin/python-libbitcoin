@@ -68,14 +68,12 @@ class VectorBase:
         self.bc_vector__erase(self._obj, pos)
 
     def append(self, item):
-        # We need to invalidate item's delete function
         self.bc_vector__push_back(self._obj, item._obj)
 
     def resize(self, count):
         self.bc_vector__resize(self._obj, count)
 
     def insert(self, pos, item):
-        # We need to invalidate item's delete function
         self.bc_vector__insert(self._obj, pos, item._obj)
 
     def __iter__(self):
