@@ -16,6 +16,7 @@ typedef enum bc_error_t
     bc_error__not_found = 3,
     bc_error__file_system = 42,
     bc_error__non_standard = 17,
+    bc_error__not_implemented = 4,
 
     // network
     bc_error__service_stopped = 1,
@@ -40,12 +41,9 @@ typedef enum bc_error_t
     bc_error__orphan_block = 5,
     bc_error__invalid_previous_block = 24,
     bc_error__insufficient_work = 48,
-    //// TODO: block_pool_filled,
 
     // transaction pool
-    bc_error__blockchain_reorganized = 14,
-    bc_error__transaction_pool_filled = 15,
-    bc_error__duplicate_pool_transaction = 4,
+    bc_error__orphan_transaction = 14,
 
     // check header
     bc_error__invalid_proof_of_work = 26,
@@ -63,7 +61,7 @@ typedef enum bc_error_t
     bc_error__first_not_coinbase = 28,
     bc_error__extra_coinbases = 29,
     bc_error__internal_duplicate = 49,
-    bc_error__internal_double_spend = 69,
+    bc_error__internal_double_spend = 15,
     bc_error__merkle_mismatch = 31,
     bc_error__block_legacy_sigop_limit = 30,
 

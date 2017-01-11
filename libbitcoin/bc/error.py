@@ -14,6 +14,7 @@ class Error(Enum):
     not_found = lib.bc_error__not_found
     file_system = lib.bc_error__file_system
     non_standard = lib.bc_error__non_standard
+    not_implemented = lib.bc_error__not_implemented
     service_stopped = lib.bc_error__service_stopped
     operation_failed = lib.bc_error__operation_failed
     resolve_failed = lib.bc_error__resolve_failed
@@ -32,9 +33,7 @@ class Error(Enum):
     orphan_block = lib.bc_error__orphan_block
     invalid_previous_block = lib.bc_error__invalid_previous_block
     insufficient_work = lib.bc_error__insufficient_work
-    blockchain_reorganized = lib.bc_error__blockchain_reorganized
-    transaction_pool_filled = lib.bc_error__transaction_pool_filled
-    duplicate_pool_transaction = lib.bc_error__duplicate_pool_transaction
+    orphan_transaction = lib.bc_error__orphan_transaction
     invalid_proof_of_work = lib.bc_error__invalid_proof_of_work
     futuristic_timestamp = lib.bc_error__futuristic_timestamp
     checkpoints_failed = lib.bc_error__checkpoints_failed
