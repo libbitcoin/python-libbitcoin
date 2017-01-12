@@ -79,6 +79,60 @@ class ClientSettings:
     def socks5(self, socks5):
         self._socks5 = socks5
 
+class Poller:
+
+    def __init__(self, socket):
+        self._socket = socket
+        self._futures = {}
+
+        loop = asyncio.get_event_loop()
+        self._task = loop.create_task(self._run())
+
+    async def _run(self):
+        while True:
+            await self._receive()
+
+    def stop(self):
+        self._task.cancel()
+
+    async def _receive(self):
+        # Get the reply
+        frame = await self._socket.recv_multipart()
+        reply = self._deserialize(frame)
+        if reply is None:
+            print("Error: bad reply sent by server. Discarding.",
+                  file=sys.stderr)
+            return
+        command, reply_id, *_ = reply
+        if reply_id in self._futures:
+            # Lookup the future based on request ID
+            future = self._futures[reply_id]
+            del self._futures[reply_id]
+            # Set the result for the future
+            try:
+                future.set_result(reply)
+            except asyncio.InvalidStateError:
+                # Future timed out.
+                pass
+        else:
+            print("Error: unhandled frame %s:%s." % (command, reply_id))
+
+    def _deserialize(self, frame):
+        if len(frame) != 3:
+            return None
+        return [
+            frame[0],                               # Command
+            struct.unpack("<I", frame[1])[0],       # Request ID
+            struct.unpack("<I", frame[2][:4])[0],   # Error Code
+            frame[2][4:]                            # Data
+        ]
+
+    def add_future(self, request_id, future):
+        self._futures[request_id] = future
+
+    def delete_future(self, request_id):
+        del self._futures[request_id]
+
 class Client:
 
     def __init__(self, context, url, settings=ClientSettings()):
@@ -87,7 +141,11 @@ class Client:
         self.settings = settings
         self._setup_socket()
 
+        self._poller = Poller(self._socket)
         #self._subscribe_manager = libbitcoin.server.subscribe.SubscribeManager()
+
+    def stop(self):
+        self._poller.stop()
 
     def _setup_socket(self):
         self._socket = self._context.zmq_context.socket(zmq.DEALER)
@@ -95,7 +153,7 @@ class Client:
             socks5 = bytes(self.settings.socks5, "ascii")
             self._socket.setsockopt(zmq.SOCKS_PROXY, socks5)
         self._socket.connect(self._url)
-        self._context.poller.register(self._socket)
+        #self._context.poller.register(self._socket)
         #self._context.poller.add_handler(b"address.update", self._on_update)
 
     async def _send_request(self, command, request_id, data):
@@ -109,9 +167,9 @@ class Client:
     async def request(self, request_command, request_data):
         """Make a generic request. Both options are byte objects specified like
         b"blockchain.fetch_block_header" as an example."""
-        future = self._context.Future()
+        future = asyncio.Future()
         request_id = create_random_id()
-        self._context.poller.add_future(request_id, future)
+        self._poller.add_future(request_id, future)
 
         await self._send_request(request_command, request_id, request_data)
 

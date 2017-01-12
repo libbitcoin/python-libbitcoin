@@ -16,34 +16,17 @@ import zmq.eventloop.future
 
 class Context:
 
-    def __init__(self, make_future=zmq.asyncio.Future,
-                       make_zmq_poller=zmq.asyncio.Poller,
-                       make_zmq_context=zmq.asyncio.Context):
-        self._make_future = make_future
-        self._make_zmq_poller = make_zmq_poller
-        self._make_zmq_context = make_zmq_context
-
-        zmq_poller = make_zmq_poller()
-        self.poller = libbitcoin.server.poller.Poller(zmq_poller)
-
-        self.zmq_context = make_zmq_context()
-
-        #self.scheduler = libbitcoin.server.scheduler.Scheduler()
-
-        self._start()
+    def __init__(self):
+        self.zmq_context = zmq.asyncio.Context()
+        self._clients = []
 
     def Client(self, address, settings=ClientSettings()):
-        return libbitcoin.server.client.Client(self, address, settings)
-
-    def Future(self):
-        return self._make_future()
-
-    def _start(self):
-        loop = asyncio.get_event_loop()
-        self._poller_task = loop.create_task(self.poller.run())
+        client = libbitcoin.server.client.Client(self, address, settings)
+        self._clients.append(client)
+        return client
 
     def stop(self):
-        self._poller_task.cancel()
+        [client.stop() for client in self._clients]
 
 class TornadoContext(Context):
 

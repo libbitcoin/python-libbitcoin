@@ -19,7 +19,7 @@ async def main():
     ec, history = await client.history(address)
     if ec:
         print("Couldn't fetch history:", ec, file=sys.stderr)
-        context.stop_all()
+        context.stop()
         return
     for output, spend in history:
         print("OUTPUT point=%s, height=%s, value=%s" %
@@ -32,13 +32,9 @@ async def main():
     balance = sum(output[2] for output, spend in history if spend is None)
     print("Address balance:", balance)
 
-    context.stop_all()
+    context.stop()
 
 if __name__ == '__main__':
-    tasks = [
-        main(),
-    ]
-    tasks.extend(context.tasks())
-    loop.run_until_complete(asyncio.wait(tasks))
+    loop.run_until_complete(main())
     loop.close()
 
