@@ -137,9 +137,8 @@ class Client:
 
     def __init__(self, context, url, settings=ClientSettings()):
         self._url = url
-        self._context = context
         self.settings = settings
-        self._setup_socket()
+        self._setup_socket(context)
 
         self._poller = Poller(self._socket)
         #self._subscribe_manager = libbitcoin.server.subscribe.SubscribeManager()
@@ -147,8 +146,8 @@ class Client:
     def stop(self):
         self._poller.stop()
 
-    def _setup_socket(self):
-        self._socket = self._context.zmq_context.socket(zmq.DEALER)
+    def _setup_socket(self, context):
+        self._socket = context.zmq_context.socket(zmq.DEALER)
         if self.settings.socks5:
             socks5 = bytes(self.settings.socks5, "ascii")
             self._socket.setsockopt(zmq.SOCKS_PROXY, socks5)
@@ -177,7 +176,7 @@ class Client:
         try:
             reply = await asyncio.wait_for(future, expiry_time)
         except asyncio.TimeoutError:
-            self._context.poller.delete_future(request_id)
+            self._poller.delete_future(request_id)
             return libbitcoin.server.ErrorCode.channel_timeout, None
 
         reply_command, reply_id, ec, data = reply
