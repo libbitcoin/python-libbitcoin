@@ -87,7 +87,7 @@ class Client:
         self.settings = settings
         self._setup_socket()
 
-        self._subscribe_manager = libbitcoin.server.subscribe.SubscribeManager()
+        #self._subscribe_manager = libbitcoin.server.subscribe.SubscribeManager()
 
     def _setup_socket(self):
         self._socket = self._context.zmq_context.socket(zmq.DEALER)
@@ -96,7 +96,7 @@ class Client:
             self._socket.setsockopt(zmq.SOCKS_PROXY, socks5)
         self._socket.connect(self._url)
         self._context.poller.register(self._socket)
-        self._context.poller.add_handler(b"address.update", self._on_update)
+        #self._context.poller.add_handler(b"address.update", self._on_update)
 
     async def _send_request(self, command, request_id, data):
         request = [
