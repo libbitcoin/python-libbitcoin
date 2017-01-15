@@ -145,6 +145,7 @@ class Client:
 
     def stop(self):
         self._poller.stop()
+        self._socket.close()
 
     def _setup_socket(self, context):
         self._socket = context.zmq_context.socket(zmq.DEALER)

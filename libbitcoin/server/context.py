@@ -27,6 +27,7 @@ class Context:
 
     def stop(self):
         [client.stop() for client in self._clients]
+        self.zmq_context.term()
 
 class TornadoContext(Context):
 
