@@ -1,5 +1,6 @@
 typedef struct bc_data_chunk_t bc_data_chunk_t;
 typedef struct bc_data_stack_t bc_data_stack_t;
+typedef struct bc_ec_signature_t bc_ec_signature_t;
 typedef struct bc_error_code_t bc_error_code_t;
 typedef struct bc_hash_digest_t bc_hash_digest_t;
 typedef struct bc_operation_t bc_operation_t;
