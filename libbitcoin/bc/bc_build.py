@@ -2,18 +2,72 @@ from cffi import FFI
 import os
 import bc_macros
 
-def read_dir_files(path):
+def read_from_filenames(filenames):
     cdef = ""
+    for filename in filenames:
+        cdef += open(filename).read()
+    return cdef
+
+def read_dir_files(path):
+    filenames = []
     for filename in os.listdir(path):
         if filename.endswith(".h"):
             filename = os.path.join(path, filename)
-            cdef += open(filename).read()
-    return cdef
+            filenames.append(filename)
+    return read_from_filenames(filenames)
+
+def read_files(path, filenames):
+    filenames = [os.path.join(path, filename) for filename in filenames]
+    return read_from_filenames(filenames)
 
 cdef = ""
 
-cdef += read_dir_files("enums")
-cdef += read_dir_files("headers")
+enum_files = [
+    "error.h",
+    "select_outputs.h",
+    "rule_fork.h",
+    "opcode.h",
+    "sighash_algorithm.h",
+    "script_pattern.h"
+]
+header_files = [
+    "error.h",
+    "data.h",
+    "header.h",
+    "dictionary.h",
+    "ec_public.h",
+    "hd_public.h",
+    "select_outputs.h",
+    "operation.h",
+    "base_10.h",
+    "chain_state.h",
+    "constants.h",
+    "crypto.h",
+    "ec_private.h",
+    "input.h",
+    "binary.h",
+    "point.h",
+    "machine_number.h",
+    "opcode.h",
+    "elliptic_curve.h",
+    "mnemonic.h",
+    "script.h",
+    "transaction.h",
+    "stealth_address.h",
+    "message.h",
+    "string.h",
+    "version.h",
+    "payment_address.h",
+    "stealth.h",
+    "block.h",
+    "hd_private.h",
+    "output.h",
+    "output_point.h",
+    "hash.h"
+]
+
+cdef += read_files("enums", enum_files)
+cdef += read_files("headers", header_files)
 
 cdef += bc_macros.byte_array("ec_secret")
 cdef += bc_macros.byte_array("ec_compressed")
