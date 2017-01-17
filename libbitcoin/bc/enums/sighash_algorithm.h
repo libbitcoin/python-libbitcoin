@@ -40,8 +40,5 @@ typedef enum bc_sighash_algorithm_t
     /// add or remove other inputs.
     bc_sighash_algorithm__single_anyone_can_pay = 0x83,
 
-    /// Used to mask off the anyone_can_pay flag to access the enumeration.
-    bc_sighash_algorithm__mask = -0x81
-
 } bc_sighash_algorithm_t;
 
