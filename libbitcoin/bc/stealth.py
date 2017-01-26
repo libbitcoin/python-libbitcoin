@@ -4,8 +4,6 @@ from libbitcoin.bc.elliptic_curve import EcCompressed, EcSecret
 from libbitcoin.bc.hash import HashDigest
 from libbitcoin.bc.script import Script
 
-ephemeral_public_key_sign = lib.bc_ephemeral_public_key_sign()
-
 # Determine if the script is a null-data script of at least 32 data bytes.
 def is_stealth_script(script):
     return lib.bc_is_stealth_script(script._obj) == 1

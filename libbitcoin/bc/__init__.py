@@ -35,10 +35,9 @@ from libbitcoin.bc.script import Script
 from libbitcoin.bc.script_pattern import ScriptPattern
 from libbitcoin.bc.sighash_algorithm import SighashAlgorithm
 from libbitcoin.bc.select_outputs import SelectAlgorithm, select_outputs
-from libbitcoin.bc.stealth import ephemeral_public_key_sign, \
-    is_stealth_script, to_stealth_prefix, create_ephemeral_key, \
-    create_stealth_data, extract_ephemeral_key, extract_ephemeral_key_Hash, \
-    shared_secret, uncover_stealth
+from libbitcoin.bc.stealth import is_stealth_script, to_stealth_prefix, \
+    create_ephemeral_key, create_stealth_data, extract_ephemeral_key, \
+    extract_ephemeral_key_Hash, shared_secret, uncover_stealth
 from libbitcoin.bc.stealth_address import StealthAddress
 from libbitcoin.bc.string_ import String, StringList
 from libbitcoin.bc.transaction import Transaction, TransactionList
